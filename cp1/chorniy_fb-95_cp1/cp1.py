@@ -6,36 +6,42 @@ let = al.keys()
 f = open('text.txt',"r",encoding = "utf-8")
 text = f.read()
 text = text.lower()
-text1 = "".join([i for i in text if i in al.keys()])     #ridding off nonletters
-del al[" "]
+text1 = "".join([i for i in text if i in al.keys()])        #ridding off nonletters
+del al[" "]                                                 #deleting spaces
 text2 = "".join([i for i in text if i in al.keys()])
 
-r = lambda x: 1 - (x / math.log2(32))
+r = lambda x: 1 - (x / math.log2(32))                       #redundency
 
 def letters(text, al):
     for i in text:
         if (i in let):
             al[i] = al[i] + 1                               #setting ammount of letters
     for i in al.keys():
-        al[i] /= len(text)
+        al[i] /= len(text)                                  #converting frequency to probabilty
     h = sum(list(map(lambda x: -x * math.log2(x), al.values())))    #entropy
-    print(h)
-    print(r(h))         #redundency 
+    return h, r(h) 
 
-def bigrams(text):
+def bigrams(text, inters):
     bis = []
-    for i,j in enumerate(text):
-        bi = text[i:i+2]                    #setting pairs
-        if (len(bi) == 2):
-            bis.append(bi)
+    if inters: 
+        for i,j in enumerate(text):
+            bi = text[i:i+2]                    #setting pairs
+            if (len(bi) == 2):
+                bis.append(bi)
+    else:
+        for i,j in enumerate(text[::2]):        #every second letter is a start of a pair
+            bi = text[i:i+2]                    #setting pairs
+            if (len(bi) == 2):
+                bis.append(bi)
     bisd =  Counter(bis)
     for i in bisd.keys():
-        bisd[i] /= len(text)
+        bisd[i] /= len(text)                    #converting frequency to probabilty
     h = sum(list(map(lambda x: -x * math.log2(x), bisd.values()))) / 2      #entropy
-    print(h)
-    print(r(h))         #redundency
+    return h, r(h)
 
-letters(text1, al)
-bigrams(text1)
-letters(text2, al)
-bigrams(text2)
+print("letter entropy with spaces, and sets redundency",letters(text1, al))
+print("bigram entropy with spaces, with intersetcions and sets redundency",bigrams(text1, 1))
+print("bigram entropy with spaces, without intersetcions and sets redundency",bigrams(text1, 0))
+print("letter entropy without spaces, and sets redundency",letters(text2, al))
+print("bigram entropy without spaces, with intersetcions and sets redundency",bigrams(text2, 1))
+print("bigram entropy without spaces, without intersetcions and sets redundency",bigrams(text2, 0))
