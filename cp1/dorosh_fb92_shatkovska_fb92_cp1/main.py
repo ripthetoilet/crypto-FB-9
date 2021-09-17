@@ -16,7 +16,13 @@ def clean_text(txt):
     text = ' '.join([word.strip('\n') for word in text.split()])
     #print(text[:1000])
 
-    with open('exmpl.txt', 'w', encoding='utf-8') as file:
+    with open('exmpl_spaces.txt', 'w', encoding='utf-8') as file:
+        file.write(text)
+
+    text = ''.join([word.strip('\n') for word in text.split()])
+    # print(text[:1000])
+
+    with open('exmpl_nospaces.txt', 'w', encoding='utf-8') as file:
         file.write(text)
 
 # counting monograms
