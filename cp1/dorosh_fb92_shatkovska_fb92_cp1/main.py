@@ -96,5 +96,3 @@ print(tabulate(count_bi_intersect_nospaces, headers='keys', tablefmt='presto'))
 count_bi_nointersect_nospaces = [count_bi_nointersect(text_nospaces)]
 print("Bigrams(not intersected, without spaces):")
 print(tabulate(count_bi_nointersect_nospaces, headers='keys', tablefmt='presto'))
-
-print(tabulate(mono, headers='keys', tablefmt='fancy_grid'))
