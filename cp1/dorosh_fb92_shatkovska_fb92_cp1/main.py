@@ -1,6 +1,14 @@
 # This is the 1st lab on Cryptology yet in progress by Dorosh and Shatkovska FB-92
-
+import math
 from collections import Counter
+
+
+def open_file(txt):
+    with open(txt, 'r', encoding='utf-8') as file:
+        text = file.read().lower()
+
+    return text
+
 
 # Cleaning example text to match the criteria before doing the task
 def clean_text(txt):
@@ -25,38 +33,46 @@ def clean_text(txt):
     with open('exmpl_nospaces.txt', 'w', encoding='utf-8') as file:
         file.write(text)
 
+
 # counting monograms
-def count_mono(txt, alphabet):
-    # dictionary for output
-    output = {}
-
-    # change later
-    with open(txt, 'r', encoding='utf-8') as file:
-        text = file.read().lower()
-
-    for a in alphabet:
-        results = text.count(a)
-        output.update({a: results})
-
-    return output
+def count_mono(text):
+    res = Counter(text[idx] for idx in range(len(text)))
+    return res
 
 
-def count_bi(txt, alphabet):
-    # change later
-    with open(txt, 'r', encoding='utf-8') as file:
-        text = file.read().lower()
-
-    res = Counter(text[idx: idx + 2] for idx in range(len(text) - 1))
-
+# counting bigrams with intersection
+def count_bi_intersect(text):
+    res = Counter(text[idx: idx + 2] for idx in range(len(text)))
     return dict(res)
 
 
-clean_text('exmpl_unformatted.txt')
+# counting bigrams with intersection
+def count_bi_nointersect(text):
+    res = Counter(text[idx: idx + 2] for idx in range(0, (len(text)), 2))
+    return dict(res)
 
-alphabet_clean = ['а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ы', 'ь', 'э', 'ю', 'я']
-alphabet_with_spaces = ['а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ы', 'ь', 'э', 'ю', 'я', ' ']
+
+def find_entropy(freq_dict, n):
+    entropy = sum(list(map(lambda x: -x * math.log2(x), freq_dict.values())))
+    entropy *= 1/n
+    return entropy
+
+
+clean_text('exmpl_unformatted.txt')
+text_with_spaces = open_file('exmpl_spaces.txt')
+text_nospaces = open_file('exmpl_nospaces.txt')
 
 # test and debug
-print(count_mono('exmpl.txt', alphabet_clean))
-print(count_mono('exmpl.txt', alphabet_with_spaces))
-print(count_bi('exmpl.txt', alphabet_with_spaces))
+
+
+#print(count_mono(text_with_spaces))
+mono = count_mono(text_with_spaces)
+print(find_entropy(mono, 1))
+
+#print(count_bi_intersect(text_with_spaces))
+#print(count_bi_nointersect(text_with_spaces))
+
+#print(count_bi_intersect(text_nospaces))
+#print(count_bi_nointersect(text_nospaces))
+
+#print(tabulate(mono, headers='keys', tablefmt='fancy_grid'))
