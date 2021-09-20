@@ -78,4 +78,4 @@ print(mono)
 #print(count_bi_intersect(text_nospaces))
 #print(count_bi_nointersect(text_nospaces))
 
-#print(tabulate(mono, headers='keys', tablefmt='fancy_grid'))
+print(tabulate(mono, headers='keys', tablefmt='fancy_grid'))
