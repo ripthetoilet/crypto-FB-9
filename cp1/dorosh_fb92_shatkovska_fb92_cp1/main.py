@@ -69,52 +69,52 @@ def find_entropy(freq, n):
 
 
 def redundant(h):
-    return (1-(h/math.log2(32)))
+    return 1 - (h/math.log2(32))
 
 
 clean_text('exmpl_unformatted.txt')
 text_with_spaces = open_file('exmpl_spaces.txt')
 text_nospaces = open_file('exmpl_nospaces.txt')
 
-
+# monograms with spaces
 mono_spaces = count_mono(text_with_spaces)
 print("Monograms:")
 for key, val in mono_spaces.items():
     print(key, ' |', val)
 print('\n')
 
-
+# monograms without spaces
 mono_nospaces = count_mono(text_nospaces)
 print("Monograms without spaces:")
 for key, val in mono_nospaces.items():
     print(key, ' |', val)
 print('\n')
 
-
-count_bi_intersect_spaces = count_bi_intersect(text_with_spaces)
-print("Bigrams(intersected, with spaces):")
-for key, val in count_bi_intersect_spaces.items():
-    print(key, '|', val)
-print('\n')
-
-
-count_bi_nointersect_spaces = count_bi_nointersect(text_with_spaces)
-print("Bigrams(not intersected, with spaces):")
-for key, val in count_bi_nointersect_spaces.items():
-    print(key, '|', val)
-print('\n')
-
-
+# bigrams intersected without spaces
 count_bi_intersect_nospaces = count_bi_intersect(text_nospaces)
 print("Bigrams(intersected, without spaces):")
 for key, val in count_bi_intersect_nospaces.items():
     print(key, '|', val)
 print('\n')
 
-
+# bigrams not intersected, without spaces
 count_bi_nointersect_nospaces = count_bi_nointersect(text_nospaces)
 print("Bigrams(not intersected, without spaces):")
 for key, val in count_bi_nointersect_nospaces.items():
+    print(key, '|', val)
+print('\n')
+
+# bigrams not intersected with spaces
+count_bi_nointersect_spaces = count_bi_nointersect(text_with_spaces)
+print("Bigrams(not intersected, with spaces):")
+for key, val in count_bi_nointersect_spaces.items():
+    print(key, '|', val)
+print('\n')
+
+# bigrams intersected with spaces
+count_bi_intersect_spaces = count_bi_intersect(text_with_spaces)
+print("Bigrams(intersected, with spaces):")
+for key, val in count_bi_intersect_spaces.items():
     print(key, '|', val)
 print('\n')
 
@@ -130,18 +130,18 @@ print("Redundancy for H1 without spaces: ", redundant(h1_nospaces_ent), '\n')
 # entropy and redundancy for H2
 # without intersection
 h2_nointersect_spaces_ent = find_entropy(count_bi_nointersect_spaces, 2)
-print("H1 text with spaces: ", h2_nointersect_spaces_ent)
-print("Redundancy for H1 with spaces: ", redundant(h1_spaces_ent), '\n')
+print("H2 text with spaces without intersection: ", h2_nointersect_spaces_ent)
+print("Redundancy for H2 with spaces without intersection: ", redundant(h2_nointersect_spaces_ent), '\n')
 
-h2_nointersect_nospaces_ent = find_entropy(count_bi_nointersect_spaces, 2)
-print("H1 text without spaces: ", h2_nointersect_nospaces_ent)
-print("Redundancy for H1 without spaces: ", redundant(h1_nospaces_ent), '\n')
+h2_nointersect_nospaces_ent = find_entropy(count_bi_nointersect_nospaces, 2)
+print("H2 text without spaces without intersection: ", h2_nointersect_nospaces_ent)
+print("Redundancy for H2 without spaces without intersection: ", redundant(h2_nointersect_nospaces_ent), '\n')
 
 # with intersections
 h2_intersect_spaces_ent = find_entropy(count_bi_intersect_spaces, 2)
-print("H1 text with spaces: ", h2_intersect_spaces_ent)
-print("Redundancy for H1 with spaces: ", redundant(h1_spaces_ent), '\n')
+print("H2 text with spaces with intersection: ", h2_intersect_spaces_ent)
+print("Redundancy for H1 with spaces: ", redundant(h2_intersect_spaces_ent), '\n')
 
 h2_intersect_nospaces_ent = find_entropy(count_bi_intersect_nospaces, 2)
-print("H1 text without spaces: ", h2_intersect_nospaces_ent)
-print("Redundancy for H1 without spaces: ", redundant(h1_nospaces_ent), '\n')
+print("H2 text without spaces with intersection: ", h2_intersect_nospaces_ent)
+print("Redundancy for H2 without spaces with intersection: ", redundant(h2_intersect_nospaces_ent), '\n')
