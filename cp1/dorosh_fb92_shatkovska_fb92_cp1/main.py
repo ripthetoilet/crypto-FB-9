@@ -16,21 +16,21 @@ def clean_text(txt):
     with open(txt, 'r', encoding='utf-8') as file:
         text = file.read().lower()
 
-    #uniqueChars = ''.join(set(text))
+    # uniqueChars = ''.join(set(text))
 
-    #-----------------------------------------------------
+    # -----------------------------------------------------
     chars = '.71()-«5d?[“!93286”…—4;»0:],na'
     # -----------------------------------------------------
     for ch in chars:
         text = text.replace(ch, '')
 
     text = '_'.join([word.strip('\n') for word in text.split()])
-    #print(text[:1000])
+    # print(text[:1000])
 
     with open('exmpl_spaces.txt', 'w', encoding='utf-8') as file:
         file.write(text)
 
-    text = ''.join([word.strip('\n') for word in text.split()])
+    text = ''.join([word.strip('\n') for word in text.split('_')])
     # print(text[:1000])
 
     with open('exmpl_nospaces.txt', 'w', encoding='utf-8') as file:
@@ -40,7 +40,7 @@ def clean_text(txt):
 # counting monograms
 def count_mono(text):
     res = Counter(text[idx] for idx in range(len(text)))
-    res = {x: res[x]/len(text) for x in res}
+    res = {x: round(res[x]/len(text), 6) for x in res}
     return dict(res)
 
 
@@ -48,7 +48,7 @@ def count_mono(text):
 def count_bi_intersect(text):
     res = Counter(text[idx: idx + 2] for idx in range(len(text)))
     total_bi = sum(res.values())
-    res = {x: res[x] / total_bi for x in res}
+    res = {x: round(res[x]/total_bi, 6) for x in res}
     return dict(res)
 
 
@@ -56,54 +56,92 @@ def count_bi_intersect(text):
 def count_bi_nointersect(text):
     res = Counter(text[idx: idx + 2] for idx in range(0, (len(text)), 2))
     total_bi = sum(res.values())
-    res = {x: res[x] / total_bi for x in res}
+    res = {x: round(res[x]/total_bi, 10) for x in res}
     return dict(res)
 
 
-def find_entropy(freq):
+def find_entropy(freq, n):
     entropy = 0
-
-    for f in freq:
+    for f in freq.values():
         entropy += - f * math.log(f, 2)
-
+    entropy *= 1 / n
     return entropy
+
+
+def redundant(h):
+    return (1-(h/math.log2(32)))
 
 
 clean_text('exmpl_unformatted.txt')
 text_with_spaces = open_file('exmpl_spaces.txt')
 text_nospaces = open_file('exmpl_nospaces.txt')
 
-# test and debug
 
-#print(count_mono(text_with_spaces))
-mono = [count_mono(text_with_spaces)]
+mono_spaces = count_mono(text_with_spaces)
 print("Monograms:")
-print(tabulate(mono, headers='keys', tablefmt='presto'))
+for key, val in mono_spaces.items():
+    print(key, ' |', val)
 print('\n')
 
-#print(count_bi_intersect(text_with_spaces))
-count_bi_intersect_spaces = [count_bi_intersect(text_with_spaces)]
+
+mono_nospaces = count_mono(text_nospaces)
+print("Monograms without spaces:")
+for key, val in mono_nospaces.items():
+    print(key, ' |', val)
+print('\n')
+
+
+count_bi_intersect_spaces = count_bi_intersect(text_with_spaces)
 print("Bigrams(intersected, with spaces):")
-print(tabulate(count_bi_intersect_spaces, headers='keys', tablefmt='presto'))
+for key, val in count_bi_intersect_spaces.items():
+    print(key, '|', val)
 print('\n')
 
-#print(count_bi_nointersect(text_with_spaces))
-count_bi_nointersect_spaces = [count_bi_nointersect(text_with_spaces)]
+
+count_bi_nointersect_spaces = count_bi_nointersect(text_with_spaces)
 print("Bigrams(not intersected, with spaces):")
-print(tabulate(count_bi_nointersect_spaces, headers='keys', tablefmt='presto'))
+for key, val in count_bi_nointersect_spaces.items():
+    print(key, '|', val)
 print('\n')
 
-#print(count_bi_intersect(text_nospaces))
-count_bi_intersect_nospaces = [count_bi_intersect(text_nospaces)]
+
+count_bi_intersect_nospaces = count_bi_intersect(text_nospaces)
 print("Bigrams(intersected, without spaces):")
-print(tabulate(count_bi_intersect_nospaces, headers='keys', tablefmt='presto'))
+for key, val in count_bi_intersect_nospaces.items():
+    print(key, '|', val)
 print('\n')
 
-#print(count_bi_nointersect(text_nospaces))
-count_bi_nointersect_nospaces = [count_bi_nointersect(text_nospaces)]
+
+count_bi_nointersect_nospaces = count_bi_nointersect(text_nospaces)
 print("Bigrams(not intersected, without spaces):")
-print(tabulate(count_bi_nointersect_nospaces, headers='keys', tablefmt='presto'))
+for key, val in count_bi_nointersect_nospaces.items():
+    print(key, '|', val)
 print('\n')
 
-#entropy
-#print(find_entropy(mono))
+# entropy and redundancy for H1
+h1_spaces_ent = find_entropy(mono_spaces, 1)
+print("H1 text with spaces: ", h1_spaces_ent)
+print("Redundancy for H1 with spaces: ", redundant(h1_spaces_ent), '\n')
+
+h1_nospaces_ent = find_entropy(mono_nospaces, 1)
+print("H1 text without spaces: ", h1_nospaces_ent)
+print("Redundancy for H1 without spaces: ", redundant(h1_nospaces_ent), '\n')
+
+# entropy and redundancy for H2
+# without intersection
+h2_nointersect_spaces_ent = find_entropy(count_bi_nointersect_spaces, 2)
+print("H1 text with spaces: ", h2_nointersect_spaces_ent)
+print("Redundancy for H1 with spaces: ", redundant(h1_spaces_ent), '\n')
+
+h2_nointersect_nospaces_ent = find_entropy(count_bi_nointersect_spaces, 2)
+print("H1 text without spaces: ", h2_nointersect_nospaces_ent)
+print("Redundancy for H1 without spaces: ", redundant(h1_nospaces_ent), '\n')
+
+# with intersections
+h2_intersect_spaces_ent = find_entropy(count_bi_intersect_spaces, 2)
+print("H1 text with spaces: ", h2_intersect_spaces_ent)
+print("Redundancy for H1 with spaces: ", redundant(h1_spaces_ent), '\n')
+
+h2_intersect_nospaces_ent = find_entropy(count_bi_intersect_nospaces, 2)
+print("H1 text without spaces: ", h2_intersect_nospaces_ent)
+print("Redundancy for H1 without spaces: ", redundant(h1_nospaces_ent), '\n')
