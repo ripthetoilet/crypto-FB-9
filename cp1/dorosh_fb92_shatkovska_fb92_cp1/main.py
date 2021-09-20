@@ -1,6 +1,7 @@
 # This is the 1st lab on Cryptology yet in progress by Dorosh and Shatkovska FB-92
 import math
 from collections import Counter
+import tabulate
 
 
 def open_file(txt):
@@ -67,7 +68,8 @@ text_nospaces = open_file('exmpl_nospaces.txt')
 
 #print(count_mono(text_with_spaces))
 mono = count_mono(text_with_spaces)
-print(find_entropy(mono, 1))
+print(mono)
+#print(find_entropy(mono, 1))
 
 #print(count_bi_intersect(text_with_spaces))
 #print(count_bi_nointersect(text_with_spaces))
