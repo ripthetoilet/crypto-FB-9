@@ -37,7 +37,7 @@ def clean_text(txt):
 # counting monograms
 def count_mono(text):
     res = Counter(text[idx] for idx in range(len(text)))
-    return res
+    return dict(res)
 
 
 # counting bigrams with intersection
@@ -53,6 +53,7 @@ def count_bi_nointersect(text):
 
 
 def find_entropy(freq_dict, n):
+    print(freq_dict.values())
     entropy = sum(list(map(lambda x: -x * math.log2(x), freq_dict.values())))
     entropy *= 1/n
     return entropy
