@@ -18,7 +18,9 @@ def clean_text(txt):
 
     #uniqueChars = ''.join(set(text))
 
-    chars = '.71()-«5d?[“!93286”…—4;»0:],_na'
+    #-----------------------------------------------------
+    chars = '.71()-«5d?[“!93286”…—4;»0:],na'
+    # -----------------------------------------------------
     for ch in chars:
         text = text.replace(ch, '')
 
@@ -53,10 +55,12 @@ def count_bi_nointersect(text):
     return dict(res)
 
 
-def find_entropy(freq_dict, n):
-    print(freq_dict.values())
-    entropy = sum(list(map(lambda x: -x * math.log2(x), freq_dict.values())))
-    entropy *= 1/n
+def find_entropy(occurrence_dict, freq):
+    entropy = 0
+
+    for o, f in occurrence_dict, freq:
+        entropy += - f * math.log(f, 2)
+
     return entropy
 
 
@@ -93,3 +97,4 @@ count_bi_nointersect_nospaces = [count_bi_nointersect(text_nospaces)]
 print("Bigrams(not intersected, without spaces):")
 print(tabulate(count_bi_nointersect_nospaces, headers='keys', tablefmt='presto'))
 
+print(tabulate(mono, headers='keys', tablefmt='fancy_grid'))
