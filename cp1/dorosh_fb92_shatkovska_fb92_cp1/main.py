@@ -1,7 +1,7 @@
 # This is the 1st lab on Cryptology yet in progress by Dorosh and Shatkovska FB-92
 import math
 from collections import Counter
-import tabulate
+from tabulate import tabulate
 
 
 def open_file(txt):
@@ -18,7 +18,7 @@ def clean_text(txt):
 
     #uniqueChars = ''.join(set(text))
 
-    chars = '.71()-«5d?[“!93286”…—4;»0:],'
+    chars = '.71()-«5d?[“!93286”…—4;»0:],_na'
     for ch in chars:
         text = text.replace(ch, '')
 
@@ -68,14 +68,28 @@ text_nospaces = open_file('exmpl_nospaces.txt')
 
 
 #print(count_mono(text_with_spaces))
-mono = count_mono(text_with_spaces)
-print(mono)
+mono = [count_mono(text_with_spaces)]
+print("Monograms:")
+print(tabulate(mono, headers='keys', tablefmt='presto'))
 #print(find_entropy(mono, 1))
 
 #print(count_bi_intersect(text_with_spaces))
+count_bi_intersect_spaces = [count_bi_intersect(text_with_spaces)]
+print("Bigrams(intersected, with spaces):")
+print(tabulate(count_bi_intersect_spaces, headers='keys', tablefmt='presto'))
+
 #print(count_bi_nointersect(text_with_spaces))
+count_bi_nointersect_spaces = [count_bi_nointersect(text_with_spaces)]
+print("Bigrams(not intersected, with spaces):")
+print(tabulate(count_bi_nointersect_spaces, headers='keys', tablefmt='presto'))
 
 #print(count_bi_intersect(text_nospaces))
-#print(count_bi_nointersect(text_nospaces))
+count_bi_intersect_nospaces = [count_bi_intersect(text_nospaces)]
+print("Bigrams(intersected, without spaces):")
+print(tabulate(count_bi_intersect_nospaces, headers='keys', tablefmt='presto'))
 
-print(tabulate(mono, headers='keys', tablefmt='fancy_grid'))
+#print(count_bi_nointersect(text_nospaces))
+count_bi_nointersect_nospaces = [count_bi_nointersect(text_nospaces)]
+print("Bigrams(not intersected, without spaces):")
+print(tabulate(count_bi_nointersect_nospaces, headers='keys', tablefmt='presto'))
+
