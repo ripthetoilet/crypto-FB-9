@@ -40,7 +40,7 @@ def clean_text(txt):
 # counting monograms
 def count_mono(text):
     res = Counter(text[idx] for idx in range(len(text)))
-    res = {x: res[x]/len(text) for x in res}
+    res = {x: round(res[x]/len(text), 6) for x in res}
     return dict(res)
 
 
@@ -48,7 +48,7 @@ def count_mono(text):
 def count_bi_intersect(text):
     res = Counter(text[idx: idx + 2] for idx in range(len(text)))
     total_bi = sum(res.values())
-    res = {x: res[x] / total_bi for x in res}
+    res = {x: round(res[x]/total_bi, 6) for x in res}
     return dict(res)
 
 
@@ -56,14 +56,13 @@ def count_bi_intersect(text):
 def count_bi_nointersect(text):
     res = Counter(text[idx: idx + 2] for idx in range(0, (len(text)), 2))
     total_bi = sum(res.values())
-    res = {x: res[x] / total_bi for x in res}
+    res = {x: round(res[x]/total_bi, 10) for x in res}
     return dict(res)
 
 
 def find_entropy(freq):
     entropy = 0
-
-    for f in freq:
+    for f in freq.values():
         entropy += - f * math.log(f, 2)
 
     return entropy
@@ -76,34 +75,44 @@ text_nospaces = open_file('exmpl_nospaces.txt')
 # test and debug
 
 #print(count_mono(text_with_spaces))
-mono = [count_mono(text_with_spaces)]
+mono = count_mono(text_with_spaces)
 print("Monograms:")
-print(tabulate(mono, headers='keys', tablefmt='presto'))
+for key, val in mono.items():
+    print(key, ' |', val)
+    print('---+-----------')
 print('\n')
 
 #print(count_bi_intersect(text_with_spaces))
-count_bi_intersect_spaces = [count_bi_intersect(text_with_spaces)]
+count_bi_intersect_spaces = count_bi_intersect(text_with_spaces)
 print("Bigrams(intersected, with spaces):")
-print(tabulate(count_bi_intersect_spaces, headers='keys', tablefmt='presto'))
+for key, val in count_bi_intersect_spaces.items():
+    print(key, '|', val)
+    print('---+-----------')
 print('\n')
 
 #print(count_bi_nointersect(text_with_spaces))
-count_bi_nointersect_spaces = [count_bi_nointersect(text_with_spaces)]
+count_bi_nointersect_spaces = count_bi_nointersect(text_with_spaces)
 print("Bigrams(not intersected, with spaces):")
-print(tabulate(count_bi_nointersect_spaces, headers='keys', tablefmt='presto'))
+for key, val in count_bi_nointersect_spaces.items():
+    print(key, '|', val)
+    print('---+-----------')
 print('\n')
 
 #print(count_bi_intersect(text_nospaces))
-count_bi_intersect_nospaces = [count_bi_intersect(text_nospaces)]
+count_bi_intersect_nospaces = count_bi_intersect(text_nospaces)
 print("Bigrams(intersected, without spaces):")
-print(tabulate(count_bi_intersect_nospaces, headers='keys', tablefmt='presto'))
+for key, val in count_bi_intersect_nospaces.items():
+    print(key, '|', val)
+    print('---+-----------')
 print('\n')
 
 #print(count_bi_nointersect(text_nospaces))
-count_bi_nointersect_nospaces = [count_bi_nointersect(text_nospaces)]
+count_bi_nointersect_nospaces = count_bi_nointersect(text_nospaces)
 print("Bigrams(not intersected, without spaces):")
-print(tabulate(count_bi_nointersect_nospaces, headers='keys', tablefmt='presto'))
+for key, val in count_bi_nointersect_nospaces.items():
+    print(key, '|', val)
+    print('---+-----------')
 print('\n')
 
 #entropy
-#print(find_entropy(mono))
+print(find_entropy(mono))
