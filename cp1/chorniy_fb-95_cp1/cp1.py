@@ -10,7 +10,7 @@ text = text.lower()
 text1 = "".join([i for i in text if i in al.keys()])        #ridding off nonletters
 text2 = "".join([i for i in text if i in al.keys() and i != ' '])
 
-r = lambda x: 1 - (x / math.log2(32))                       #redundency
+r = lambda x,y: 1 - (x / math.log2(y))                       #redundency
 
 def letters(text, al):
     for i in text:
@@ -19,7 +19,7 @@ def letters(text, al):
     for i in al.keys():
         al[i] /= len(text)                                  #converting frequency to probabilty
     h = sum(list(map(lambda x: -x * math.log2(x), al.values())))    #entropy
-    print( h, "and sets redundency ", r(h) )
+    print( h, "and sets redundency ", r(h, len(al.keys())) )
     return dict(sorted(al.items(), key=lambda item: item[1], reverse=True))
 
 def bigrams(text, inters):
@@ -41,7 +41,7 @@ def bigrams(text, inters):
         for i in bisd.keys():
             bisd[i] /= len(text) / 2                    #converting frequency to probabilty
     h = sum(list(map(lambda x: -x * math.log2(x), bisd.values()))) / 2      #entropy
-    print( h, "and sets redundency ", r(h))
+    print( h, "and sets redundency ", r(h, len(al.keys())))
     return dict(sorted(bisd.items(), key=lambda item: item[1], reverse=True))
 
 print("letter entropy with spaces", end = ' ')
