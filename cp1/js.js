@@ -39,6 +39,7 @@ document.querySelector("button").addEventListener("click", function () {
   let reader = new FileReader();
   reader.readAsText(file);
   reader.onload = function () {
+    
     setLetters(textEditor(reader.result, true), alpha, keys, 1);
     setLetters(textEditor(reader.result, false), alpha, keys, 2);
     setBigrams(textEditor(reader.result), true, 3)
