@@ -1,7 +1,7 @@
 # This is the 1st lab on Cryptology yet in progress by Dorosh and Shatkovska FB-92
 import math
 from collections import Counter
-from tabulate import tabulate
+import operator
 
 
 def open_file(txt):
@@ -48,7 +48,7 @@ def count_mono(text):
 def count_bi_intersect(text):
     res = Counter(text[idx: idx + 2] for idx in range(len(text)))
     total_bi = sum(res.values())
-    res = {x: round(res[x]/total_bi, 6) for x in res}
+    res = {x: round(res[x]/total_bi, 100) for x in res}
     return dict(res)
 
 
@@ -78,43 +78,55 @@ text_nospaces = open_file('exmpl_nospaces.txt')
 
 # monograms with spaces
 mono_spaces = count_mono(text_with_spaces)
+# sort
+mono_spaces_sorted = dict(sorted(mono_spaces.items(), key=operator.itemgetter(1),reverse=True))
 print("Monograms:")
-for key, val in mono_spaces.items():
+for key, val in mono_spaces_sorted.items():
     print(key, ' |', val)
 print('\n')
 
 # monograms without spaces
 mono_nospaces = count_mono(text_nospaces)
+# sort
+mono_nospaces_sorted = dict(sorted(mono_nospaces.items(), key=operator.itemgetter(1),reverse=True))
 print("Monograms without spaces:")
-for key, val in mono_nospaces.items():
+for key, val in mono_nospaces_sorted.items():
     print(key, ' |', val)
 print('\n')
 
 # bigrams intersected without spaces
 count_bi_intersect_nospaces = count_bi_intersect(text_nospaces)
+# sort
+count_bi_intersect_nospaces_sorted = dict(sorted(count_bi_intersect_nospaces.items(), key=operator.itemgetter(1),reverse=True))
 print("Bigrams(intersected, without spaces):")
-for key, val in count_bi_intersect_nospaces.items():
+for key, val in count_bi_intersect_nospaces_sorted.items():
     print(key, '|', val)
 print('\n')
 
 # bigrams not intersected, without spaces
 count_bi_nointersect_nospaces = count_bi_nointersect(text_nospaces)
+# sort
+count_bi_nointersect_nospaces_sorted = dict(sorted(count_bi_nointersect_nospaces.items(), key=operator.itemgetter(1),reverse=True))
 print("Bigrams(not intersected, without spaces):")
-for key, val in count_bi_nointersect_nospaces.items():
+for key, val in count_bi_nointersect_nospaces_sorted.items():
     print(key, '|', val)
 print('\n')
 
 # bigrams not intersected with spaces
 count_bi_nointersect_spaces = count_bi_nointersect(text_with_spaces)
+# sort
+count_bi_nointersect_spaces_sorted = dict(sorted(count_bi_nointersect_spaces.items(), key=operator.itemgetter(1),reverse=True))
 print("Bigrams(not intersected, with spaces):")
-for key, val in count_bi_nointersect_spaces.items():
+for key, val in count_bi_nointersect_spaces_sorted.items():
     print(key, '|', val)
 print('\n')
 
 # bigrams intersected with spaces
 count_bi_intersect_spaces = count_bi_intersect(text_with_spaces)
+# sort
+count_bi_intersect_spaces_sorted = dict(sorted(count_bi_intersect_spaces.items(), key=operator.itemgetter(1),reverse=True))
 print("Bigrams(intersected, with spaces):")
-for key, val in count_bi_intersect_spaces.items():
+for key, val in count_bi_intersect_spaces_sorted.items():
     print(key, '|', val)
 print('\n')
 
