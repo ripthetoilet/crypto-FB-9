@@ -7,6 +7,7 @@ file1=io.open("without_spaces.txt", mode="r", encoding="utf-8")
 textWithSpaces = file.read()
 textWithoutSpaces = file1.read()
 
+
 alphabetWithSpaces = ['а','б','в','г','д','е','ж','з','и','й','к',
             'л','м','н','о','п','р','с','т','у','ф','х','ц',
             'ч','ш','щ','ы','ь','э','ю','я',' ']
@@ -22,7 +23,7 @@ def letters(alphabet,text):
 
     #заповнення словника ключ - літера , значення - частота
     for i in range(len(alphabet)):
-        dict[alphabet[i]]=round(text.count(alphabet[i])/len_text,5)
+        dict[alphabet[i]]=text.count(alphabet[i])/len_text
 
     #новий словник, значення у якому відсортовані
     sorted_dict = {}
@@ -69,7 +70,7 @@ def bigram(alphabet,text):
 
     #вивід матриці
     for i in range(len(matrix)):
-        for j in range(len(matrix[i])):
+        for j in range(len(matrix)):
             if(i==0):
                 print(matrix[i][j],"         ",end="")
             else: print(matrix[i][j],"   ",end="")
@@ -84,7 +85,6 @@ def bigram(alphabet,text):
 
     h2=round(h2/2,3)
     print("H2=",h2)
-
 
 letters(alphabetWithSpaces,textWithSpaces)
 print()
