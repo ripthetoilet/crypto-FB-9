@@ -120,8 +120,6 @@ print('\n')
 
 alphabet_nospace = 33
 alphabet_space = 34
-total_bi_nospace = 33*33
-total_bi_space = 34*34
 
 # entropy and redundancy for H1
 h1_spaces_ent = find_entropy(mono_spaces, 1)
@@ -136,17 +134,17 @@ print("Redundancy for H1 without spaces: ", redundant(h1_nospaces_ent, alphabet_
 # without intersection
 h2_nointersect_spaces_ent = find_entropy(count_bi_nointersect_spaces, 2)
 print("H2 text with spaces without intersection: ", h2_nointersect_spaces_ent)
-print("Redundancy for H2 with spaces without intersection: ", redundant(h2_nointersect_spaces_ent, total_bi_space), '\n')
+print("Redundancy for H2 with spaces without intersection: ", redundant(h2_nointersect_spaces_ent, alphabet_space), '\n')
 
 h2_nointersect_nospaces_ent = find_entropy(count_bi_nointersect_nospaces, 2)
 print("H2 text without spaces without intersection: ", h2_nointersect_nospaces_ent)
-print("Redundancy for H2 without spaces without intersection: ", redundant(h2_nointersect_nospaces_ent, total_bi_nospace), '\n')
+print("Redundancy for H2 without spaces without intersection: ", redundant(h2_nointersect_nospaces_ent, alphabet_nospace), '\n')
 
 # with intersections
 h2_intersect_spaces_ent = find_entropy(count_bi_intersect_spaces, 2)
 print("H2 text with spaces with intersection: ", h2_intersect_spaces_ent)
-print("Redundancy for H1 with spaces: ", redundant(h2_intersect_spaces_ent, total_bi_space), '\n')
+print("Redundancy for H1 with spaces: ", redundant(h2_intersect_spaces_ent, alphabet_space), '\n')
 
 h2_intersect_nospaces_ent = find_entropy(count_bi_intersect_nospaces, 2)
 print("H2 text without spaces with intersection: ", h2_intersect_nospaces_ent)
-print("Redundancy for H2 without spaces with intersection: ", redundant(h2_intersect_nospaces_ent, total_bi_nospace), '\n')
+print("Redundancy for H2 without spaces with intersection: ", redundant(h2_intersect_nospaces_ent, alphabet_nospace), '\n')
