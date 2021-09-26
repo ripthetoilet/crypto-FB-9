@@ -1,9 +1,9 @@
-from collections import Counter 
+from collections  import Counter 
 import math 
 
 mode = False#mode false means text without spaces
 #true - with spaces
-alphabet = ['а','б','в','г','д','е','ё','ж','з','и','й','к',
+alphabet = ['а','б','в','г','д','е','ж','з','и','й','к',
             'л','м','н','о','п','р','с','т','у','ф','х','ц',
             'ч','ш','щ','ы','ь','э','ю','я']
 
@@ -37,22 +37,18 @@ letters = Counter(text)
 bigrams1 = Counter(bigramArray1)
 bigrams2 = Counter(bigramArray2)
 
-def CountEntropy(counter, len):
+def CountEntropy(counter, len, n_gram):
     entropy = 0
     for i in counter:
         p = counter[i] / (len)
-        log = math.log(p,2)
-        entropy += -p*log
-    return entropy
+        entropy -= p*math.log(p,2)
+    return entropy / n_gram
 
 
-#print(letters)
 
-print('Entropy for letters: ',CountEntropy(letters, length))
-print('Entropy for bigrams with step 1: ', CountEntropy(bigrams1, length-1))
-print('Entropy for bigrams with step 2: ', CountEntropy(bigrams2, (length/2)))
-
-
+print('Entropy for letters: ',CountEntropy(letters, sum(letters.values()), 1))
+print('Entropy for bigrams with step 1: ', CountEntropy(bigrams1, sum(bigrams1.values()),2))
+print('Entropy for bigrams with step 2: ', CountEntropy(bigrams2, sum(bigrams2.values()),2))
 
 
 def PrintLettersFreqency1():
@@ -60,6 +56,7 @@ def PrintLettersFreqency1():
     print(i," => " ,(letters[i]/length))
 
 #PrintLettersFreqency1()
+
 f1 = open('resultCross.txt', 'w')
 def PrintCrossBigramFreqency(bigrams):
   for i in alphabet:
@@ -85,3 +82,9 @@ def PrintNotCrossBigramFreqency(bigrams):
 
 #PrintNotCrossBigramFreqency(bigrams2)
 f2.close()
+
+def PrintBigramP(bigrams):
+  for bg in bigrams.most_common():
+    print(bg[0] + " : " + str(('%.6f' % (bg[1]/sum(bigrams.values())))))
+
+#PrintBigramP(bigrams2)
