@@ -89,7 +89,7 @@ elif ans == "2":
     number1 = len(one)/2
     print("   ", "      ".join(alphabet))
     for item in arr1:
-        bigram(item, alphabet, number1)
+        bigram(item, alphabet1, number1)
     print("H2 without spaces: ", (sum(save2)/2))
 elif ans == "3":
     # перетинаються
