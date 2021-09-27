@@ -7,19 +7,19 @@ file = open("my.txt", encoding="utf8")
 
 f2 = open('test_gap.txt', 'w' ,encoding="utf8")
 alphabet = "_абвгдеёжзийклмнопрстуфхцчшщыьэюя"
-my_str = file.read().replace("ъ","ь").lower()
+my_str = file.read().replace("ъ","ь").replace("ё","е").lower()
+
 #f2 = open('test.txt', 'w' ,encoding="utf8")
-#my_str = file.read().replace("ъ","ь").replace("_", "").lower()
 #alphabet = "абвгдеёжзийклмнопрстуфхцчшщыьэюя"
+#my_str = file.read().replace("ъ","ь").replace("ё","е").replace("_", "").lower()
 
 
-
-def Entr(counter, l):
+def Entr(counter, l, n=1):
     entr = 0
     for i in counter:
         p = counter[i] / l
         entr += -p*log2(p)
-    return entr
+    return entr/2
 
 def printTable(counter, alphabet, name):
   f2.write(name+"\n")
@@ -32,7 +32,7 @@ def printTable(counter, alphabet, name):
     f2.write(i+" ")
     for j in alphabet:
       f = counter[i + j]/Sum
-      f2.write(str('%.6f' % f)+" ")
+      f2.write(str('%.6f' % (f))+" ")
     f2.write("\n")
   f2.write("\n")
 
@@ -61,7 +61,10 @@ while k < (l - 1):
 letters = OrderedDict(Counter(my_str).most_common()) 
 cK = Counter(arr)
 cS = Counter(arr1)
+aaaa = cS.most_common()
 
+for bigram in aaaa:
+  print( bigram[0] + ": ", str('%.6f' % (bigram[1]/sum(cS.values()))) , end=", ")
 
 
 print("ЛIТЕРИ")
@@ -74,14 +77,13 @@ print()
 
 
 print("ПРОСТI БIГРАМИ")
-print("ЕНТРОПIЯ:", Entr(cK, sum(cK.values())))
+print("ЕНТРОПIЯ:", Entr(cK, sum(cK.values()), 2))
 printTable(cK, alphabet, "ПРОСТI БIГРАМИ")
 print()
 
 print("ПЕРЕХРЕСТНI БIГРАМИ")
-print("ЕНТРОПIЯ:", Entr(cS, sum(cS.values())))
+print("ЕНТРОПIЯ:", Entr(cS, sum(cS.values()), 2))
 printTable(cS, alphabet, "ПЕРЕХРЕСТНI БIГРАМИ")
-
 
 
 
