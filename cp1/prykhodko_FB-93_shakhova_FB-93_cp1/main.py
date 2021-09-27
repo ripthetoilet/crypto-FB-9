@@ -78,7 +78,7 @@ def bigram(alphabet,bigram_list):
 
     #вивід матриці
     for i in range(len(matrix)):
-        for j in range(23,len(matrix)):
+        for j in range(len(matrix)):
             if(i==0):
                 print(matrix[i][j],"      ",end="")
             else: print(matrix[i][j]," ",end="")
@@ -95,8 +95,13 @@ def bigram(alphabet,bigram_list):
     print("H2=",h2)
 
 letters(alphabetWithSpaces,textWithSpaces)
+print()
 letters(alphabetWithoutSpaces,textWithoutSpaces)
+print()
 bigram(alphabetWithSpaces,CrossBigramWithSpaces)
+print()
 bigram(alphabetWithSpaces,NoCrossBigramWithSpaces)
+print()
 bigram(alphabetWithoutSpaces,CrossBigramWithoutSpaces)
+print()
 bigram(alphabetWithoutSpaces,NoCrossBigramWithoutSpaces)
