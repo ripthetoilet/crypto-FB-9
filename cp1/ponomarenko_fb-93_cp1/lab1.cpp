@@ -111,7 +111,7 @@ double withIntersection(string** a_bigram, int lengthOfArray, string txt_filtere
 			entropy = entropy + logarifm;
 		}
 	}
-	entropy = entropy * (-1);
+	entropy = (entropy * (-1)) / 2;
 	return entropy;
 }
 
@@ -187,7 +187,7 @@ double matrix(string** a_bigram, int lengthOfArray, string txt_filtered, int len
 			entropy = entropy + logarifm;
 		}
 	}
-	entropy = entropy * (-1);
+	entropy = (entropy * (-1)) / 2;
 	return entropy;
 }
 
@@ -294,7 +294,7 @@ int main() {
 	int lengthOfText;
 	int lengthOfArray;
 	//зчитуємо змінений файл
-	/*cout << "Enter the name of filtered txt(without spaces): ";
+	cout << "Enter the name of filtered txt(without spaces): ";
 	cin >> str1;
 	txt_filtered = inputf(f, str1);
 	alphabet = "абвгдежзийклмнопрстуфхцчшщыьэюя";
@@ -320,7 +320,7 @@ int main() {
 
 	cout << "The frequency of bigrams has been written. Enter the root to it: ";
 	cin >> str2;
-	cout << "Entropy(bigram frequencies): " << matrix(a_bigram, lengthOfArray, txt_filtered, lengthOfText, f1, str2, alphabet) << endl;*/
+	cout << "Entropy(bigram frequencies): " << matrix(a_bigram, lengthOfArray, txt_filtered, lengthOfText, f1, str2, alphabet) << endl;
 
 	cout << "Enter the name of filtered txt(with spaces): ";
 	cin >> str1;
