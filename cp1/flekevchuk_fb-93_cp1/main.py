@@ -5,13 +5,13 @@ from os import write
 
 file = open("my.txt", encoding="utf8")
 
-f2 = open('test_gap.txt', 'w' ,encoding="utf8")
-alphabet = "_абвгдежзийклмнопрстуфхцчшщыьэюя"
-my_str = file.read().replace("ъ","ь").replace("ё","е").lower()
+#f2 = open('test_gap.txt', 'w' ,encoding="utf8")
+#alphabet = "_абвгдежзийклмнопрстуфхцчшщыьэюя"
+#my_str = file.read().replace("ъ","ь").replace("ё","е").lower()
 
-#f2 = open('test.txt', 'w' ,encoding="utf8")
-#alphabet = "абвгдежзийклмнопрстуфхцчшщыьэюя"
-#my_str = file.read().replace("ъ","ь").replace("ё","е").replace("_", "").lower()
+f2 = open('test.txt', 'w' ,encoding="utf8")
+alphabet = "абвгдежзийклмнопрстуфхцчшщыьэюя"
+my_str = file.read().replace("ъ","ь").replace("ё","е").replace("_", "").lower()
 
 
 def Entr(counter, l, n=1):
