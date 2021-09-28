@@ -80,8 +80,8 @@ def bigram(alphabet,bigram_list):
     for i in range(len(matrix)):
         for j in range(len(matrix)):
             if(i==0):
-                print(matrix[i][j],"      ",end="")
-            else: print(matrix[i][j]," ",end="")
+                print(matrix[i][j],"     ",end="")
+            else: print(matrix[i][j],"",end="")
         print()
 
     #підрахунок Н2 безпосередньо за значенням
