@@ -19,7 +19,7 @@ def Entr(counter, l, n=1):
     for i in counter:
         p = counter[i] / l
         entr += -p*log2(p)
-    return entr/2
+    return entr/n
 
 def printTable(counter, alphabet, name):
   f2.write(name+"\n")
@@ -76,12 +76,12 @@ print()
 
 
 print("ПРОСТI БIГРАМИ")
-print("ЕНТРОПIЯ:", Entr(cK, sum(cK.values()), 2))
+print("ЕНТРОПIЯ:", Entr(cK, sum(cK.values()), 2), 2)
 printTable(cK, alphabet, "ПРОСТI БIГРАМИ")
 print()
 
 print("ПЕРЕХРЕСТНI БIГРАМИ")
-print("ЕНТРОПIЯ:", Entr(cS, sum(cS.values()), 2))
+print("ЕНТРОПIЯ:", Entr(cS, sum(cS.values()), 2), 2)
 printTable(cS, alphabet, "ПЕРЕХРЕСТНI БIГРАМИ")
 
 
