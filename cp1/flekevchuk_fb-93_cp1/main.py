@@ -6,11 +6,11 @@ from os import write
 file = open("my.txt", encoding="utf8")
 
 f2 = open('test_gap.txt', 'w' ,encoding="utf8")
-alphabet = "_абвгдеёжзийклмнопрстуфхцчшщыьэюя"
+alphabet = "_абвгдежзийклмнопрстуфхцчшщыьэюя"
 my_str = file.read().replace("ъ","ь").replace("ё","е").lower()
 
 #f2 = open('test.txt', 'w' ,encoding="utf8")
-#alphabet = "абвгдеёжзийклмнопрстуфхцчшщыьэюя"
+#alphabet = "абвгдежзийклмнопрстуфхцчшщыьэюя"
 #my_str = file.read().replace("ъ","ь").replace("ё","е").replace("_", "").lower()
 
 
@@ -61,16 +61,15 @@ while k < (l - 1):
 letters = OrderedDict(Counter(my_str).most_common()) 
 cK = Counter(arr)
 cS = Counter(arr1)
-aaaa = cS.most_common()
+aaaa = cS.most_common(10)
 
-for bigram in aaaa:
-  print( bigram[0] + ": ", str('%.6f' % (bigram[1]/sum(cS.values()))) , end=", ")
+
 
 
 print("ЛIТЕРИ")
 print("ЕНТРОПIЯ:", Entr(letters, sum(letters.values())))
-for letter in letters.keys():
-  print(letter + " :", letters[letter], end=", ")
+for letter in alphabet:
+  print(letter + " :", letters[letter]/sum(letters.values()), end=", ")
 print()
 print()
 
