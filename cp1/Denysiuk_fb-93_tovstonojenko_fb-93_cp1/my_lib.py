@@ -13,3 +13,13 @@ def make_dict_of_chars_entry(text: str) -> dict:
     for char in text:
         stats[char] += 1
     return dict(stats)
+
+def make_list_of_bigram(text: str, step:int)->list:
+    pass
+
+def make_dict_of_frequency_of_bigram(text:str, step:int)->dict:
+    list_of_bigram=make_list_of_bigram(text, step)
+    dict_of_frequency_of_bigram={}
+    for bigram in list_of_bigram:
+        dict_of_frequency_of_bigram[bigram]=text.count(bigram)/len(list_of_bigram)
+        
