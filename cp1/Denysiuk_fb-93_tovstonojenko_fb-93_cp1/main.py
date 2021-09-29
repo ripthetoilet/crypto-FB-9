@@ -29,4 +29,11 @@ my_lib.print_results_in_file('frequency_of_cross_biggram_with_whitespace',
 my_lib.print_results_in_file('frequency_of_biggram_with_whitespace',
                              my_lib.stats_to_frequency(stats_of_biggram_with_whitespaces)
                              )
-print(sum(my_lib.stats_to_frequency(stats_of_biggram_with_whitespaces).values()))
+
+
+print('Entropy for chars with whitespace:', my_lib.calculate_entropy(1, stats_of_characters_with_whitespace))
+print('Entropy for chars without whitespace:', my_lib.calculate_entropy(1, stats_of_characters_without_whitespace))
+print('Entropy for cross-biggrams with whitespace:', my_lib.calculate_entropy(2, stats_of_cross_biggram_with_whitespaces))
+print('Entropy for cross-biggrams without whitespace:', my_lib.calculate_entropy(2, stats_of_cross_biggram_without_whitespaces))
+print('Entropy for biggrams with whitespace:', my_lib.calculate_entropy(2, stats_of_biggram_with_whitespaces))
+print('Entropy for biggrams without whitespace:', my_lib.calculate_entropy(2, stats_of_biggram_without_whitespaces))
