@@ -21,3 +21,10 @@ def make_list_of_bigram(text: str, step: int) -> list:
     if len(text) % 2 == 1:
         text = text + 'a'
     return [text[i] + text[i + 1] for i in range(0, len(text) - 1, step)]
+
+def make_dict_of_frequency_of_bigram(text:str, step:int)->dict:
+    list_of_bigram=make_list_of_bigram(text, step)
+    dict_of_frequency_of_bigram={}
+    for bigram in list_of_bigram:
+        dict_of_frequency_of_bigram[bigram] = text.count(bigram)/len(list_of_bigram)
+
