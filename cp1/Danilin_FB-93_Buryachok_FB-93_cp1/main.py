@@ -1,7 +1,7 @@
 from collections  import Counter 
 import math 
 
-mode = False#mode false means text without spaces
+mode = True#mode false means text without spaces
 #true - with spaces
 alphabet = ['а','б','в','г','д','е','ж','з','и','й','к',
             'л','м','н','о','п','р','с','т','у','ф','х','ц',
@@ -16,7 +16,6 @@ else:
     text = file.read()
 
 length = len(text)
-#print(length)
 
 if (length % 2 == 1) :
   text += 'о'
@@ -51,40 +50,40 @@ print('Entropy for bigrams with step 1: ', CountEntropy(bigrams1, sum(bigrams1.v
 print('Entropy for bigrams with step 2: ', CountEntropy(bigrams2, sum(bigrams2.values()),2))
 
 
-def PrintLettersFreqency1():
+def PrintLettersFreqency():
   for i in alphabet:
     print(i," => " ,(letters[i]/length))
 
-#PrintLettersFreqency1()
+#PrintLettersFreqency()
 
 f1 = open('resultCross.txt', 'w')
-def PrintCrossBigramFreqency(bigrams):
+def PrintCrossBigramFreqency(bigrams, len):
   for i in alphabet:
     for j in alphabet:
       bg = (i + j)
-      p = bigrams[bg] / (length-1)
+      p = bigrams[bg] / (len)
       f1.write(bg + "->" + (str('%.6f' % p) + " "))
     f1.write("\n")
 
-#PrintCrossBigramFreqency(bigrams1)
+PrintCrossBigramFreqency(bigrams1, sum(bigrams1.values())-1)
 f1.close()
 
 
 f2 = open('resultNotCross.txt', 'w')
-def PrintNotCrossBigramFreqency(bigrams):
+def PrintNotCrossBigramFreqency(bigrams, len):
   for i in alphabet:
     for j in alphabet:
       bg = (i + j)
-      p = bigrams[bg] / (length-1)
+      p = bigrams[bg] / (len)
       f2.write(bg + "->" + (str('%.6f' % p) + " "))
     f2.write("\n")
 
 
-#PrintNotCrossBigramFreqency(bigrams2)
+PrintNotCrossBigramFreqency(bigrams2, sum(bigrams2.values()))
 f2.close()
 
-def PrintBigramP(bigrams):
+def PrintBigramFreqencyConcole(bigrams):
   for bg in bigrams.most_common():
     print(bg[0] + " : " + str(('%.6f' % (bg[1]/sum(bigrams.values())))))
 
-#PrintBigramP(bigrams2)
+PrintBigramFreqencyConcole(bigrams2)
