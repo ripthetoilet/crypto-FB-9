@@ -65,7 +65,7 @@ def PrintCrossBigramFreqency(bigrams, len):
       f1.write(bg + "->" + (str('%.6f' % p) + " "))
     f1.write("\n")
 
-PrintCrossBigramFreqency(bigrams1, sum(bigrams1.values())-1)
+PrintCrossBigramFreqency(bigrams1, sum(bigrams1.values()))
 f1.close()
 
 
