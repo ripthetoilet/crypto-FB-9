@@ -13,8 +13,8 @@ def make_dict_of_frequency_of_chars(text: str) -> dict:
     for char in text:
         stats[char] += 1
     stats = dict(stats)
-    for k in stats:
-        stats[k] = stats[k] / len(text)
+    # for k in stats:
+    #     stats[k] = stats[k] / len(text)
     return stats
 
 def make_list_of_bigram(text: str, step: int) -> list:
@@ -22,12 +22,12 @@ def make_list_of_bigram(text: str, step: int) -> list:
         text = text + 'a'
     return [text[i] + text[i + 1] for i in range(0, len(text) - 1, step)]
 
-def make_dict_of_frequency_of_bigram(text:str, step:int)->dict:
+def make_dict_of_stats_of_bigram(text:str, step:int)->dict:
     list_of_bigram=make_list_of_bigram(text, step)
-    dict_of_frequency_of_bigram={}
-    for bigram in list_of_bigram:
-        dict_of_frequency_of_bigram[bigram] = text.count(bigram)/len(list_of_bigram)
-    return dict_of_frequency_of_bigram
+    dict_of_stats_of_bigram={}
+    for bigram in set(list_of_bigram):
+        dict_of_stats_of_bigram[bigram] = text.count(bigram)
+    return dict_of_stats_of_bigram
 
 def print_results_in_file(file_name:str, dict_of_items:dict[str,float]):
     with open(f'./results/{file_name}.csv', mode='w', encoding='UTF-8') as frc_of_chars_file:
@@ -35,3 +35,7 @@ def print_results_in_file(file_name:str, dict_of_items:dict[str,float]):
         d = dict(sorted(dict_of_items.items(), key=lambda item: item[1], reverse=True))
         for k, v in d.items():
             frc_of_chars_file.write(f'"{k}",{v}\n')
+
+def stats_to_frequency(stat: dict)->dict:
+    return {k: v / sum(stat.values()) for k, v in
+            stat.items()}
