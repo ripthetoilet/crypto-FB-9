@@ -29,3 +29,4 @@ my_lib.print_results_in_file('frequency_of_cross_biggram_with_whitespace',
 my_lib.print_results_in_file('frequency_of_biggram_with_whitespace',
                              my_lib.stats_to_frequency(stats_of_biggram_with_whitespaces)
                              )
+print(sum(my_lib.stats_to_frequency(stats_of_biggram_with_whitespaces).values()))
