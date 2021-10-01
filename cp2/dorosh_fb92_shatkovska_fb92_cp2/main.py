@@ -14,6 +14,13 @@ def get_dict():
 
     return alphabet
 
+# used for generating keys
+def gen_keys(alph):
+    keys = []
+    for i in chain(range(2,6), range(10, 21)):
+        keys.append(''.join(random.choices(alphabet, k=i)))
+    return keys
+
 
 def open_file(txt):
     with open(txt, 'r', encoding='utf-8') as file:
@@ -30,7 +37,7 @@ def clean_text(txt):
     for ch in chars:
         text = text.replace(ch, '')
 
-    text = ''.join([word.strip('\n') for word in text.split('_')])
+    text = ''.join([word.strip('\n') for word in text.split()])
 
     with open('example_prepared.txt', 'w', encoding='utf-8') as file:
         file.write(text)
