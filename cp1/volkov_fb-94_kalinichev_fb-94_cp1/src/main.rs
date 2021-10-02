@@ -2,6 +2,7 @@ use anyhow::{Context, Result};
 use regex::Regex;
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::collections::HashMap;
 
 fn filter_file<P: AsRef<Path>>(path: P) -> Result<String> {
     let file_name = path
@@ -27,6 +28,30 @@ fn filter_file<P: AsRef<Path>>(path: P) -> Result<String> {
     }
 }
 
+fn count_bigram_frequency(text: &str) -> HashMap<String, u32> {
+    let mut frequency = HashMap::new();
+
+    let mut chars = text.chars();
+    let mut last_char = chars.next().unwrap();
+    while let Some(char) = chars.next() {
+        *frequency.entry(format!("{}{}", last_char, char)).or_insert(0) += 1;
+        last_char = char;
+    }
+    frequency
+}
+
+fn count_monogram_frequency(text: &str) -> HashMap<char, u32> {
+    let mut frequency = HashMap::new();
+
+    let mut chars = text.chars();
+    while let Some(char) = chars.next() {
+        *frequency.entry(char).or_insert(0) += 1;
+    }
+    frequency
+}
+
 fn main() {
     let text = filter_file("text.txt").unwrap();
+    dbg!(count_monogram_frequency(&text));
+    dbg!(count_bigram_frequency(&text));
 }
