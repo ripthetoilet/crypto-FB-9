@@ -18,7 +18,7 @@ pub fn filter_file<P: AsRef<Path>>(path: P) -> Result<String> {
         Ok(fs::read_to_string(filtered_file)?)
     } else {
         let lowercase_text = fs::read_to_string(path)?.to_lowercase();
-        let russian_letters = Regex::new("[^а-я-ё ]+")?;
+        let russian_letters = Regex::new("[^а-яё ]+")?;
         let text = russian_letters.replace_all(&lowercase_text, " ");
         let multiple_whitespaces = Regex::new(r"\s+")?;
         let filtered_text = multiple_whitespaces.replace_all(text.as_ref(), " ");
