@@ -15,7 +15,7 @@ impl<T> EntropyExt<T> for Frequency<T> {
     fn calc_entropy(&self, n: f32) -> f32 {
         let mut entropy = 0f32;
         for frequency in self.values() {
-            entropy += -frequency * frequency.log(2f32)
+            entropy += -frequency * frequency.log2()
         }
         entropy *= 1f32 / n;
         entropy
