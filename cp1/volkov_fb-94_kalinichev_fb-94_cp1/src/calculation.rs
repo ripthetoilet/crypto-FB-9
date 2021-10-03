@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-pub type Entropy<T> = HashMap<T, f32>;
+pub type Frequency<T> = HashMap<T, f32>;
 pub type Redundancy = f32;
 
 pub trait EntropyExt<T> {
@@ -11,7 +11,7 @@ pub trait RedundancyExt {
     fn calc_redundancy(&self, n: f32) -> f32;
 }
 
-impl<T> EntropyExt<T> for Entropy<T> {
+impl<T> EntropyExt<T> for Frequency<T> {
     fn calc_entropy(&self, n: f32) -> f32 {
         let mut entropy = 0f32;
         for frequency in self.values() {
@@ -28,7 +28,7 @@ impl RedundancyExt for Redundancy {
     }
 }
 
-pub fn count_bigram_frequency(text: &str) -> Entropy<String> {
+pub fn count_bigram_frequency(text: &str) -> Frequency<String> {
     let mut frequency = HashMap::new();
 
     let mut chars = text.chars();
@@ -39,7 +39,7 @@ pub fn count_bigram_frequency(text: &str) -> Entropy<String> {
             .or_insert(0f32) += 1f32;
         last_char = char;
     }
-    let len = frequency.keys().len() as f32;
+    let len: f32 = frequency.values().sum();
 
     for (_, v) in frequency.iter_mut() {
         *v = *v / len;
@@ -47,7 +47,7 @@ pub fn count_bigram_frequency(text: &str) -> Entropy<String> {
     frequency
 }
 
-pub fn count_monogram_frequency(text: &str) -> Entropy<char> {
+pub fn count_monogram_frequency(text: &str) -> Frequency<char> {
     let mut frequency = HashMap::new();
 
     let mut chars = text.chars();
