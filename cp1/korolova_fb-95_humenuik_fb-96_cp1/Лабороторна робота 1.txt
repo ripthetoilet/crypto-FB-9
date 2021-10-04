@@ -1,0 +1,694 @@
+#include <string>
+#include <fstream>
+#include <streambuf>
+#include <iostream>
+#include <vector>
+#include <locale>
+#include <string>
+#include <algorithm>
+#include<conio.h>
+#include <stdio.h>
+#include<windows.h>
+#include <string.h>
+#include<stdlib.h>
+#include <memory>
+#include <map>
+#include <unordered_map>
+#include <iterator>
+#include <regex>
+#include "libxl.h"
+using namespace libxl;
+#define _CRT_SECURE_NO_DEPRECATE
+using namespace std;
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+typedef std::vector<char>     T_str;
+int* KolichestvoBigramok;
+/////////////////////////////////////////////////////////////////////////////////////////
+template<class Range, class Iterator>
+bool is_last_element_of(Range const& r, Iterator&& it) 
+{
+    using std::end;
+    if (it == end(r)) return false;
+    if (std::next(std::forward<Iterator>(it)) == end(r)) return true;
+    return false;
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+char  tolower_rus(char c)
+{
+    return  tolower
+    (
+        c,
+        std::locale("")
+    );
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+T_str  string_tolower_rus(const T_str& str)
+{
+    T_str   res_str = str;
+
+    std::transform
+    (
+        str.begin(),
+        str.end(),
+        res_str.begin(),
+        tolower_rus
+    );
+
+    return  res_str;
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+int Change_registors()
+{
+    std::locale::global(std::locale(""));
+
+    std::ifstream in("text.txt");/////
+    std::vector<char> array{
+        std::istreambuf_iterator<char>(in),
+        std::istreambuf_iterator<char>() };
+
+    T_str   s = string_tolower_rus(array);
+
+    std::ofstream out("Смена регистров.txt");
+    std::copy(s.begin(), s.end(),
+        std::ostreambuf_iterator<char>(out));
+    _getch();
+    return 0;
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+bool delete_characters_1(char c)
+{
+    switch (c)
+    {
+    case 'а':
+    case 'б':
+    case 'в':
+    case 'г':
+    case 'д':
+    case 'е':
+    case 'ё':
+    case 'ж':
+    case 'з':
+    case 'и':
+    case 'й':
+    case 'к':
+    case 'л':
+    case 'м':
+    case 'н':
+    case 'о':
+    case 'п':
+    case 'р':
+    case 'с':
+    case 'т':
+    case 'у':
+    case 'ф':
+    case 'х':
+    case 'ц':
+    case 'ч':
+    case 'ш':
+    case 'щ':
+    case 'ъ':
+    case 'ы':
+    case 'ь':
+    case 'э':
+    case 'ю':
+    case 'я':
+        return false;
+    case ' ':
+        return false;
+    default:
+        return true;
+    }
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+bool delete_characters_2(char c)
+{
+    switch (c)
+    {
+    case 'а':
+    case 'б':
+    case 'в':
+    case 'г':
+    case 'д':
+    case 'е':
+    case 'ё':
+    case 'ж':
+    case 'з':
+    case 'и':
+    case 'й':
+    case 'к':
+    case 'л':
+    case 'м':
+    case 'н':
+    case 'о':
+    case 'п':
+    case 'р':
+    case 'с':
+    case 'т':
+    case 'у':
+    case 'ф':
+    case 'х':
+    case 'ц':
+    case 'ч':
+    case 'ш':
+    case 'щ':
+    case 'ъ':
+    case 'ы':
+    case 'ь':
+    case 'э':
+    case 'ю':
+    case 'я':
+        return false;
+    default:
+        return true;
+    }
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+void helper_delete()
+{
+    std::locale::global(std::locale(""));
+    std::cout << "Удаление лишних символов в файле\n>> ";
+    std::ifstream in("Смена регистров.txt");
+    std::vector<char> array{
+        std::istreambuf_iterator<char>(in),
+        std::istreambuf_iterator<char>() };
+
+    std::string s;
+    for (char c : array) {
+        s.push_back(c);
+    }
+
+    std::cout << "Наша строка \n" << s << endl;
+    /////////////////////////////////////////////////////////////////////////////////////////
+    s.erase(std::remove_if(s.begin(), s.end(), &delete_characters_1), s.end());
+    std::cout << "Наша строка после \n" << s << std::endl;
+    std::ofstream out_1("Удаление лишних символов в файле с пробелами.txt");
+    std::copy(s.begin(), s.end(),
+        std::ostreambuf_iterator<char>(out_1));
+    /////////////////////////////////////////////////////////////////////////////////////////
+    s.erase(std::remove_if(s.begin(), s.end(), &delete_characters_2), s.end());
+    std::cout << "Наша строка после \n" << s << std::endl;
+    std::ofstream out_2("Удаление лишних символов в файле без пробелов.txt");
+    std::copy(s.begin(), s.end(),
+        std::ostreambuf_iterator<char>(out_2));
+    /////////////////////////////////////////////////////////////////////////////////////////
+    _getch();
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+void Bigramka1()
+{
+        std::ifstream inBigramka("Удаление лишних символов в файле с пробелами.txt");
+        std::vector<char> massiv{
+            std::istreambuf_iterator<char>(inBigramka),
+            std::istreambuf_iterator<char>() };
+        vector<char> s = massiv;
+
+        map< string, float> KKKRIPTA;
+        map < string, float> ::iterator it_1, it_2;
+        int countbich = 0;
+        int kabachok = 0;
+            //////////////////////////////////////
+            //I am assuming that buffer has some data
+            char* c = new char[massiv.size()];
+
+            for (int a = 0; a < massiv.size(); a++)
+            {
+                c[a] = massiv[a];
+            }
+            int a = massiv.size();
+
+            cout << "О,мой char\n" << c << endl;
+            //////////////////////////////////////
+            cout << "Количество символов " << (massiv.size() - 1) << endl;
+            int k = massiv.size();
+            for (int h = 0; h <= k; h++)//for each char in string/////
+            {
+                if (h <= massiv.size() - 1)
+                {
+                    char BigramkaChar[3] = { c[h],c[h + 1],0 };
+                    std::string BigramkaString(BigramkaChar);
+
+                    it_2 = it_1 = KKKRIPTA.find(BigramkaString);
+                    if (it_2 == KKKRIPTA.end())
+                    {
+                        KKKRIPTA.insert(make_pair(BigramkaString, 1));
+                        countbich++;
+                    }
+                    else if (it_2 != KKKRIPTA.end())
+                    {
+                        it_2->second++;
+                        countbich++;
+                    }
+                }
+                else if (h == massiv.size())
+                {
+                    cout << "Конец массива...." << endl;
+                    kabachok = h;
+                }
+            }
+            std::ofstream ofs("Биграмка с пробелами з шагом 1.txt");
+            std::streambuf* our_buffer = std::cout.rdbuf(ofs.rdbuf());
+            for (auto& e : KKKRIPTA)  //for each unique char in map
+            {
+                std::map< char, float>::iterator iter;
+                std::cout << e.first << "\t" << e.second << "\t" << e.second / countbich << endl;
+            }
+            std::cout.rdbuf(our_buffer);
+            ofs.close();
+            return;
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+void Bigramka2()
+{
+    std::ifstream inBigramka("Удаление лишних символов в файле с пробелами.txt");
+    std::vector<char> massiv{
+        std::istreambuf_iterator<char>(inBigramka),
+        std::istreambuf_iterator<char>() };
+    vector<char> s = massiv;
+
+    map< string, float> KKKRIPTA;
+    map < string, float> ::iterator it_1, it_2;
+    int countbich = 0;
+    int kabachok = 0;
+    //////////////////////////////////////
+    //I am assuming that buffer has some data
+    char* c = new char[massiv.size()];
+
+    for (int a = 0; a < massiv.size(); a++)
+    {
+        c[a] = massiv[a];
+    }
+    int a = massiv.size();
+
+    cout << "О,мой char\n" << c << endl;
+    //////////////////////////////////////
+    cout << "Количество символов " << (massiv.size() - 1) << endl;
+    int k = massiv.size();
+    for (int h = 0; h <= k; h++)//for each char in string/////
+    {
+        if (h <= massiv.size() - 1)
+        {
+            char BigramkaChar[3] = { c[h],c[h + 2],0 };
+            std::string BigramkaString(BigramkaChar);
+
+            it_2 = it_1 = KKKRIPTA.find(BigramkaString);
+            if (it_2 == KKKRIPTA.end())
+            {
+                KKKRIPTA.insert(make_pair(BigramkaString, 1));
+                countbich++;
+            }
+            else if (it_2 != KKKRIPTA.end())
+            {
+                it_2->second++;
+                countbich++;
+            }
+        }
+        else if (h == massiv.size())
+        {
+            cout << "Конец массива...." << endl;
+            kabachok = h;
+        }
+    }
+    std::ofstream ofs("Биграмка с пробелами з шагом 2.txt");
+    std::streambuf* our_buffer = std::cout.rdbuf(ofs.rdbuf());
+    for (auto& e : KKKRIPTA)  //for each unique char in map
+    {
+        std::map< char, float>::iterator iter;
+        std::cout << e.first << "\t" << e.second << "\t" << e.second / countbich << endl;
+    }
+    std::cout.rdbuf(our_buffer);
+    ofs.close();
+    return;
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+void Bigramka3()
+{
+    std::ifstream inBigramka("Удаление лишних символов в файле без пробелов.txt");
+    std::vector<char> massiv{
+        std::istreambuf_iterator<char>(inBigramka),
+        std::istreambuf_iterator<char>() };
+    vector<char> s = massiv;
+
+    map< string, float> KKKRIPTA;
+    map < string, float> ::iterator it_1, it_2;
+    int countbich = 0;
+    int kabachok = 0;
+    //////////////////////////////////////
+    //I am assuming that buffer has some data
+    char* c = new char[massiv.size()];
+
+    for (int a = 0; a < massiv.size(); a++)
+    {
+        c[a] = massiv[a];
+    }
+    int a = massiv.size();
+
+    cout << "О,мой char\n" << c << endl;
+    //////////////////////////////////////
+    cout << "Количество символов " << (massiv.size() - 1) << endl;
+    int k = massiv.size();
+    for (int h = 0; h <= k; h++)//for each char in string/////
+    {
+        if (h <= massiv.size() - 1)
+        {
+            char BigramkaChar[3] = { c[h],c[h + 1],0 };
+            std::string BigramkaString(BigramkaChar);
+
+            it_2 = it_1 = KKKRIPTA.find(BigramkaString);
+            if (it_2 == KKKRIPTA.end())
+            {
+                KKKRIPTA.insert(make_pair(BigramkaString, 1));
+                countbich++;
+            }
+            else if (it_2 != KKKRIPTA.end())
+            {
+                it_2->second++;
+                countbich++;
+            }
+        }
+        else if (h == massiv.size())
+        {
+            cout << "Конец массива...." << endl;
+            kabachok = h;
+        }
+    }
+    std::ofstream ofs("Биграмка без пробелов з шагом 1.txt");
+    std::streambuf* our_buffer = std::cout.rdbuf(ofs.rdbuf());
+    for (auto& e : KKKRIPTA)  //for each unique char in map
+    {
+        std::map< char, float>::iterator iter;
+        std::cout << e.first << "\t" << e.second << "\t" << e.second / countbich << endl;
+    }
+    std::cout.rdbuf(our_buffer);
+    ofs.close();
+    return;
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+void Bigramka4()
+{
+    std::ifstream inBigramka("Удаление лишних символов в файле без пробелов.txt");
+    std::vector<char> massiv{
+        std::istreambuf_iterator<char>(inBigramka),
+        std::istreambuf_iterator<char>() };
+    vector<char> s = massiv;
+
+    map< string, float> KKKRIPTA;
+    map < string, float> ::iterator it_1, it_2;
+    int countbich = 0;
+    int kabachok = 0;
+    //////////////////////////////////////
+    //I am assuming that buffer has some data
+    char* c = new char[massiv.size()];
+
+    for (int a = 0; a < massiv.size(); a++)
+    {
+        c[a] = massiv[a];
+    }
+    int a = massiv.size();
+
+    cout << "О,мой char\n" << c << endl;
+    //////////////////////////////////////
+    cout << "Количество символов " << (massiv.size() - 1) << endl;
+    int k = massiv.size();
+    for (int h = 0; h <= k; h++)//for each char in string/////
+    {
+        if (h <= massiv.size() - 1)
+        {
+            char BigramkaChar[3] = { c[h],c[h + 2],0 };
+            std::string BigramkaString(BigramkaChar);
+
+            it_2 = it_1 = KKKRIPTA.find(BigramkaString);
+            if (it_2 == KKKRIPTA.end())
+            {
+                KKKRIPTA.insert(make_pair(BigramkaString, 1));
+                countbich++;
+            }
+            else if (it_2 != KKKRIPTA.end())
+            {
+                it_2->second++;
+                countbich++;
+            }
+        }
+        else if (h == massiv.size())
+        {
+            cout << "Конец массива...." << endl;
+            kabachok = h;
+        }
+    }
+    std::ofstream ofs("Биграмка без пробелов з шагом 2.txt");
+    std::streambuf* our_buffer = std::cout.rdbuf(ofs.rdbuf());
+    for (auto& e : KKKRIPTA)  //for each unique char in map
+    {
+        std::map< char, float>::iterator iter;
+        std::cout << e.first << "\t" << e.second << "\t" << e.second / countbich << endl;
+    }
+    std::cout.rdbuf(our_buffer);
+    ofs.close();
+    return;
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+void BuckvoSchet1()
+{
+    std::ifstream inBigramka("Удаление лишних символов в файле с пробелами.txt");
+    std::vector<char> massiv{
+        std::istreambuf_iterator<char>(inBigramka),
+        std::istreambuf_iterator<char>() };
+    vector<char> s = massiv;
+
+    map< string, float> KKKRIPTA;
+    map < string, float> ::iterator it_1, it_2;
+    int countbich = 0;
+    int kabachok = 0;
+    //////////////////////////////////////
+    //I am assuming that buffer has some data
+    char* c = new char[massiv.size()];
+
+    for (int a = 0; a < massiv.size(); a++)
+    {
+        c[a] = massiv[a];
+    }
+    int a = massiv.size();
+
+    cout << "О,мой char\n" << c << endl;
+    //////////////////////////////////////
+    cout << "Количество символов " << (massiv.size() - 1) << endl;
+    int k = massiv.size();
+    for (int h = 0; h <= k; h++)//for each char in string/////
+    {
+        if (h <= massiv.size() - 1)
+        {
+            char BigramkaChar[2] = { c[h],0 };
+            std::string BigramkaString(BigramkaChar);
+
+            it_2 = it_1 = KKKRIPTA.find(BigramkaString);
+            if (it_2 == KKKRIPTA.end())
+            {
+                KKKRIPTA.insert(make_pair(BigramkaString, 1));
+                countbich++;
+            }
+            else if (it_2 != KKKRIPTA.end())
+            {
+                it_2->second++;
+                countbich++;
+            }
+        }
+        else if (h == massiv.size())
+        {
+            cout << "Конец массива...." << endl;
+            kabachok = h;
+        }
+    }
+    std::ofstream ofs("Букви с пробелами.txt");
+    std::streambuf* our_buffer = std::cout.rdbuf(ofs.rdbuf());
+    for (auto& e : KKKRIPTA)  //for each unique char in map
+    {
+        std::map< char, float>::iterator iter;
+        std::cout << e.first << "\t" << e.second << "\t" << e.second / countbich << endl;
+    }
+    std::cout.rdbuf(our_buffer);
+    ofs.close();
+    return;
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+void BuckvoSchet2()
+{
+    std::ifstream inBigramka("Удаление лишних символов в файле без пробелов.txt");
+    std::vector<char> massiv{
+        std::istreambuf_iterator<char>(inBigramka),
+        std::istreambuf_iterator<char>() };
+    vector<char> s = massiv;
+
+    map< string, float> KKKRIPTA;
+    map < string, float> ::iterator it_1, it_2;
+    int countbich = 0;
+    int kabachok = 0;
+    //////////////////////////////////////
+    //I am assuming that buffer has some data
+    char* c = new char[massiv.size()];
+
+    for (int a = 0; a < massiv.size(); a++)
+    {
+        c[a] = massiv[a];
+    }
+    int a = massiv.size();
+
+    cout << "О,мой char\n" << c << endl;
+    //////////////////////////////////////
+    cout << "Количество символов " << (massiv.size() - 1) << endl;
+    int k = massiv.size();
+    for (int h = 0; h <= k; h++)//for each char in string/////
+    {
+        if (h <= massiv.size() - 1)
+        {
+            char BigramkaChar[2] = { c[h],0 };
+            std::string BigramkaString(BigramkaChar);
+
+            it_2 = it_1 = KKKRIPTA.find(BigramkaString);
+            if (it_2 == KKKRIPTA.end())
+            {
+                KKKRIPTA.insert(make_pair(BigramkaString, 1));
+                countbich++;
+            }
+            else if (it_2 != KKKRIPTA.end())
+            {
+                it_2->second++;
+                countbich++;
+            }
+        }
+        else if (h == massiv.size())
+        {
+            cout << "Конец массива...." << endl;
+            kabachok = h;
+        }
+    }
+    std::ofstream ofs("Букви без пробелов.txt");
+    std::streambuf* our_buffer = std::cout.rdbuf(ofs.rdbuf());
+    for (auto& e : KKKRIPTA)  //for each unique char in map
+    {
+        std::map< char, float>::iterator iter;
+        std::cout << e.first << "\t" << e.second << "\t" << e.second / countbich << endl;
+    }
+    std::cout.rdbuf(our_buffer);
+    ofs.close();
+    return;
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////`
+int main()
+{
+    setlocale(LC_ALL, "ru");
+    SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
+    SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывод
+    bool exit = 0;
+    while (exit == 0) {
+        std::cout << endl <<
+            "1. Изменение регистров в текстовом файле\n"
+            "2. Удаление лишних символов\n"
+            "3. Частота биграмм \n"
+            "4. Частота букв\n"
+            "5. Перенос в excel файл\n"
+            "0. Exit\n";
+        std::cout << endl << ">> ";
+        int choice;
+        cin >> choice;
+        switch (choice)
+        {
+        case 1:
+            system("pause");
+            system("cls");
+            cout << "\n";
+            std::locale::global(std::locale(""));
+            std::cout << "Изменение регистров в файле\n>> ";
+            Change_registors();
+            system("pause");
+            system("cls");
+            cout << "\n";
+            break;
+        case 2:
+            system("pause");
+            system("cls");
+            cout << "\n";
+            std::cout << "Удаления символов в файле\n>> ";
+            helper_delete();
+            system("pause");
+            system("cls");
+            cout << "\n";
+            break;
+        case 3:
+            system("pause");
+            system("cls");
+            cout << "\n";
+            std::cout << "Биграмка  1\n>> ";
+            Bigramka1();
+            system("pause");
+            system("cls");
+            cout << "\n";
+            std::cout << "Биграмка  2\n>> ";
+            Bigramka2();
+            system("pause");
+            system("cls");
+            cout << "\n";
+            std::cout << "Биграмка  3\n>> ";
+            Bigramka3();
+            system("pause");
+            system("cls");
+            cout << "\n";
+            std::cout << "Биграмка  4\n>> ";
+            Bigramka4();
+            system("pause");
+            system("cls");
+            cout << "\n";
+            break;
+        case 4:
+            system("pause");
+            system("cls");
+            cout << "\n";
+            std::cout << "Часстота количество букв 1:\n>> ";
+            BuckvoSchet1();
+            system("pause");
+            system("cls");
+            cout << "\n";
+            std::cout << "Часстота количество букв 2:\n>> ";
+            BuckvoSchet2();
+            system("pause");
+            system("cls");
+            cout << "\n";
+            break;
+        case 5:
+            system("pause");
+            system("cls");
+            cout << "\n";
+            std::cout << "Переносим данные в файл:\n>> ";
+            system("pause");
+            system("cls");
+            cout << "\n";
+            break;
+        case 0:
+            system("pause");
+            system("cls");
+            cout << "\n";
+            exit = 1;
+            break;
+        default:
+            system("pause");
+            system("cls");
+            cout << "\n";
+            std::cout << "Error!";
+            break;
+        }
+    }
+}
