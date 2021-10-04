@@ -22,7 +22,8 @@ pub fn filter_file<P: AsRef<Path>>(path: P) -> Result<String> {
         let text = russian_letters.replace_all(&lowercase_text, " ");
         let multiple_whitespaces = Regex::new(r"\s+")?;
         let filtered_text = multiple_whitespaces.replace_all(text.as_ref(), " ");
-        fs::write(filtered_file, filtered_text.as_bytes())?;
-        Ok(filtered_text.to_string())
+        let final_text = filtered_text.replace("ё", "е").replace("ъ", "ь");
+        fs::write(filtered_file, final_text.as_bytes())?;
+        Ok(final_text)
     }
 }
