@@ -69,6 +69,7 @@ def decode(text, key):
         decrypted.append(alphabet[p_idx])
     return decrypted
 
+
 # func from lab1
 # used in text_coincidence_idx()
 def freq_data(text):
