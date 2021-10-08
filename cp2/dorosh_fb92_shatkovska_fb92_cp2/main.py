@@ -5,17 +5,16 @@ from itertools import chain
 
 keys_list = ['мэ', 'фуж', 'хшлъ', 'етгуз', 'илиъглкяоф', 'йпфъчнвэови', 'щзрхдъыэрглф', 'нблзчсхкмшпня', 'сучвнюоъптяамю', 'ъеьяюжхээфъэыью', 'гакыыхрвбчлючицы', 'рнътдцаоицкшлжьни', 'ьищэксьтчбещйархря', 'увэояихшцхерхкпхнфы', 'яоьдэузэцяеьобмэхруы']
 
+
 # getting the alphabet
 def get_dict():
     a = ord('а')
-
-    # ["_"] +
-    alphabet = ["_"] + [chr(i) for i in range(a,a+32)]
-
+    alphabet = [chr(i) for i in range(a,a+32)]
     return alphabet
 
+
 # used for generating keys
-def gen_keys(alph):
+def gen_keys():
     keys = []
     for i in chain(range(2,6), range(10, 21)):
         keys.append(''.join(random.choices(alphabet, k=i)))
@@ -45,12 +44,10 @@ def clean_text(txt):
 
 def encode(text, key):
     encrypted = []
-
+    key_indexes = [alphabet.index(k) + 1 for k in key]
     for idx, ch in enumerate(text):
-       # print(idx, ch)
-        p_idx = alphabet.index(ch)
-        k_idx = (idx+1) % len(key)
-        print(p_idx, k_idx)
+        p_idx = alphabet.index(ch) + 1
+        k_idx = key_indexes[idx % len(key)]
         c_idx = (p_idx + k_idx) % len(alphabet)
 
         encrypted.append(alphabet[c_idx])
@@ -59,10 +56,9 @@ def encode(text, key):
 
 def decode(text, key):
     decrypted = []
-    key_idx = [alphabet.index(k) for k in key]
+    key_idx = [alphabet.index(k) + 1 for k in key]
     for idx, ch in enumerate(text):
-        print(idx, ch)
-        c_idx = alphabet.index(ch)
+        c_idx = alphabet.index(ch) + 1
         k_idx = key_idx[idx % len(key)]
         p_idx = (c_idx - k_idx + len(alphabet)) % len(alphabet)
 
@@ -70,25 +66,32 @@ def decode(text, key):
     return decrypted
 
 
-def count_mono(text):
+def freq_data(text):
     res = Counter(text[idx] for idx in range(len(text)))
     res = {x: round(res[x]/len(text), 6) for x in res}
     return dict(res)
 
+
 alphabet = get_dict()
+
+# prepare text
+clean_text("example.txt")
+text_sample = open_file("example_prepared.txt")
+
 in_text = "большойфлопченко"
-"""
+
 print("Encoded text")
 for key in keys_list:
-    c_text = encode(in_text, key)
-    print(f" {key} : {len(key)} : {''.join(c_text)}")"""
+    c_text = encode(text_sample, key)
+    print(f" {key} : {len(key)} : {''.join(c_text)}")
 
+"""
 key = "кот"
 c_text = encode(in_text, key)
 print(''.join(c_text))
 p_text = decode(c_text, key)
 print(''.join(p_text))
-
+"""
 # test and debug
 
 get_dict()
