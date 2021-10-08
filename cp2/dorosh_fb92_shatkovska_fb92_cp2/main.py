@@ -66,7 +66,7 @@ def decode(text, key):
         p_idx = (c_idx - k_idx + len(alphabet)) % len(alphabet)
 
         decrypted.append(alphabet[p_idx])
-    return decrypted
+    return ''.join(decrypted)
 
 
 # func from lab1
