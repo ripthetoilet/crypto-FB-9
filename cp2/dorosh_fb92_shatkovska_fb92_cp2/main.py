@@ -1,9 +1,8 @@
-# # This is the 2nd lab on Cryptology yet in progress by Dorosh and Shatkovska FB-92
+# # This is the 2nd lab on Cryptology done by Dorosh and Shatkovska FB-92
 from collections import Counter
 import random
 from itertools import chain
 import pandas as pd
-import operator
 
 keys_list = ['мэ', 'фуж', 'хшлъ', 'етгуз', 'илиъглкяоф', 'йпфъчнвэови', 'щзрхдъыэрглф', 'нблзчсхкмшпня', 'сучвнюоъптяамю', 'ъеьяюжхээфъэыью', 'гакыыхрвбчлючицы', 'рнътдцаоицкшлжьни', 'ьищэксьтчбещйархря', 'увэояихшцхерхкпхнфы', 'яоьдэузэцяеьобмэхруы']
 
@@ -74,7 +73,6 @@ def decode(text, key):
 # used in text_coincidence_idx()
 def freq_data(text):
     res = Counter(text[idx] for idx in range(len(text)))
-    # res = {x: round(res[x]/len(text), 6) for x in res}
     return dict(res)
 
 
@@ -90,32 +88,56 @@ def text_coincidence_idx(text):
     return res
 
 
+def create_blocks(text, size):
+    blocks = []
+
+    for start in range(0, size):
+        blocks.append(text[start::size])
+
+    return blocks
+
+
 def find_key_len(text):
     indexes = {}
     for len_key in range(1, 31):
-        blocks = []
-        concidence_idx = 0
+        coincidence_idx = 0
 
-        for start in range(0, len_key):
-            blocks.append(text[start::len_key])
+        blocks = create_blocks(text, len_key)
 
         for block in blocks:
-            concidence_idx += text_coincidence_idx(block)
-        concidence_idx /= len_key
-        indexes[len_key] = concidence_idx
+            coincidence_idx += text_coincidence_idx(block)
+        coincidence_idx /= len_key
+        indexes[len_key] = coincidence_idx
 
     return indexes
 
 
-alphabet = get_dict()
-print(alphabet)
+def find_key(text, key_len):
+    results = {}
+    blocks = create_blocks(text, key_len)
 
-"""# prepare text
+    # results from lab1
+    top_letters = "оаетни"
+
+    for letter in top_letters:
+        res = ""
+        for block in blocks:
+            block_freq = freq_data(block)
+            most_f = max(block_freq, key=block_freq.get)
+            res += alphabet[(alphabet.index(most_f) - alphabet.index(letter)) % len(alphabet)]
+
+        results[letter] = res
+
+    return results
+
+
+alphabet = get_dict()
+
+# prepare text
 clean_text("example.txt")
 text_sample = open_file("example_prepared.txt")
 
 
-# task 1 + 2
 print("Plain text")
 print("Індекс відповідності: ", text_coincidence_idx(text_sample))
 
@@ -124,7 +146,9 @@ data_t2 = {}
 
 for key in keys_list:
     c_text = encode(text_sample, key)
+    # task 1
     data_t1[len(key)] = [key, ''.join(c_text)]
+    # task 2
     data_t2[len(key)] = [key, text_coincidence_idx(c_text)]
 
 df_t1 = pd.DataFrame.from_dict(data_t1, orient='index', columns=['Key', 'Encoded'])
@@ -132,7 +156,7 @@ df_t2 = pd.DataFrame.from_dict(data_t2, orient='index', columns=['Key', 'Coincid
 
 df_t1.to_csv('task1.csv')
 df_t2.to_csv('task2.csv')
-"""
+
 
 # task 3
 text_t3 = open_file('task3.txt')
@@ -142,43 +166,7 @@ df_t3.to_csv('task3.csv')
 
 key_len = max(key_len_data, key=key_len_data.get)
 
+print(find_key(text_t3, key_len))
 
-
-
-
-#print(table_t1)
-
-"""
-key = "кот"
-in_text = "большойфлопченко"
-test = encode(text_sample, key)
-#test_d = decode(text_sample, key)
-print(test)
-#print(test_d)
-print(text_coincidence_idx(test))
-"""
-
-"""
-c_text = encode(in_text, key)
-print(''.join(c_text))
-p_text = decode(c_text, key)
-print(''.join(p_text))
-"""
-# test and debug
-
-get_dict()
-#clean_text("example.txt")
-#in_text = "большойфлопченко"
-in_key = "кот"
-#test = encode(in_text, in_key)
-#print(test)
-#print(decode(test, in_key))
-#print(gen_keys(alphabet))
-# бпньщрйхнорщеомо
-# бпньщрйхнорщеомо
-
-'''a = ord('а')
-pr = enumerate([chr(i) for i in range(a,a+32)])
-for p, k in pr:
-    print(p+1, k)
-print(pr)'''
+key_final = "вшекспирбуря"
+print(decode(text_t3, key_final))
