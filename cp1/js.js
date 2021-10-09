@@ -39,11 +39,13 @@ document.querySelector("button").addEventListener("click", function () {
   let reader = new FileReader();
   reader.readAsText(file);
   reader.onload = function () {
-    
-    setLetters(textEditor(reader.result, true), alpha, keys, 1);
     setLetters(textEditor(reader.result, false), alpha, keys, 2);
-    setBigrams(textEditor(reader.result), true, 3)
-    setBigrams(textEditor(reader.result), false, 4)
+    setLetters(textEditor(reader.result, true), alpha, keys, 1);
+    
+    setBigrams(textEditor(reader.result, true), true, 3)
+    setBigrams(textEditor(reader.result, false), true, 4)
+    setBigrams(textEditor(reader.result, true), false, 5)
+    setBigrams(textEditor(reader.result, false), false, 6)
   };
   reader.onerror = function () {
     console.log(reader.error);
@@ -122,7 +124,7 @@ function setLetters(text, alphabet, keys, iteration) {
 }
 
 function setBigrams(text, inters, iteration) {
-  let bigram;
+  let bigram="";
   let bigrams = [];
   let bigramsObj = {};
   if (inters) {
@@ -151,7 +153,7 @@ function setBigrams(text, inters, iteration) {
       else bigramsObj[bigrams[i]] = 1;
     }
     for (let el in bigramsObj) {
-      bigramsObj[el] = bigramsObj[el] / newtext.length / 2;
+      bigramsObj[el] = bigramsObj[el] / newtext.length ;
     }
   }
   let varArr = [];
