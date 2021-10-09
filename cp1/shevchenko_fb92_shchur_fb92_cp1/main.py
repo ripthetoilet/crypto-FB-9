@@ -2,29 +2,18 @@ import math
 from nltk import everygrams
 from collections import Counter
 import re
-import sys
 
 
 def read_file(filename):
-    try:
-        fin = open(filename, "r")
-        text = fin.read()
-        fin.close()
-        return text
-    except IOError:
-        print("Неможливо відкрити файл: " + filename + "\n")
-        sys.exit(1)
+    with open(filename, 'r') as fin:
+        return fin.read()
 
 
 def write_file(filename, text):
-    try:
-        fout = open(filename, "w")
+    with open(filename, 'w') as fout:
         for key, val in text.items():
             fout.write('{}:{}\n'.format(key, val))
-        fout.close()
-    except IOError:
-        print("Неможливо відкрити файл: " + filename + "\n")
-        sys.exit(2)
+
 
 
 def clear_text(text, space):
