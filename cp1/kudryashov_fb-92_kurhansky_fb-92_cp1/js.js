@@ -55,10 +55,10 @@ document.querySelector("button").addEventListener("click", function () {
 function textEditor(text, spaces) {
   let editText;
   if (spaces) {
-    editText = text.replace(/[!-@]|[\[-`]|[\{-~]|I|—|…/gi, "").toLowerCase();
+    editText = text.replace(/[!-@]|[\[-`]|[\{-~]|I|—|…|»|’|[a-z]|«/gi, "").toLowerCase().replace(/  /gi, " ");
   } else {
     editText = text
-      .replace(/[ -@]|[\[-`]|[\{-~]|I|—|…/gi, "")
+      .replace(/[ -@]|[\[-`]|[\{-~]|I|—|…|»|’|[a-z]|«/gi, "")
       .trim()
       .toLowerCase();
   }
@@ -69,10 +69,11 @@ function textEditor(text, spaces) {
 function appendList(obj, iteration) {
   let ulList = document.createElement("ul");
   ulList.classList.add("letters" + iteration);
+  console.log(obj);
   for (let key in obj) {
-    let liEl = document.createElement("li");
-    liEl.textContent = key + ": " + obj[key];
-    ulList.append(liEl);
+      let liEl = document.createElement("li");
+      liEl.textContent = key + ": " + obj[key];
+      ulList.append(liEl);
   }
   document.querySelector(".uls").append(ulList);
 }
@@ -129,8 +130,11 @@ function setBigrams(text, inters, iteration) {
   let bigramsObj = {};
   if (inters) {
     for (let i = 0; i < text.length - 1; i++) {
-      bigram = text[i] + text[i + 1];
-      bigrams.push(bigram);
+      if (text[i].match("\n") || text[i + 1].match("\n")){}
+      else {
+        bigram = text[i] + text[i + 1];
+        bigrams.push(bigram);
+      }
     }
     for (let i = 0; i < bigrams.length; i++) {
       if (bigramsObj[bigrams[i]] != undefined) bigramsObj[bigrams[i]]++;
@@ -145,8 +149,13 @@ function setBigrams(text, inters, iteration) {
       newtext += text[i];
     }
     for (let i = 0; i < newtext.length - 1; i++) {
-      bigram = text[i] + text[i + 1];
-      bigrams.push(bigram);
+      if (newtext[i].match("\n") || newtext[i + 1].match("\n")){}
+      else {
+        bigram = newtext[i] + newtext[i + 1];
+        bigrams.push(bigram);
+      }
+      /* bigram = newtext[i] + newtext[i + 1];
+      bigrams.push(bigram); */
     }
     for (let i = 0; i < bigrams.length; i++) {
       if (bigramsObj[bigrams[i]] != undefined) bigramsObj[bigrams[i]]++;
