@@ -5,7 +5,7 @@ import re
 alphavit = "абвгдежзийклмнопрстуфхцчшщыьэюя "
 # Очистка файла
 def clear_file(name, mode):
-    fin = open(name + '.txt', "r")
+    fin = open(name + '.txt', "r", encoding='utf-8')
     text = fin.read()
     fin.close()
     if mode == True:
@@ -14,7 +14,7 @@ def clear_file(name, mode):
                 if char not in alphavit:
                     clear_text = clear_text.replace(char, "")
         clear_text = re.sub(r'\s+', ' ', clear_text)
-        fout = open(name + '_clean.txt', "w")
+        fout = open(name + '_clean.txt', "w", encoding='utf-8')
         fout.write(clear_text)
         fout.close()
     else:
@@ -22,12 +22,12 @@ def clear_file(name, mode):
         for char in clear_text[:]:
                 if char not in alphavit:
                     clear_text = clear_text.replace(char, "")
-        fout = open(name + '_clean2.txt', "w")
+        fout = open(name + '_clean2.txt', "w", encoding='utf-8')
         fout.write(clear_text)
         fout.close()   
 # Частота букв
 def letter_frequency(name):
-    fin = open(name+'.txt', "r")
+    fin = open(name + '.txt', "r", encoding='utf-8')
     text = fin.read()
     fin.close
     counts=Counter(text)
@@ -36,7 +36,7 @@ def letter_frequency(name):
 # Частота биграмм
 # mode указывает на то, пересекаются ли биграммы или нет
 def bigramm_frequencey(name, mode):
-    fin = open(name+'.txt', "r")
+    fin = open(name + '.txt', "r", encoding='utf-8')
     text = fin.read()
     fin.close
     bigramms = {}
@@ -52,7 +52,7 @@ def bigramm_frequencey(name, mode):
 # Энтропия и излишек языка для монограмм
 # mode указывает на наличие пробелов 
 def entrophy_for_letters(name, mode):
-    fin = open(name+'.txt', "r")
+    fin = open(name + '.txt', "r", encoding='utf-8')
     text = fin.read()
     fin.close
     counts=Counter(text)
@@ -69,7 +69,7 @@ def entrophy_for_letters(name, mode):
 # mode1 указывает на наличие пробелов 
 # mode2 указывает на то, пересекаются ли биграммы или нет
 def entrophy_for_bigramms(name, mode1, mode2):
-    fin = open(name+'.txt', "r")
+    fin = open(name + '.txt', "r", encoding='utf-8')
     text = fin.read()
     fin.close
     bigramms = {}
@@ -98,31 +98,31 @@ def entrophy_for_bigramms(name, mode1, mode2):
         print("Surplus H2 without spaces without intersection: "+ str(1-entropy/math.log2(31)))
 # Текст без пробелов
 print("Text with spaces")
-# clear_file('bulgakov1',True)
-# print("Frequencey for letters:\n")
-# letter_frequency('bulgakov1_clean')
-# print("\nFrequencey for bigramms with intersection:\n")
-# bigramm_frequencey('bulgakov1_clean', True)
-# print("\nFrequencey for bigramms without intersection:\n")
+clear_file('bulgakov1',True)
+print("Frequencey for letters:\n")
+letter_frequency('bulgakov1_clean')
+print("\nFrequencey for bigramms with intersection:\n")
+bigramm_frequencey('bulgakov1_clean', True)
+print("\nFrequencey for bigramms without intersection:\n")
 bigramm_frequencey('bulgakov1_clean', False)
-# print("\n")
-# entrophy_for_letters('bulgakov1_clean',True)
-# print("\n")
-# entrophy_for_bigramms('bulgakov1_clean', True, True)
-# print("\n")
-# entrophy_for_bigramms('bulgakov1_clean', True, False)
+print("\n")
+entrophy_for_letters('bulgakov1_clean',True)
+print("\n")
+entrophy_for_bigramms('bulgakov1_clean', True, True)
+print("\n")
+entrophy_for_bigramms('bulgakov1_clean', True, False)
 # Текст с пробелами
 print("Text without spaces")
-# clear_file('bulgakov1',False)
-# print("Frequencey for letters:\n")
-# letter_frequency('bulgakov1_clean2')
-# print("\nFrequencey for bigramms with intersection:\n")
-# bigramm_frequencey('bulgakov1_clean2', True)
-# print("\nFrequencey for bigramms without intersection:\n")
-# bigramm_frequencey('bulgakov1_clean2', False)
-# print("\n")
-# entrophy_for_letters('bulgakov1_clean2',False)
-# print("\n")
-# entrophy_for_bigramms('bulgakov1_clean2', False, True)
-# print("\n")
-# entrophy_for_bigramms('bulgakov1_clean2', False, False)
+clear_file('bulgakov1',False)
+print("Frequencey for letters:\n")
+letter_frequency('bulgakov1_clean2')
+print("\nFrequencey for bigramms with intersection:\n")
+bigramm_frequencey('bulgakov1_clean2', True)
+print("\nFrequencey for bigramms without intersection:\n")
+bigramm_frequencey('bulgakov1_clean2', False)
+print("\n")
+entrophy_for_letters('bulgakov1_clean2',False)
+print("\n")
+entrophy_for_bigramms('bulgakov1_clean2', False, True)
+print("\n")
+entrophy_for_bigramms('bulgakov1_clean2', False, False)
