@@ -141,18 +141,19 @@ function setBigrams(text, inters, iteration) {
       else bigramsObj[bigrams[i]] = 1;
     }
     for (let el in bigramsObj) {
-      bigramsObj[el] = bigramsObj[el] / text.length;
+      bigramsObj[el] = bigramsObj[el] / bigrams.length;
     }
   } else {
-    let newtext = "";
-    for (let i = 0; i < text.length; i += 2) {
+    let newtext = text;
+    /* for (let i = 0; i < text.length; i += 2) {
       newtext += text[i];
-    }
+    } */
     for (let i = 0; i < newtext.length - 1; i++) {
       if (newtext[i].match("\n") || newtext[i + 1].match("\n")){}
       else {
         bigram = newtext[i] + newtext[i + 1];
         bigrams.push(bigram);
+        i++;
       }
       /* bigram = newtext[i] + newtext[i + 1];
       bigrams.push(bigram); */
