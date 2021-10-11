@@ -3,22 +3,20 @@ from collections import Counter
 alphabet = 'абвгдежзийклмнопрстуфхцчшщъыьэюя'
 al=dict((alphabet[i], i) for i in range(len(alphabet)))
 dic = {}
-for i in range(0, len(alphabet)):
+for i in range(len(alphabet)):
     dic[i] = alphabet[i]
 cid = dict((v, k) for k, v in dic.items())
 
-f = open('text.txt', "r", encoding = "utf-8")
-text = f.read()
+with open('text.txt', "r", encoding = "utf-8") as f:
+    text = f.read()
 text = text.lower()
-text1 = "".join([i for i in text if i in al.keys()])
-f.close()
+text1 = "".join([i for i in text if i in alphabet])
 
-f = open('etext.txt', "r", encoding = "utf-8")
-etext = f.read()
+with open('etext.txt', "r", encoding = "utf-8") as f:
+    etext = f.read()
 etext = etext.replace('\n', '')
-f.close()
 
-m = lambda x: sum(x) / len(x)
+mean = lambda x: sum(x) / len(x)
 
 def acrdindx(al, text):                                                #calculating the accordance index
     ind = 0
@@ -31,25 +29,25 @@ def crack(etext, text, al):
     expvl = 0
     dct = {}
     for i in text:
-        if (i in al.keys()):
+        if (i in alphabet):
             al[i] += 1                                                  #calculating letter frequency
-    for i in al.keys():
+    for i in alphabet:
         al[i] /= len(text)                                              #calculating letter probability
         expvl += pow(al[i], 2)                                          #calculating the expected value of accordance index
     for r in range(2, 33):
         lst = []
-        for j in range(0, r):
+        for j in range(r):
             tmp = ""
             for i in range(j, len(etext), r):
                 tmp += etext[i]                                         #creating blocks to find closest accordance index
             tmpfrq = Counter(tmp)
             lst.append(acrdindx(tmpfrq, tmp))                           #adding accordance index of every possible block
-        dct[r] = m(lst)                                                 #mean value of accordance indexes
+        dct[r] = mean(lst)                                              #mean value of accordance indexes
     for key in dct.keys():
         dct[key] = abs(dct[key] - expvl)                                #finding closest accordance index
     keylen = min(dct, key=dct.get)                                      #getting key length
     key = ''
-    for k in range(0, keylen):
+    for k in range(keylen):
         tmp = []
         for i in range(k, len(etext), keylen):
             tmp.append(etext[i])                                        #splitting ciphertext in certain number of blocks
@@ -87,7 +85,7 @@ def decode(ct, key):
     for pos, char in enumerate(ct):
         ci = alphabet.index(ct[pos % len(ct)])
         ki = alphabet.index(key[pos % len(key)])
-        mt.append(alphabet[(ci - ki + len(al)) % len(al)])
+        mt.append(alphabet[(ci - ki + len(alphabet)) % len(alphabet)])
     return ''.join(mt)
 
 key = crack(etext, text1, al)

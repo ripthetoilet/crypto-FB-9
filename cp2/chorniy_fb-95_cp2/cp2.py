@@ -1,6 +1,8 @@
+from collections import Counter
+
 al = 'йцукенгшщзхэждлорпавыфячсмитьбю'
-f = open('text.txt',"r",encoding = "utf-8")
-text = f.read()
+with open('text.txt',"r",encoding = "utf-8") as f:
+    text = f.read()
 text = text.lower()
 text1 = ''.join([i for i in text if i in al]) 
 
@@ -21,19 +23,35 @@ def decrypt(ct, key):
         mt.append(al[(ci - ki + len(al)) % len(al)])
     return ''.join(mt)
 
-e = open("r2.txt", "w", encoding='utf-8')
-encoded = encrypt(text1, 'да')
-e.write(encoded)
-e.close()
-e = open("r3.txt", "w", encoding='utf-8')
-encoded = encrypt(text1, 'кот')
-e.write(encoded)
-e.close()
-e = open("r4.txt", "w", encoding='utf-8')
-encoded = encrypt(text1, 'маша')
-e.write(encoded)
-e.close()
-e = open("r5.txt", "w", encoding='utf-8')
-encoded = encrypt(text1, 'толик')
-e.write(encoded)
-e.close()
+def acrdindx(text):
+    dic = Counter(text)
+    ind = 0
+    for i in dic:
+        ind += dic[i] * (dic[i] - 1)
+    ind /= (len(text) * (len(text) - 1))
+    return ind
+
+with open("r2.txt", "w", encoding='utf-8') as e:
+    e.write(encrypt(text1, 'да'))
+
+print("accordence index with keu length of 2: ", acrdindx(encrypt(text1, 'да')))
+
+with open("r3.txt", "w", encoding='utf-8') as e:
+    e.write(encrypt(text1, 'кот'))
+
+print("accordence index with keu length of 3: ", acrdindx(encrypt(text1, 'кот')))
+
+with open("r4.txt", "w", encoding='utf-8') as e:
+    e.write(encrypt(text1, 'маша'))
+
+print("accordence index with keu length of 4: ", acrdindx(encrypt(text1, 'маша')))
+
+with open("r5.txt", "w", encoding='utf-8') as e:
+    e.write(encrypt(text1, 'толик'))
+
+print("accordence index with keu length of 5: ", acrdindx(encrypt(text1, 'толик')))
+
+with open("r15.txt", "w", encoding='utf-8') as e:
+    e.write(encrypt(text1, 'япишулабуночью'))
+
+print("accordence index with keu length of 14: ", acrdindx(encrypt(text1, 'япишулабуночью')))
