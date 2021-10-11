@@ -131,11 +131,8 @@ function setBigrams(text, inters, iteration) {
   let bigramsObj = {};
   if (inters) {
     for (let i = 0; i < text.length - 1; i++) {
-      if (text[i].match("\n") || text[i + 1].match("\n")){}
-      else {
         bigram = text[i] + text[i + 1];
         bigrams.push(bigram);
-      }
     }
     for (let i = 0; i < bigrams.length; i++) {
       if (bigramsObj[bigrams[i]] != undefined) bigramsObj[bigrams[i]]++;
@@ -145,17 +142,13 @@ function setBigrams(text, inters, iteration) {
       bigramsObj[el] = bigramsObj[el] / bigrams.length;
     }
   } else {
-    let newtext = text;
     /* for (let i = 0; i < text.length; i += 2) {
-      newtext += text[i];
+      text += text[i];
     } */
-    for (let i = 0; i < newtext.length - 1; i+=2) {
-      if (newtext[i].match("\n") || newtext[i + 1].match("\n")){}
-      else {
-        bigram = newtext[i] + newtext[i + 1];
+    for (let i = 0; i < text.length - 1; i+=2) {
+        bigram = text[i] + text[i + 1];
         bigrams.push(bigram);
-      }
-      /* bigram = newtext[i] + newtext[i + 1];
+      /* bigram = text[i] + text[i + 1];
       bigrams.push(bigram); */
     }
     for (let i = 0; i < bigrams.length; i++) {
