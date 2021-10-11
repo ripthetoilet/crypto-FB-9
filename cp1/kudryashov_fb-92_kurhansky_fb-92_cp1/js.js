@@ -70,7 +70,6 @@ function textEditor(text, spaces) {
 function appendList(obj, iteration) {
   let ulList = document.createElement("ul");
   ulList.classList.add("letters" + iteration);
-  console.log(obj);
   for (let key in obj) {
       let liEl = document.createElement("li");
       liEl.textContent = key + ": " + obj[key];
@@ -100,9 +99,6 @@ function redundency(x, y) {
 }
 
 function setLetters(text, alphabet, keys, iteration) {
-  console.log(alphabet);
-  console.log(alpha);
-  console.log(iteration);
   for (let letter of text) {
     for (let key of keys) {
       if (key == letter) {
@@ -167,7 +163,7 @@ function setBigrams(text, inters, iteration) {
   for (let val of varArr) {
     summ += val;
   }
-  if (inters) summ = summ / 2;
+  summ = summ / 2;
   
   console.log("entropy: ", summ," redundency: ", redundency(summ, Object.values(bigramsObj).length));
   appendList(sortObj(bigramsObj), iteration);
