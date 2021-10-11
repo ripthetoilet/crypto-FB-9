@@ -33,6 +33,7 @@ let alpha = {
   ю: 0,
   " ": 0,
 };
+
 let keys = Object.keys(alpha);
 document.querySelector("button").addEventListener("click", function () {
   let file = document.getElementById("file").files[0];
@@ -148,12 +149,11 @@ function setBigrams(text, inters, iteration) {
     /* for (let i = 0; i < text.length; i += 2) {
       newtext += text[i];
     } */
-    for (let i = 0; i < newtext.length - 1; i++) {
+    for (let i = 0; i < newtext.length - 1; i+=2) {
       if (newtext[i].match("\n") || newtext[i + 1].match("\n")){}
       else {
         bigram = newtext[i] + newtext[i + 1];
         bigrams.push(bigram);
-        i++;
       }
       /* bigram = newtext[i] + newtext[i + 1];
       bigrams.push(bigram); */
@@ -163,7 +163,7 @@ function setBigrams(text, inters, iteration) {
       else bigramsObj[bigrams[i]] = 1;
     }
     for (let el in bigramsObj) {
-      bigramsObj[el] = bigramsObj[el] / newtext.length ;
+      bigramsObj[el] = bigramsObj[el] / bigrams.length ;
     }
   }
   let varArr = [];
@@ -174,7 +174,8 @@ function setBigrams(text, inters, iteration) {
   for (let val of varArr) {
     summ += val;
   }
-  summ = summ / 2;
+  if (inters) summ = summ / 2;
+  
   console.log("entropy: ", summ," redundency: ", redundency(summ, Object.values(bigramsObj).length));
   appendList(sortObj(bigramsObj), iteration);
 }
