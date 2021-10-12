@@ -40,3 +40,21 @@ def count_index_of_coincidence(text):
         index_of_coincidence += i * (i - 1)
     n = len(text)
     return index_of_coincidence/(n*(n-1))
+
+def divide_the_text_into_blocks(text: str, length_of_key: int) -> list[str]:
+    blocks = []
+    for i in range(length_of_key):
+        blocks.append(text[i::length_of_key])
+    return blocks
+
+
+def most_frequent_char(text: str) -> str:
+    return sorted(my_lib.make_dict_of_frequency_of_chars(text).items(), key=lambda item: item[1], reverse=True)[0][0]
+
+
+def generate_list_of_indexes_of_coincidence_for_text_with_length_of_key(length_of_key: int, cyphered_text) -> list:
+    blocks = divide_the_text_into_blocks(cyphered_text, length_of_key)
+    result_list = []
+    for j in blocks:
+        result_list.append(count_index_of_coincidence(j))
+    return result_list
