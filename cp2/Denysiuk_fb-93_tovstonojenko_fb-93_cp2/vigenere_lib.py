@@ -1,5 +1,4 @@
 import sys
-
 sys.path.insert(0, '../../cp1/Denysiuk_fb-93_tovstonojenko_fb-93_cp1')
 import re
 import my_lib
@@ -76,3 +75,27 @@ def generate_supposable_key(cyphered_text: str, len_of_key: int) -> str:
         key += most_frequent_char(chars)
     return key
 
+
+def print_encoded_text_to_files(keys: list[int], text: str):
+    my_lib.delete_all_files_in_directory('./results/cyphered_texts')
+    for k in keys:
+        with open(f'./results/cyphered_texts/key_len_{k}.txt', mode='w', encoding='UTF-8') as file:
+            key = generate_key(k)
+            file.write(f'Key:{key}\n')
+            cyphered_text = encrypt(text, key)
+            file.write(f'Index of coincidence:{count_index_of_coincidence(cyphered_text)}\n')
+            file.write(cyphered_text)
+
+
+def print_results_to_file(file_name: str, dict_of_items: dict):
+    with open(f'./results/{file_name}.csv', mode='w', encoding='UTF-8') as file:
+        for k in dict_of_items:
+            file.write(f'{k:20d},')
+        file.write('\n')
+        for i in range(1, 33):
+            for k in dict_of_items:
+                if len(dict_of_items[k]) >= i:
+                    file.write(f'{dict_of_items[k][i - 1]:.18f},')
+                else:
+                    file.write(f'                    ,')
+            file.write('\n')
