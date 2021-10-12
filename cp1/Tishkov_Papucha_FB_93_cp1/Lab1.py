@@ -31,13 +31,15 @@ def calc_all_symbols_freq(alphabet, text, log_file_name = None):
         sorted_symbol_freq_dict = dict(sorted(symbol_freq_dict.items(), key=lambda item: item[1], reverse=True))
         out_df = pd.DataFrame.from_dict(sorted_symbol_freq_dict, orient='index', columns=['Frequency'])
         out_df.to_excel(log_file_name + '.xlsx')
+
+    return symbol_freq_dict
     
 
 def calc_monogramm_entropy(alphabet, text):
     entropy = 0
-    for symbol in alphabet:
-        p = calc_symbol_freq(symbol, text)
-        entropy = entropy + (p * math.log(p, 2))
+    monogramm_freq_dict = calc_all_symbols_freq(alphabet, text)
+    for monogramm_freq in monogramm_freq_dict:
+        entropy = entropy + (monogramm_freq * math.log(monogramm_freq, 2))
     entropy = entropy * -1
     return entropy
 
@@ -61,9 +63,9 @@ def calc_bigramm_freq(bigramm, text, is_intersec_allowed = False):
 
     frequency = bigramm_counter / (text_len / 2)
     return frequency
-    
 
-def calc_bigramm_entropy(alphabet, text, is_space_allowed = False, is_intersec_allowed = False):
+
+def calc_all_bigramm_freq(alphabet, text, is_space_allowed = False, is_intersec_allowed = False, log_file_name = None):
     bigramm_freq_dict = {}
     bigramm_num_dict = {}
 
@@ -96,7 +98,16 @@ def calc_bigramm_entropy(alphabet, text, is_space_allowed = False, is_intersec_a
             index = index + 2
     for bigramm in bigramm_num_dict:
         bigramm_freq_dict.update({bigramm: bigramm_num_dict[bigramm]/(text_len/2)})
-        #print(bigramm + '-> ' + str(bigramm_freq_dict[bigramm]))
+
+    if log_file_name != None:
+        sorted_bigramm_freq_dict = dict(sorted(bigramm_freq_dict.items(), key=lambda item: item[1], reverse=True))
+        out_df = pd.DataFrame.from_dict(sorted_bigramm_freq_dict, orient='index', columns=['Frequency'])
+        out_df.to_excel(log_file_name + '.xlsx')
+
+    return bigramm_freq_dict
+
+def calc_bigramm_entropy(alphabet, text, is_space_allowed = False, is_intersec_allowed = False):
+    bigramm_freq_dict = calc_all_bigramm_freq(alphabet, text, is_space_allowed, is_intersec_allowed)
 
     # Calculating entropy
     bigramm_entropy = 0
