@@ -9,8 +9,8 @@ alph = ["а","б","в","г","д","е","ё","ж","з","и","й","к","л","м","�
 text_spaces = []
 text_nospaces = []
 
-with open('text.txt', 'r', encoding = 'utf-8') as file:
-    file = file.read()
+with open('text.txt', 'r', encoding = 'utf-8') as f:
+    file = f.read()
     file = file.lower()
     length = len(file)
 
@@ -33,6 +33,9 @@ with open('text.txt', 'r', encoding = 'utf-8') as file:
                 space = True
 
 
+def redundancy(n, m):
+    return 1 - (n / math.log(m, 2))
+
 def letters_entropy(text):
     length = len(text)
     freq = {}
@@ -44,7 +47,8 @@ def letters_entropy(text):
         if count/length == 0: #for text without spaces
             continue
         freq.update({alph[i]: count/length})
-    return -1 * sum(freq[k] * math.log(freq[k], 2) for k in freq)
+    result = -1 * sum(freq[k] * math.log(freq[k], 2) for k in freq)
+    return result, redundancy(result, len(freq))
 
 
 def bigrams_entropy(text, intersection):
@@ -53,12 +57,20 @@ def bigrams_entropy(text, intersection):
         length -= 1
 
     bigrams = []
-    for i in range(0, length, 2-intersection):
+    for i in range(0, length-1, 2-intersection):
         bigrams.append(text[i]+text[i+1])
     count = len(bigrams)
 
     freq = Counter(bigrams)
     for i in freq:
         freq[i] /= count
-    return sum(freq[k] * math.log(freq[k], 2) for k in freq) / (-2)
+    result = sum(freq[k] * math.log(freq[k], 2) for k in freq) / (-2)
+    return result, redundancy(result, len(''.join(set(text))))
+
+print(letters_entropy(text_spaces))
+print(letters_entropy(text_nospaces))
+print(bigrams_entropy(text_spaces, 0))
+print(bigrams_entropy(text_spaces, 1))
+print(bigrams_entropy(text_nospaces, 0))
+print(bigrams_entropy(text_nospaces, 1))
 
