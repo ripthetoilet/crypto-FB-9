@@ -38,15 +38,9 @@ def redundancy(n, m):
 
 def letters_entropy(text):
     length = len(text)
-    freq = {}
-    for i in range(34):
-        count = 0
-        for j in range(length):
-            if text[j] == alph[i]:
-                count += 1
-        if count/length == 0: #for text without spaces
-            continue
-        freq.update({alph[i]: count/length})
+    freq = Counter(text)
+    for i in freq:
+        freq[i] /= length
     result = -1 * sum(freq[k] * math.log(freq[k], 2) for k in freq)
     return result, redundancy(result, len(freq))
 
