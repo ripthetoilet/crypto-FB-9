@@ -6,9 +6,9 @@ print("1 >>> Text without spaces\n2 >>> Text with spaces\n")
 what = input()
 with open("need.txt", "r", encoding="utf-8") as txt:
     if what == "1":
-        content = re.sub('[^а-я\ё]+', '', txt.read().lower())
+        content = re.sub('[^а-я]+', '', txt.read().lower().replace("ё", "е").replace("ъ", "ь"))
     elif what == "2":
-        content = re.sub('[^а-я\ё]+', ' ', txt.read().lower())
+        content = re.sub('[^а-я]+', ' ', txt.read().lower().replace("ё", "е").replace("ъ", "ь"))
 
 
 def amount(content: str) -> dict:
