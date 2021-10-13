@@ -10,7 +10,6 @@ let alpha = {
   щ: 0,
   з: 0,
   х: 0,
-  ъ: 0,
   ф: 0,
   ы: 0,
   в: 0,
@@ -56,12 +55,12 @@ document.querySelector("button").addEventListener("click", function () {
 function textEditor(text, spaces) {
   let editText;
   if (spaces) {
-    editText = text.replace(/[!-@]|[\[-`]|[\{-~]|I|—|…|»|’|[a-z]|«/gi, "").toLowerCase().replace(/  /gi, " ");
+    editText = text.replace(/[!-@]|[\[-`]|[\{-~]|I|—|…|»|’|[a-z]|«/gi, "").toLowerCase().replace(/  /gi, " ").replace(/ё/gi, "e").replace(/ъ/gi, "ь");
   } else {
     editText = text
       .replace(/[ -@]|[\[-`]|[\{-~]|I|—|…|»|’|[a-z]|«/gi, "")
       .trim()
-      .toLowerCase();
+      .toLowerCase().replace(/ё/gi, "e").replace(/ъ/gi, "ь");
   }
 
   return editText;
