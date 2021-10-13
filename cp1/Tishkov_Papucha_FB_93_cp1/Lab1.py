@@ -1,6 +1,6 @@
 #coding=UTF-8
-import os
 import math
+from contextlib import contextmanager
 import pandas as pd
 
 rus_alphabet = ['а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к',
@@ -16,9 +16,11 @@ def calc_symbol_freq(symbol, text):
     return symbol_counter / len(text)
 
 
-def calc_all_symbols_freq(alphabet, text, log_file_name = None):
+def calc_all_symbols_freq(alphabet, text, is_space_allowed = False, log_file_name = None):
     symbol_num_dict = {}
     symbol_freq_dict = {}
+    if is_space_allowed:
+        alphabet.append(' ')
     for letter in alphabet:
         symbol_num_dict.update({letter: 0})
         symbol_freq_dict.update({letter: 0})
@@ -31,13 +33,15 @@ def calc_all_symbols_freq(alphabet, text, log_file_name = None):
         sorted_symbol_freq_dict = dict(sorted(symbol_freq_dict.items(), key=lambda item: item[1], reverse=True))
         out_df = pd.DataFrame.from_dict(sorted_symbol_freq_dict, orient='index', columns=['Frequency'])
         out_df.to_excel(log_file_name + '.xlsx')
+
+    return symbol_freq_dict
     
 
-def calc_monogramm_entropy(alphabet, text):
+def calc_monogramm_entropy(alphabet, text, is_space_allowed = False):
     entropy = 0
-    for symbol in alphabet:
-        p = calc_symbol_freq(symbol, text)
-        entropy = entropy + (p * math.log(p, 2))
+    monogramm_freq_dict = calc_all_symbols_freq(alphabet, text, is_space_allowed)
+    for monogramm_freq in monogramm_freq_dict.values():
+        entropy = entropy + (monogramm_freq * math.log(monogramm_freq, 2))
     entropy = entropy * -1
     return entropy
 
@@ -61,9 +65,9 @@ def calc_bigramm_freq(bigramm, text, is_intersec_allowed = False):
 
     frequency = bigramm_counter / (text_len / 2)
     return frequency
-    
 
-def calc_bigramm_entropy(alphabet, text, is_space_allowed = False, is_intersec_allowed = False):
+
+def calc_all_bigramm_freq(alphabet, text, is_space_allowed = False, is_intersec_allowed = False, log_file_name = None):
     bigramm_freq_dict = {}
     bigramm_num_dict = {}
 
@@ -95,8 +99,22 @@ def calc_bigramm_entropy(alphabet, text, is_space_allowed = False, is_intersec_a
         else:
             index = index + 2
     for bigramm in bigramm_num_dict:
-        bigramm_freq_dict.update({bigramm: bigramm_num_dict[bigramm]/(text_len/2)})
-        #print(bigramm + '-> ' + str(bigramm_freq_dict[bigramm]))
+        divider = 0
+        if is_intersec_allowed:
+            divider = text_len - 1
+        else:
+            divider = text_len / 2
+        bigramm_freq_dict.update({bigramm: bigramm_num_dict[bigramm]/divider})
+
+    if log_file_name != None:
+        sorted_bigramm_freq_dict = dict(sorted(bigramm_freq_dict.items(), key=lambda item: item[1], reverse=True))
+        out_df = pd.DataFrame.from_dict(sorted_bigramm_freq_dict, orient='index', columns=['Frequency'])
+        out_df.to_excel(log_file_name + '.xlsx')
+
+    return bigramm_freq_dict
+
+def calc_bigramm_entropy(alphabet, text, is_space_allowed = False, is_intersec_allowed = False):
+    bigramm_freq_dict = calc_all_bigramm_freq(alphabet, text, is_space_allowed, is_intersec_allowed)
 
     # Calculating entropy
     bigramm_entropy = 0
@@ -108,44 +126,99 @@ def calc_bigramm_entropy(alphabet, text, is_space_allowed = False, is_intersec_a
     return bigramm_entropy
     
 
-def make_text_only_alphabet_symbols(in_file_name, out_file_name):
-    text_file = open(in_file_name, 'r')
-    context = text_file.read()
-    text_file.close()
+def make_text_only_alphabet_symbols(text, is_space_allowed):
+    context = text
     new_context = str()
     for text_symbol in context:
         for rus_symbol in rus_alphabet:
-            if text_symbol == rus_symbol or text_symbol == ' ':
-                new_context = new_context + text_symbol
-                break
-            elif text_symbol == rus_symbol.upper():
+            if text_symbol.lower() == rus_symbol:
                 new_context = new_context + text_symbol.lower()
                 break
-    edited_text_file = open(out_file_name, 'w')
-    edited_text_file.write(new_context)
-    edited_text_file.close()
+            elif text_symbol == 'ъ':
+                new_context = new_context + 'ь'
+                break
+            elif text_symbol == 'Ъ':
+                new_context = new_context + 'Ь'
+                break
+            elif text_symbol == 'ё':
+                new_context = new_context + 'е'
+                break
+            elif text_symbol == 'Ё':
+                new_context = new_context + 'Е'
+                break
+            elif is_space_allowed and text_symbol == ' ':
+                new_context = new_context + text_symbol
+    
+    return new_context
 
 
-def make_text_without_spaces(in_file_name, out_file_name):
-    text_file = open(in_file_name, 'r')
-    context = text_file.read()
+def redundant(entropy, alphabet, is_spaces_allowed = False, in_percents = False):
+    multiplicator = 1
+    if in_percents:
+        multiplicator = 100
+    if is_spaces_allowed:
+        return (1 - (entropy/math.log2(len(alphabet) + 1))) * multiplicator
+    else:
+        return (1 - (entropy/math.log2(len(alphabet)))) * multiplicator
+
+
+@contextmanager
+def open_text(path, is_space_allowed):
+    try:
+        text_file = open(path, 'r')
+        text_in = text_file.read()
+        text_out = make_text_only_alphabet_symbols(text_in, is_space_allowed)
+    except OSError:
+        print("There is a problem with text file!")
+    yield text_out
     text_file.close()
-    new_context = context.replace(' ', '')
-    edited_text_file = open(out_file_name, 'w')
-    edited_text_file.write(new_context)
-    edited_text_file.close()
 
 
 def main():
-    # TODO: Correct main workflow
-    #make_text_only_alphabet_symbols('dyuma.txt', 'dyuma_edited.txt')
-    file = open("dyuma_edited.txt", 'r')
-    context = file.read()
-    file.close()
-    #print(calc_bigramm_entropy(rus_alphabet, context, False, False))
-    calc_all_symbols_freq(rus_alphabet, context, 'excel')
 
+    is_space_allowed = False
+    with open_text('dyuma.txt', is_space_allowed) as context:
+        # Export monogramm freq
+        calc_all_symbols_freq(rus_alphabet, context, is_space_allowed, 'monogramms')
+        calc_all_bigramm_freq(rus_alphabet, context, is_space_allowed, False, 'bigramms')
+        calc_all_bigramm_freq(rus_alphabet, context, is_space_allowed, True, 'bigramms_with_intersec')
+        print("Monogramm entropy:")
+        h1 = calc_monogramm_entropy(rus_alphabet, context, is_space_allowed)
+        print(h1)
+        print("Redundant:")
+        print(redundant(h1, rus_alphabet, is_space_allowed, True))
+        print("Bigramm entropy:")
+        h2_without_intersec = calc_bigramm_entropy(rus_alphabet, context, is_space_allowed, False)
+        print(h2_without_intersec)
+        print("Redundant:")
+        print(redundant(h2_without_intersec, rus_alphabet, is_space_allowed, True))
+        print("Bigramm entropy with intersection:")
+        h2_with_intersec = calc_bigramm_entropy(rus_alphabet, context, is_space_allowed, True)
+        print(h2_with_intersec)
+        print("Redundant:")
+        print(redundant(h2_with_intersec, rus_alphabet, is_space_allowed, True))
 
+    is_space_allowed = True
+    with open_text('dyuma.txt', is_space_allowed) as context:
+        # Export monogramm freq
+        calc_all_symbols_freq(rus_alphabet, context, is_space_allowed, 'monogramms_with_spaces')
+        calc_all_bigramm_freq(rus_alphabet, context, is_space_allowed, False, 'bigramms_with_spaces')
+        calc_all_bigramm_freq(rus_alphabet, context, is_space_allowed, True, 'bigramms_with_spaces_and_intersec')
+        print("Monogramm entropy with spaces:")
+        h1 = calc_monogramm_entropy(rus_alphabet, context, is_space_allowed)
+        print(h1)
+        print("Redundant:")
+        print(redundant(h1, rus_alphabet, is_space_allowed, True))
+        print("Bigramm entropy with spaces:")
+        h2_without_intersec = calc_bigramm_entropy(rus_alphabet, context, is_space_allowed, False)
+        print(h2_without_intersec)
+        print("Redundant:")
+        print(redundant(h2_without_intersec, rus_alphabet, is_space_allowed, True))
+        print("Bigramm entropy with spaces and intersection:")
+        h2_with_intersec = calc_bigramm_entropy(rus_alphabet, context, is_space_allowed, True)
+        print(h2_with_intersec)
+        print("Redundant:")
+        print(redundant(h2_with_intersec, rus_alphabet, is_space_allowed, True))
 
 if __name__ == '__main__':
     main()
