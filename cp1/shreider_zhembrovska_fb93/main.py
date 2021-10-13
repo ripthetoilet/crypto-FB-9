@@ -42,6 +42,11 @@ def letters_entropy(text):
     for i in freq:
         freq[i] /= length
     result = -1 * sum(freq[k] * math.log(freq[k], 2) for k in freq)
+
+    freq = sorted(freq.items(), key=lambda item: item[1], reverse=True)
+    for key, value in freq:
+        print(key, ':', value)
+
     return result, redundancy(result, len(freq))
 
 
@@ -59,12 +64,35 @@ def bigrams_entropy(text, intersection):
     for i in freq:
         freq[i] /= count
     result = sum(freq[k] * math.log(freq[k], 2) for k in freq) / (-2)
+
+    freq = sorted(freq.items(), key=lambda item: item[1], reverse=True)
+    for key, value in freq:
+        print(key, ':', value)
+
     return result, redundancy(result, len(''.join(set(text))))
 
-print(letters_entropy(text_spaces))
-print(letters_entropy(text_nospaces))
-print(bigrams_entropy(text_spaces, 0))
-print(bigrams_entropy(text_spaces, 1))
-print(bigrams_entropy(text_nospaces, 0))
-print(bigrams_entropy(text_nospaces, 1))
 
+print("H1 text with spaces", letters_entropy(text_spaces))
+print("H1 text without spaces", letters_entropy(text_nospaces))
+print("H2 text with spaces without intersections", bigrams_entropy(text_spaces, 0))
+print("H2 text with spaces with intersections", bigrams_entropy(text_spaces, 1))
+print("H2 text without spaces without intersections", bigrams_entropy(text_nospaces, 0))
+print("H2 text without spaces without intersections", bigrams_entropy(text_nospaces, 1))
+
+print("\nFrequency of monograms in text with spaces\n")
+letters_entropy(text_spaces)
+
+print("\nFrequency of monograms in text without spaces\n")
+letters_entropy(text_nospaces)
+
+print("\nFrequency of bigrams in text with spaces without intersections\n")
+bigrams_entropy(text_spaces, 0)
+
+print("\nFrequency of bigrams in text with spaces with intersections\n")
+bigrams_entropy(text_spaces, 1)
+
+print("\nFrequency of bigrams in text without spaces without intersections\n")
+bigrams_entropy(text_nospaces, 0)
+
+print("\nFrequency of bigrams in text without spaces with intersections\n")
+bigrams_entropy(text_nospaces, 1)
