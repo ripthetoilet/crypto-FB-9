@@ -129,26 +129,36 @@ def calc_bigramm_entropy(alphabet, text, is_space_allowed = False, is_intersec_a
 def make_text_only_alphabet_symbols(text, is_space_allowed):
     context = text
     new_context = str()
+    is_prev_space = False
     for text_symbol in context:
         for rus_symbol in rus_alphabet:
             if text_symbol.lower() == rus_symbol:
+                is_prev_space = False
                 new_context = new_context + text_symbol.lower()
                 break
             elif text_symbol == 'ъ':
+                is_prev_space = False
                 new_context = new_context + 'ь'
                 break
             elif text_symbol == 'Ъ':
+                is_prev_space = False
                 new_context = new_context + 'Ь'
                 break
             elif text_symbol == 'ё':
+                is_prev_space = False
                 new_context = new_context + 'е'
                 break
             elif text_symbol == 'Ё':
+                is_prev_space = False
                 new_context = new_context + 'Е'
                 break
             elif is_space_allowed and text_symbol == ' ':
-                new_context = new_context + text_symbol
-    
+                if is_prev_space:
+                    break
+                else:
+                    is_prev_space = True
+                    new_context = new_context + ' '
+                
     return new_context
 
 
