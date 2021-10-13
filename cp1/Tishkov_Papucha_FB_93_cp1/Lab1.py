@@ -40,7 +40,7 @@ def calc_all_symbols_freq(alphabet, text, is_space_allowed = False, log_file_nam
 def calc_monogramm_entropy(alphabet, text, is_space_allowed = False):
     entropy = 0
     monogramm_freq_dict = calc_all_symbols_freq(alphabet, text, is_space_allowed)
-    for monogramm_freq in monogramm_freq_dict:
+    for monogramm_freq in monogramm_freq_dict.values():
         entropy = entropy + (monogramm_freq * math.log(monogramm_freq, 2))
     entropy = entropy * -1
     return entropy
@@ -99,7 +99,12 @@ def calc_all_bigramm_freq(alphabet, text, is_space_allowed = False, is_intersec_
         else:
             index = index + 2
     for bigramm in bigramm_num_dict:
-        bigramm_freq_dict.update({bigramm: bigramm_num_dict[bigramm]/(text_len/2)})
+        divider = 0
+        if is_intersec_allowed:
+            divider = text_len - 1
+        else:
+            divider = text_len / 2
+        bigramm_freq_dict.update({bigramm: bigramm_num_dict[bigramm]/divider})
 
     if log_file_name != None:
         sorted_bigramm_freq_dict = dict(sorted(bigramm_freq_dict.items(), key=lambda item: item[1], reverse=True))
@@ -147,6 +152,16 @@ def make_text_only_alphabet_symbols(text, is_space_allowed):
     return new_context
 
 
+def redundant(entropy, alphabet, is_spaces_allowed = False, in_percents = False):
+    multiplicator = 1
+    if in_percents:
+        multiplicator = 100
+    if is_spaces_allowed:
+        return (1 - (entropy/math.log2(len(alphabet) + 1))) * multiplicator
+    else:
+        return (1 - (entropy/math.log2(len(alphabet)))) * multiplicator
+
+
 @contextmanager
 def open_text(path, is_space_allowed):
     try:
@@ -160,15 +175,50 @@ def open_text(path, is_space_allowed):
 
 
 def main():
-    is_space_allowed = True
+
+    is_space_allowed = False
     with open_text('dyuma.txt', is_space_allowed) as context:
         # Export monogramm freq
         calc_all_symbols_freq(rus_alphabet, context, is_space_allowed, 'monogramms')
+        calc_all_bigramm_freq(rus_alphabet, context, is_space_allowed, False, 'bigramms')
+        calc_all_bigramm_freq(rus_alphabet, context, is_space_allowed, True, 'bigramms_with_intersec')
+        print("Monogramm entropy:")
+        h1 = calc_monogramm_entropy(rus_alphabet, context, is_space_allowed)
+        print(h1)
+        print("Redundant:")
+        print(redundant(h1, rus_alphabet, is_space_allowed, True))
+        print("Bigramm entropy:")
+        h2_without_intersec = calc_bigramm_entropy(rus_alphabet, context, is_space_allowed, False)
+        print(h2_without_intersec)
+        print("Redundant:")
+        print(redundant(h2_without_intersec, rus_alphabet, is_space_allowed, True))
+        print("Bigramm entropy with intersection:")
+        h2_with_intersec = calc_bigramm_entropy(rus_alphabet, context, is_space_allowed, True)
+        print(h2_with_intersec)
+        print("Redundant:")
+        print(redundant(h2_with_intersec, rus_alphabet, is_space_allowed, True))
+
+    is_space_allowed = True
+    with open_text('dyuma.txt', is_space_allowed) as context:
+        # Export monogramm freq
+        calc_all_symbols_freq(rus_alphabet, context, is_space_allowed, 'monogramms_with_spaces')
         calc_all_bigramm_freq(rus_alphabet, context, is_space_allowed, False, 'bigramms_with_spaces')
         calc_all_bigramm_freq(rus_alphabet, context, is_space_allowed, True, 'bigramms_with_spaces_and_intersec')
-    
-        
-
+        print("Monogramm entropy with spaces:")
+        h1 = calc_monogramm_entropy(rus_alphabet, context, is_space_allowed)
+        print(h1)
+        print("Redundant:")
+        print(redundant(h1, rus_alphabet, is_space_allowed, True))
+        print("Bigramm entropy with spaces:")
+        h2_without_intersec = calc_bigramm_entropy(rus_alphabet, context, is_space_allowed, False)
+        print(h2_without_intersec)
+        print("Redundant:")
+        print(redundant(h2_without_intersec, rus_alphabet, is_space_allowed, True))
+        print("Bigramm entropy with spaces and intersection:")
+        h2_with_intersec = calc_bigramm_entropy(rus_alphabet, context, is_space_allowed, True)
+        print(h2_with_intersec)
+        print("Redundant:")
+        print(redundant(h2_with_intersec, rus_alphabet, is_space_allowed, True))
 
 if __name__ == '__main__':
     main()
