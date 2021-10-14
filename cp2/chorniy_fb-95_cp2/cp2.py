@@ -31,27 +31,9 @@ def acrdindx(text):
     ind /= (len(text) * (len(text) - 1))
     return ind
 
-with open("r2.txt", "w", encoding='utf-8') as e:
-    e.write(encrypt(text1, 'да'))
-
-print("accordence index with keu length of 2: ", acrdindx(encrypt(text1, 'да')))
-
-with open("r3.txt", "w", encoding='utf-8') as e:
-    e.write(encrypt(text1, 'кот'))
-
-print("accordence index with keu length of 3: ", acrdindx(encrypt(text1, 'кот')))
-
-with open("r4.txt", "w", encoding='utf-8') as e:
-    e.write(encrypt(text1, 'маша'))
-
-print("accordence index with keu length of 4: ", acrdindx(encrypt(text1, 'маша')))
-
-with open("r5.txt", "w", encoding='utf-8') as e:
-    e.write(encrypt(text1, 'толик'))
-
-print("accordence index with keu length of 5: ", acrdindx(encrypt(text1, 'толик')))
-
-with open("r15.txt", "w", encoding='utf-8') as e:
-    e.write(encrypt(text1, 'япишулабуночью'))
-
-print("accordence index with keu length of 14: ", acrdindx(encrypt(text1, 'япишулабуночью')))
+keys = ['да', 'кот', 'маша', 'толик', 'япишулабуночью']
+for i in keys:
+    with open(str(len(i)) + ".txt", "w", encoding='utf-8') as e:
+        e.write(encrypt(text1, i))
+        length = len(i)
+        print("accordence index with key length of " + str(len(i)) + ": ", acrdindx(encrypt(text1, i)))
