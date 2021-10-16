@@ -2,11 +2,12 @@ import random
 
 with open('firstText.txt','r',encoding='utf-8') as file:
     text1 = file.read()
+with open('TexttoDecrypt.txt','r',encoding='utf-8') as file2:
+    toDecrypt = file2.read()
+alphabet = ['а','б','в','г','д','е','ж','з','и','й','к','л','м','н','о','п','р','с','т','у','ф','х','ц','ч','ш','щ','ъ','ы','ь','э','ю','я']
 
-alphabet = ['а','б','в','г','д','е','ж','з','и','й','к','л','м','н','о','п','р','с','т','у','ф','х','ц','ч','ш','щ','ы','ь','э','ю','я']
 
-#функція шифрування
-def encode (text,key):
+def encode(text, key):                              # функція кодування
     encryptedText = ""
 
     keysIndex=[]
@@ -20,8 +21,8 @@ def encode (text,key):
         encryptedText+=alphabet[encryptedLetter]
     return encryptedText
 
-#функція розшифрування
-def dencode (text,key):
+
+def decode (text,key):                              # функція декодування
     encryptedText = ""
 
     keysIndex=[]
@@ -31,29 +32,30 @@ def dencode (text,key):
     for i in range(len(text)):
         letterToEncrypt = alphabet.index(text[i])
         keyIndex = keysIndex[i%len(keysIndex)]
-        encryptedLetter = (letterToEncrypt-keyIndex+len(alphabet))%len(alphabet)
+        encryptedLetter = (letterToEncrypt-keyIndex)%len(alphabet)
         encryptedText+=alphabet[encryptedLetter]
     return encryptedText
 
-def keyGen(lenght):
-    key=""
+def keyGen(lenght):                                 # геренування ключів
+    key=""                                          # різної довжини
     for i in range(lenght):
         key+=alphabet[random.randint(0,len(alphabet)-1)]
     print("key:",key)
     return key
 
-#функція пошуку індексу відповідності
-def complianceIndex(text):
-    sum = 0;
+
+def complianceIndex(text):                          # пошук індексу відповідності
+    ind = 0;
+    n=len(text)
     for i in range(len(alphabet)):
         letterCount=text.count(alphabet[i])
-        sum+=(letterCount*(letterCount-1))
+        ind+=letterCount*(letterCount-1)
+    ind*=1/(n*(n-1))
+    return ind
 
-    index = sum / (len(text)*(len(text)-1))
-    return index
 
-def task1(text):
-    print("Compilance index start= ",complianceIndex(text))
+def task1(text):                                    # функція для завдання 1
+    print("Compilance index start= ", complianceIndex(text))
     print(" ")
 
     for i in range(2,6):
@@ -61,7 +63,7 @@ def task1(text):
         key=keyGen(i)
         enc=encode(text,key)
         print("Encoded text: ",enc)
-        print("Decoded text: ",dencode(enc,key))
+        print("Decoded text: ",decode(enc,key))
         print("Compilance index: ",complianceIndex(enc))
         print(" ")
     for i in range(10,21):
@@ -69,8 +71,46 @@ def task1(text):
         key = keyGen(i)
         enc = encode(text, key)
         print("Encoded text: ", enc)
-        print("Decoded text: ", dencode(enc, key))
+        print("Decoded text: ", decode(enc, key))
         print("Compilance index: ", complianceIndex(enc))
         print(" ")
 
 task1(text1)
+
+
+def makeBlocks(text, len):              # розбити текст на блоки
+    blocks = []
+    for i in range(len):
+        blocks.append(text[i::len])
+    return blocks
+
+
+def indexForBlocks(text, size):         # порахувати для кожного блоку
+    blocks = makeBlocks(text, size)     # cвій індекс відповідності
+    index = 0
+    for i in range(len(blocks)):
+        index=index+complianceIndex(blocks[i])
+    index=index/len(blocks)
+    return index
+
+
+def getIndexForBlocks ( ):              # вивести індекси відповідності
+    for i in range (1,len(alphabet)):   # для ключів різних довжин
+        print('Key len =',i,'index=',indexForBlocks(toDecrypt,i))
+
+getIndexForBlocks()
+
+
+def MakeKey(text, size, letter):        # функція для знаходження ключа можливого
+    blocks=makeBlocks(text, size)       # на вхід дається текст,довжина ключа
+    key = ""                            # та літера яка є серед частих
+    for i in range(len(blocks)):
+        mostFr = max(blocks[i], key=lambda c: blocks[i].count(c))
+        key+=alphabet[(alphabet.index(mostFr)-alphabet.index(letter))%len(alphabet)]
+    return key
+
+
+key = MakeKey(toDecrypt,16,"о")         # пункт вище показав що ключ має довжину 17
+key = 'делолисоборотней'                # трішки підкоригувавши отриманий ключ отримали
+decoded=(decode(toDecrypt,key))         # його та декодували весь текст
+print(decoded)
