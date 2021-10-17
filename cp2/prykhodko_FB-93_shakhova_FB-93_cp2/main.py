@@ -110,7 +110,7 @@ def MakeKey(text, size, letter):        # функція для знаходже
     return key
 
 
-key = MakeKey(toDecrypt,16,"о")         # пункт вище показав що ключ має довжину 17
+key = MakeKey(toDecrypt,16,"о")         # пункт вище показав що ключ має довжину 16
 key = 'делолисоборотней'                # трішки підкоригувавши отриманий ключ отримали
 decoded=(decode(toDecrypt,key))         # його та декодували весь текст
 print(decoded)
