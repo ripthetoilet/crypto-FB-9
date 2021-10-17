@@ -3,10 +3,11 @@ import collections
 import math
 from collections import Counter
 import numpy as np
-import pandas as pd
+#import pandas as pd
 
-text1 =open("text.txt",encoding="utf-8").read().lower().replace("ъ", "ь").replace("ё", "е").replace(" ","")
-text2 =open("text.txt",encoding="utf-8").read().lower().replace("ъ", "ь").replace("ё", "е")
+text =open("text.txt",encoding="utf-8").read().lower().replace("ъ", "ь").replace("ё", "е")
+text1= re.sub("[^а-я]","",text)
+text2= re.sub("[^" "+^а-я]","",text)
 Alphabet1 = ['а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф','х', 'ц', 'ч', 'ш', 'щ', 'ы', 'ь', 'э', 'ю', 'я']
 Alphabet2 = ['а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф','х', 'ц', 'ч', 'ш', 'щ', 'ы', 'ь', 'э', 'ю', 'я', ' ']
 letters1 = Counter(text1)
@@ -20,8 +21,8 @@ def Bigram1(text):
     for i in range(len(text)-1):
         arr1.append(text[i]+text[i+1])              
     return arr1
-#print(Bigram1())
 
+print(Bigram1(text1))
 
 #для біграм що не перетинаються
 def Bigram2(text):
@@ -40,7 +41,7 @@ bigram2 = Counter(Bigram2(text1))
 bigram1s=Counter(Bigram1(text2))
 bigram2s = Counter(Bigram2(text2))
 
-
+#print(bigram1s)
 
 #частота биграм
 def BigramFrequancy(bigram,text):
@@ -50,7 +51,7 @@ def BigramFrequancy(bigram,text):
         #print(bigramfreq)
     return bigramfreq
 
-print(BigramFrequancy(bigram1,text1))
+#print(Bigram1(text1),BigramFrequancy(bigram1,text1))
 
  #частота букв
 def LetterFrequancy(letters,Alphabet,text):
@@ -68,10 +69,10 @@ def EntropyBigram(bigramfreq):
         Entropy += -i*math.log(i,2)
     return Entropy/2
 
-print(EntropyBigram(BigramFrequancy(bigram1,text1)))
-print(EntropyBigram(BigramFrequancy(bigram2,text1)))
-print(EntropyBigram(BigramFrequancy(bigram1s,text2)))
-print(EntropyBigram(BigramFrequancy(bigram2s,text2)))
+# print(EntropyBigram(BigramFrequancy(bigram1,text1)))
+# print(EntropyBigram(BigramFrequancy(bigram2,text1)))
+# print(EntropyBigram(BigramFrequancy(bigram1s,text2)))
+# print(EntropyBigram(BigramFrequancy(bigram2s,text2)))
 
 #H1
 def EntropyLetters(letterfreq):
@@ -79,8 +80,8 @@ def EntropyLetters(letterfreq):
     for i in letterfreq:
         Entropy += -i*math.log(i,2)
     return Entropy
-print(EntropyLetters(LetterFrequancy(letters1,Alphabet1,text1)))
-print(EntropyLetters(LetterFrequancy(letters2,Alphabet2,text2)))
+# print(EntropyLetters(LetterFrequancy(letters1,Alphabet1,text1)))
+# print(EntropyLetters(LetterFrequancy(letters2,Alphabet2,text2)))
 #LetterFrequancy(letters)
 
 def redandancy1(letters,Alphabet,text):
@@ -88,6 +89,12 @@ def redandancy1(letters,Alphabet,text):
 def redandancy2(letters,Alphabet,text):
     return 1 - EntropyLetters(LetterFrequancy(letters,Alphabet,text))/math.log(32,2)
 
-print(redandancy1(letters1,Alphabet1,text1))
-print(redandancy2(letters2,Alphabet2,text2))
+# print(redandancy1(letters1,Alphabet1,text1))
+# print(redandancy2(letters2,Alphabet2,text2))
 
+
+
+
+def PrintBigramTable(filename,tablename, Alphabet,bigramfreq):
+    file =open(filename,encoding="utf8")
+    file.write(tablename+"\n")
