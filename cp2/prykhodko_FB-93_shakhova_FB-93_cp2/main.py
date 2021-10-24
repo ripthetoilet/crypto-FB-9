@@ -75,8 +75,6 @@ def task1(text):                                    # функція для за
         print("Compilance index: ", complianceIndex(enc))
         print(" ")
 
-task1(text1)
-
 
 def makeBlocks(text, len):              # розбити текст на блоки
     blocks = []
@@ -98,8 +96,6 @@ def getIndexForBlocks ( ):              # вивести індекси відп
     for i in range (1,len(alphabet)):   # для ключів різних довжин
         print('Key len =',i,'index=',indexForBlocks(toDecrypt,i))
 
-#getIndexForBlocks()
-
 
 def MakeKey(text, size, letter):        # функція для знаходження ключа
     blocks=makeBlocks(text, size)       # на вхід дається текст,розмір блоку
@@ -110,7 +106,13 @@ def MakeKey(text, size, letter):        # функція для знаходже
     return key
 
 
-key = MakeKey(toDecrypt,16,"о")         # пункт вище показав що ключ має довжину 17
-key = 'делолисоборотней'                # трішки підкоригувавши отриманий ключ отримали
-decoded=(decode(toDecrypt,key))         # його та декодували весь текст
-print(decoded)
+if __name__ == "__main__":
+
+    task1(text1)                        #перша частина
+    print('')
+    getIndexForBlocks()                 #індекси відповідностей для блоків
+    print('')                           #різної довжини ШТ
+    key = MakeKey(toDecrypt, 16, "о")   # пункт вище показав що ключ має довжину 16
+    key = 'делолисоборотней'            # трішки підкоригувавши отриманий ключ отримали
+    decoded = (decode(toDecrypt, key))  # його та декодували весь текст
+    print(decoded)
