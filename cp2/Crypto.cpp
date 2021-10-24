@@ -225,12 +225,12 @@ void part2()
 
 	fin.close();
 
-	/*for (int i = 1; i < 21; i++)
+	/*for (int i = 1; i < 31; i++)
 	{
 		check_indexes(cipher, i);
 	}*/
 
-	/*for (int i = 1; i < 21; i++)
+	/*for (int i = 1; i < 31; i++)
 	{
 		check_kronekera(cipher, i);
 	}*/
