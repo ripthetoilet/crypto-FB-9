@@ -8,7 +8,7 @@ alphabet = ['а','б','в','г','д','е','ж','з','и','й','к','л','м','н
 
 
 def encode(text, key):                              # функція кодування
-    encryptedText = ""
+    encryptedText = []
 
     keysIndex=[]
     for i in key :
@@ -18,12 +18,12 @@ def encode(text, key):                              # функція кодув�
         letterToEncrypt = alphabet.index(text[i])
         keyIndex = keysIndex[i%len(keysIndex)]
         encryptedLetter = (keyIndex+letterToEncrypt)%len(alphabet)
-        encryptedText+=alphabet[encryptedLetter]
-    return encryptedText
+        encryptedText.append(alphabet[encryptedLetter])
+    return ''.join(encryptedText)
 
 
 def decode (text,key):                              # функція декодування
-    encryptedText = ""
+    encryptedText = []
 
     keysIndex=[]
     for i in key :
@@ -33,8 +33,8 @@ def decode (text,key):                              # функція декод�
         letterToEncrypt = alphabet.index(text[i])
         keyIndex = keysIndex[i%len(keysIndex)]
         encryptedLetter = (letterToEncrypt-keyIndex)%len(alphabet)
-        encryptedText+=alphabet[encryptedLetter]
-    return encryptedText
+        encryptedText.append(alphabet[encryptedLetter])
+    return ''.join(encryptedText)
 
 def keyGen(lenght):                                 # геренування ключів
     key=""                                          # різної довжини
@@ -98,11 +98,11 @@ def getIndexForBlocks ( ):              # вивести індекси відп
     for i in range (1,len(alphabet)):   # для ключів різних довжин
         print('Key len =',i,'index=',indexForBlocks(toDecrypt,i))
 
-getIndexForBlocks()
+#getIndexForBlocks()
 
 
-def MakeKey(text, size, letter):        # функція для знаходження ключа можливого
-    blocks=makeBlocks(text, size)       # на вхід дається текст,довжина ключа
+def MakeKey(text, size, letter):        # функція для знаходження ключа
+    blocks=makeBlocks(text, size)       # на вхід дається текст,розмір блоку
     key = ""                            # та літера яка є серед частих
     for i in range(len(blocks)):
         mostFr = max(blocks[i], key=lambda c: blocks[i].count(c))
