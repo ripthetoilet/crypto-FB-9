@@ -8,17 +8,17 @@ with open("keys.txt", "r", encoding="utf-8") as file:
 
 
 def encode_text(text: str, key: str) -> str:
-    result = ""
+    result = []
     for index, letter in enumerate(text):
-        result += ru_alphabet[(ru_alphabet.index(letter) + ru_alphabet.index(key[index % len(key)])) % len(ru_alphabet)]
-    return result
+        result.append(ru_alphabet[(ru_alphabet.index(letter) + ru_alphabet.index(key[index % len(key)])) % len(ru_alphabet)])
+    return "".join(result)
 
 
 def decode_text(text: str, key: str) -> str:
-    result = ""
+    result = []
     for index, letter in enumerate(text):
-        result += ru_alphabet[(ru_alphabet.index(letter) - ru_alphabet.index(key[index % len(key)])) % len(ru_alphabet)]
-    return result
+        result.append(ru_alphabet[(ru_alphabet.index(letter) - ru_alphabet.index(key[index % len(key)])) % len(ru_alphabet)])
+    return "".join(result)
 
 
 def calculate_index(text: str) -> float:
