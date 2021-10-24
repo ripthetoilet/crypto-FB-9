@@ -1,6 +1,7 @@
 from collections import defaultdict
 from math import log
 import re
+import os
 
 
 def filter_text(file_name: str, with_whitespace: bool) -> str:
@@ -50,3 +51,8 @@ def calculate_entropy(n: int, stats: dict) -> float:
     for i in stats:
         entropy += stats[i] / quantity * log(stats[i] / quantity, 2)
     return -entropy / n
+
+
+def delete_all_files_in_directory(directory: str):
+    for f in os.listdir(directory):
+        os.remove(os.path.join(directory, f))
