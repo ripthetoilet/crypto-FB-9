@@ -106,7 +106,6 @@ def MakeKey(text, size, letter):        # функція для знаходже
     return key
 
 
-<<<<<<< HEAD
 if __name__ == "__main__":
 
     task1(text1)                        #перша частина
@@ -117,9 +116,8 @@ if __name__ == "__main__":
     key = 'делолисоборотней'            # трішки підкоригувавши отриманий ключ отримали
     decoded = (decode(toDecrypt, key))  # його та декодували весь текст
     print(decoded)
-=======
-key = MakeKey(toDecrypt,16,"о")         # пункт вище показав що ключ має довжину 16
-key = 'делолисоборотней'                # трішки підкоригувавши отриманий ключ отримали
-decoded=(decode(toDecrypt,key))         # його та декодували весь текст
-print(decoded)
->>>>>>> 081928a4d8e9d87ef291232ed4e67f2c7738db7e
+
+    key = MakeKey(toDecrypt,16,"о")         # пункт вище показав що ключ має довжину 16
+    key = 'делолисоборотней'                # трішки підкоригувавши отриманий ключ отримали
+    decoded=(decode(toDecrypt,key))         # його та декодували весь текст
+    print(decoded)
