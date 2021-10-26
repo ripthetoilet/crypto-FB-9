@@ -38,6 +38,25 @@ string  RUS(const string& DOS_string) {
 	delete[] p_buf;
 	return res;
 }
+void f_quantityOfSym(int* quantityOfSym, int lengthOfAlphabet, string alphabet, string txt) {
+	char symbol;
+	for (int i = 0; i < lengthOfAlphabet; i++) {
+		symbol = alphabet[i];
+		const auto count_symbol = count(txt.cbegin(), txt.cend(), symbol);
+		//cout << alphabet[i] << ": " << count_symbol << endl;
+		quantityOfSym[i] = count_symbol;//запис кі-сті літер у масив
+	}
+}
+
+double f_index_OT(int lengthOfText, int* quantityOfSym, int lengthOfAlphabet, double index_OT) {
+	double extra;
+	extra = 1.0 / (lengthOfText * (lengthOfText - 1));
+	for (int i = 0; i < lengthOfAlphabet; i++) {
+		index_OT = index_OT + (quantityOfSym[i] * (quantityOfSym[i] - 1));
+	}
+	index_OT = index_OT * extra;
+	return index_OT;
+}
 
 int main() {
 	setlocale(LC_ALL, "Russian");
@@ -47,7 +66,7 @@ int main() {
 	cout << "Enter the root to .txt file: ";
 	cin >> file_name;
 	txt_before = inputf(f, file_name);
-	//cout << txt << endl;
+	//cout << txt_before << endl;
 	txt_after = txt_before;
 	string key;
 	string alphabet;
@@ -60,7 +79,7 @@ int main() {
 	int lengthOfAlphabet = alphabet.length();
 	int j, j1;
 	int j2;
-	while (true) {
+	/*while (true) {
 		j2 = 0;
 		cout << "Enter the key word: ";
 		cin >> key;
@@ -73,7 +92,7 @@ int main() {
 		/*for (int i = 0; i < lengthOfText; i++) {
 			cout << OT[i] << "\t";
 		}*/
-		for (int i = 0; i < lengthOfText; i++, j2++) {
+		/*for (int i = 0; i < lengthOfText; i++, j2++) {
 			if (j2 == lengthOfKey) {
 				j2 = -1;
 				i--;
@@ -87,19 +106,38 @@ int main() {
 		for (int i = 0; i < lengthOfText; i++) {
 			cout << key_mas[i] << "\t";
 		}*/
-		for (int i = 0; i < lengthOfText; i++) {
+		/*for (int i = 0; i < lengthOfText; i++) {
 			CT[i] = (OT[i] + key_mas[i]) % lengthOfAlphabet;
 		}
 		/*cout << endl;
 		for (int i = 0; i < lengthOfText; i++) {
 			cout << CT[i] << "\t";
 		}*/
-		for (int i = 0; i < lengthOfText; i++) {
+		/*for (int i = 0; i < lengthOfText; i++) {
 			txt_after[i] = alphabet[CT[i]];
 		}
 		cout << endl;
 		cout << "New .txt is ready. Enter the root to it: ";
 		cin >> file_name;
 		outputf(f1, txt_after, file_name);
+	}*/
+	int* quantityOfSym = new int[lengthOfAlphabet];
+	f_quantityOfSym(quantityOfSym, lengthOfAlphabet, alphabet, txt_before);
+	/*for (int i = 0; i < lengthOfAlphabet; i++) {
+		cout << quantityOfSym[i] << endl;
+	}*/
+	double index_OT = 0;
+	index_OT = f_index_OT(lengthOfText, quantityOfSym, lengthOfAlphabet, index_OT);
+	cout << "Index of Open Text: " << index_OT << endl;
+	while (true) {
+		cout << "Enter the root to .txt file: ";
+		cin >> file_name;
+		txt_after = inputf(f, file_name);
+		lengthOfText = txt_after.length();
+		//cout << txt_after << endl;
+		f_quantityOfSym(quantityOfSym, lengthOfAlphabet, alphabet, txt_after);
+		index_OT = 0;
+		index_OT = f_index_OT(lengthOfText, quantityOfSym, lengthOfAlphabet, index_OT);
+		cout << "Index of Open Text: " << index_OT << endl;
 	}
 }
