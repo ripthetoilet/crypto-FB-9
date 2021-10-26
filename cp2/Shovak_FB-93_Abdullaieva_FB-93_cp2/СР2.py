@@ -71,7 +71,7 @@ def decrypt (text, key):
         entrancetext.append(alphabet[DecodLeter])
 
     entrancedtext = ''.join(entrancetext)
-    #print("\nDecrypted text:", entrancedtext)
+    print("\nDecrypted text:", entrancedtext)
     return entrancedtext
 
 
@@ -91,10 +91,9 @@ def makeBlocks(text, r):
     comp_index_blocks = []
     for i in range(r):
         blocks.append(text[i::r])
-        #print("\nCompliance index for block:",i,compliance_index(blocks[i]))
         comp = compliance_index(blocks[i])
         comp_index_blocks.append(comp)
-    print("Len of key:", r,"Compliance index for all bloсk:",sum(comp_index_blocks)/r)
+    print("Len of key:", r,"Compliance index for all bloсks:",sum(comp_index_blocks)/r)
     
     return blocks 
 
@@ -109,19 +108,21 @@ def MakeKey (text, r, letter):
     return key
 
 # main part
-
+def main():
 #key1 = rand_key()
 #makeBlocks(TEXT,len(key1))
 #en = encrypt(text1, key1)
 #dec = decrypt(en, key1)
 #print("\nCompliance index for our random text:",compliance_index(en))
-print("\nCompliance index for our variant:",compliance_index(TEXT1))
-print("\nCompliance index for open text:",compliance_index(text1))
-#for r in range(1,len(alphabet)):
- #   makeBlocks(TEXT, r)
-print("\nНайчастіше зустрічається у зашифрованому тексті:",max_leter(TEXT1))
-print("\nНаш ключ:",MakeKey(TEXT1,12,'о'))
-print("\nРозшифрований текст:",decrypt(TEXT1,'вшекспирбуря'))
-decoded_file=codecs.open('3.txt',"w","utf_8_sig")
-decoded_file.write(decrypt(TEXT1,'вшекспирбуря'))
+#print("\nCompliance index for our variant:",compliance_index(TEXT1))
+    print("\nCompliance index for open text:",compliance_index(text1))
+    for r in range(1,len(alphabet)):
+        makeBlocks(TEXT1, r)
+#print("\nНайчастіше зустрічається у зашифрованому тексті:",alphabet[max_leter(TEXT1)])
+    print("\nНаш ключ:",MakeKey(TEXT1,12,'о'))
+    print("\nЗашифрований текст:", TEXT1)
+    decrypt(TEXT1,'вшекспирбуря')
+#decoded_file=codecs.open('3.txt',"w","utf_8_sig")
+#decoded_file.write(decrypt(TEXT1,'вшекспирбуря'))
 
+main()
