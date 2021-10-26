@@ -108,7 +108,7 @@ def MakeKey (text, r, letter):
     return key
 
 # main part
-if __name__="__main__":
+def main():
 #key1 = rand_key()
 #makeBlocks(TEXT,len(key1))
 #en = encrypt(text1, key1)
@@ -124,3 +124,6 @@ if __name__="__main__":
     decrypt(TEXT1,'вшекспирбуря')
 #decoded_file=codecs.open('3.txt',"w","utf_8_sig")
 #decoded_file.write(decrypt(TEXT1,'вшекспирбуря'))
+
+if __name__ = "__main__":
+    main()
