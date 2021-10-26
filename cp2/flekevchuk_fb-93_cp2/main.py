@@ -70,42 +70,41 @@ def parsKey(s, string = 'оеоооеооооооао'): # Параметр stri
     i+=1
   return key
 
-arr = ['рв','узс','зслу','вшувз','флфлцхювге','аопретиоенк','аопренлскгек','аопренлскгеки','аопренксокекик','ащпренксбкекокв','рщпленксйкефоква','роплжнксйкпфокваз','ьрплжнксйюпфоквазр','ьрплжнксйюпфоявалщо','ьрплжносйюмфоявалщро']
+name = 'main'
 
-file1 = open("test.txt", encoding="utf8")
-text1 = file1.read().lower().replace('_','')
-i = 0 
+if name == 'main':
+  arr = ['рв','узс','зслу','вшувз','флфлцхювге','аопретиоенк','аопренлскгек','аопренлскгеки','аопренксокекик','ащпренксбкекокв','рщпленксйкефоква','роплжнксйкпфокваз','ьрплжнксйюпфоквазр','ьрплжнксйюпфоявалщо','ьрплжносйюмфоявалщро']
 
-print('Методом Індексів')
-while i<4:
-  stext = VishenerEncode(text1, arr[i])
-  j = 2
-  print('key=', arr[i], ' len=', len(arr[i]))
-  while j < 6:
-    print(j,IndexCounter(stext, j)[j])
-    j+=1
-  i+=1
+  file1 = open("test.txt", encoding="utf8")
+  text1 = file1.read().lower().replace('_','')
+  i = 0 
 
-print('Методом кронекера')
-while i<len(arr):
-  stext = VishenerEncode(text1, arr[i])
-  print('key=', arr[i], ' len=', len(arr[i]))
-  PrintKroneker(stext)
-  i+=1
+  print('Методом Індексів')
+  while i<4:
+    stext = VishenerEncode(text1, arr[i])
+    j = 2
+    print('key=', arr[i], ' len=', len(arr[i]))
+    while j < 6:
+      print(j,IndexCounter(stext, j)[j])
+      j+=1
+    i+=1
 
+  print('Методом кронекера')
+  while i<len(arr):
+    stext = VishenerEncode(text1, arr[i])
+    print('key=', arr[i], ' len=', len(arr[i]))
+    PrintKroneker(stext)
+    i+=1
 
-
-
-
-print('\n\n')
-print('Результати аналізу наданого ШТ')
-file = open("text.txt", encoding="utf8")
-text = file.read()
-print('Методом кронекера')
-PrintKroneker(text)
-analis = IndexCounter(text, 14)
-print(analis)
-print('key=',parsKey(analis))
-print(VishenerDecode(text, parsKey(analis)))
+  print('\n\n')
+  print('Результати аналізу наданого ШТ')
+  file = open("text.txt", encoding="utf8")
+  text = file.read()
+  print('Методом кронекера')
+  PrintKroneker(text)
+  analis = IndexCounter(text, 14)
+  print(analis)
+  print('key=',parsKey(analis))
+  print(VishenerDecode(text, parsKey(analis)))
 
 
