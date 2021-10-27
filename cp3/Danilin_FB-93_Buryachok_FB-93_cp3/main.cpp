@@ -270,37 +270,32 @@ array<int, 32> get_frequencies(string text)
 		frequencies[text[i] + 32]++;
 	}
 
-	/*ofstream fout("output.txt", fstream::app);
-
-	for (int j = 0; j < 32; j++)
-	{
-		fout << frequencies[j] << "\t";
-	}
-
-	fout << endl;
-
-	fout.close();*/
-
 	return frequencies;
 }
 
-float check_indexes(const string& text)
+float analysis_text(const string& text)
 {
-	/*ofstream fout("output.txt");
-
-	for (int i = 0; i < 32; i++)
-	{
-		fout << char(i - 32) << "\t";
-	}
-
-	fout << endl;
-
-	fout.close();*/
-
 	int n = text.length();
 
 	array<int, 32> frequencies = get_frequencies(text);
 
+	float frequency_o = float(frequencies[14]) / n, frequency_e = float(frequencies[5]) / n, frequency_a = float(frequencies[0]) / n;
+
+	if (frequency_o < 0.08 || frequency_o > 0.12)
+	{
+		return 0;
+	}
+
+	if (frequency_e < 0.07 || frequency_e > 0.10)
+	{
+		return 0;
+	}
+
+	if (frequency_a < 0.06 || frequency_a > 0.10)
+	{
+		return 0;
+	}
+	
 	float index = 0;
 
 	for (int j = 0; j < 32; j++)
@@ -309,8 +304,6 @@ float check_indexes(const string& text)
 	}
 
 	index /= (n * (n - 1));
-
-	//cout << "index = " << index << endl;
 
 	return index;
 }
@@ -438,18 +431,23 @@ int main()
 
 	for (auto key = all_keys.begin(); key != all_keys.end(); ++key)
 	{
-		fout << key->first << "\t" << key->second << endl;
-
 		string text = uncipher(cipher, key->first, key->second);
 
-		fout << check_indexes(text) << endl;
+		float index = analysis_text(text);
 
-		fout << text << endl;
+		if (index > 0.04)
+		{
+			fout << key->first << "\t" << key->second << endl;
+
+			fout << index << endl;
+
+			fout << text << endl;
+		}
 	}
 
 	fout.close();
 
-	//decode
+	//uncipher
 
 	pair<int, int> key(27, 211);
 
