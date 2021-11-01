@@ -114,7 +114,7 @@ def Task3(text, filename):
     print("Довжина ключа  з максимальним індексом відповідності ",max(Index_for_blocks(text), key=Index_for_blocks(text).get))
     key =Create_key(text2, max(Index_for_blocks(text), key=Index_for_blocks(text).get))
     with open(filename, 'w', encoding='utf-8') as w2:
-        w2.write(Decipher(text2,key))
+        w2.write(Decipher(text2,"вшекспирбуря"))
 
 
 print("Task1 +-----------------------------------")
