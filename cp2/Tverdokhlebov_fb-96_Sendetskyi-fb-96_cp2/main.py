@@ -25,8 +25,8 @@ def Cipher(text, key):
 def Decipher(text,key):
     deciphered_text=[]
     key_index = [alphabet.index(i) for i in key]
-    for i, char in enumerate(text):
-        deciphered_text.append(alphabet[alphabet.index(char)-key_index[i%len(key)]+len(alphabet)%len(alphabet)])
+    for index, char in enumerate(text):
+        deciphered_text.append(alphabet[(alphabet.index(char)-key_index[index % len(key)] + len(alphabet)) % len(alphabet)])
     return "".join(deciphered_text)
 
 
@@ -71,6 +71,24 @@ def Create_key(text, len):
             created_key.append(res)
     return created_key
 
+def popular(text, key_len):
+    l = []
+    for i in range(key_len):
+        j = 0
+        s = ''
+        while j < len(text) - key_len:
+            s += text[j+i]
+            j += key_len
+        x = Counter(s)
+        l.append(x.most_common(1)[0][0])
+    return l
+
+def key_find(s):
+    key = ''
+    for i in range(len(s)):
+        key += alphabet[(alphabet.index(s[i])-14) % 32 ]
+    return key
+
 def Task1(text, filename):
     task1_dic=[]
     with open(filename, 'w', encoding='utf-8') as w1:
@@ -83,6 +101,7 @@ def Task1(text, filename):
     print(tabulate(data, headers='keys', tablefmt='grid'))
 
 def Task2(text):
+    print(Index_for_blocks(text))
     for i in keys:
         task2=[]
         print("\nКлюч " + i)
@@ -92,9 +111,23 @@ def Task2(text):
         task2=dict(list(zip(Index_for_blocks(Cipher(text, i)).keys(),tmp)))
         data=pd.DataFrame.from_dict(task2,'index', columns=["Індекс відповідності"])
         print(tabulate(data, headers='keys', tablefmt='grid'))
+        print(max(Index_for_blocks(Cipher(text, i)).values()))
 
+def Task3(text):
+    # print("\nІндех відповідності для ШТ ", index(text))
+    # print(Index_for_blocks(text))
+    # print(max(Index_for_blocks(text).values()))
+    # print(Create_key(text,9))
+    print(index(text))
+    print(Index_for_blocks(text))
+    print(max(Index_for_blocks(text).values()), ":", max(Index_for_blocks(text), key=Index_for_blocks(text).get))
+    print(popular(text, max(Index_for_blocks(text), key=Index_for_blocks(text).get)))
+    print(key_find(popular(text,max(Index_for_blocks(text), key=Index_for_blocks(text).get))))
+    key = input()
+    print(Decipher(text, key))
 
 print("Task1 +-----------------------------------\n")
-Task1(text1,'out1.txt')
+#Task1(text1,'out1.txt')
 
-Task2(text1)
+#Task2(text1)
+Task3(text2)
