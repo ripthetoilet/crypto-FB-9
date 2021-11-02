@@ -1,3 +1,11 @@
+from collections import Counter
+
+alph = 'абвгдежзийклмнопрстуфхцчшщыьэюя'
+with open('ciphertext.txt', 'r', encoding = 'utf-8') as f:
+     text = f.read()
+
+ciphertext = ''.join(i for i in text if i in alph)
+
 def gcd(a,b):
      while a != 0 and b != 0:
           if a > b: a = a % b
@@ -13,7 +21,6 @@ def inverted(a,n):
      for i in range(2,len(q)): q[i] = q[i-2] - q[i]*q[i-1]
      return q[-2]
 
-
 def equation(a,b,n): # ax=b modn
      d = gcd(a,n)
      if d < 1: return 0
@@ -26,6 +33,12 @@ def equation(a,b,n): # ax=b modn
                for i in range(d):
                     x.append(x1 + i*n)
                return x
-          else: return 0
+     return 0
 
-print(equation(5,1,12))
+def bigramsfreq(text):
+     bigrams = []
+     for i in range(0, len(text) - 1, 2):
+          bigrams.append(text[i:i+2])
+     return list(dict(sorted(Counter(bigrams).items(), key=lambda item: item[1], reverse = True)).keys())[:5]
+
+print(bigramsfreq(ciphertext))
