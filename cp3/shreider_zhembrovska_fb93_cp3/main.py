@@ -1,4 +1,5 @@
 from collections import Counter
+import math
 
 alph = 'абвгдежзийклмнопрстуфхцчшщьыэюя'
 m = len(alph)
@@ -83,4 +84,20 @@ def bigramsfreq(text):
           bigrams.append(text[i:i+2])
      return list(dict(sorted(Counter(bigrams).items(), key=lambda item: item[1], reverse = True)).keys())[:5]
 
+def entropy(text):
+    length = len(text)
+    freq = Counter(text)
+    for i in freq:
+        freq[i] /= length
+    result = -1 * sum(freq[k] * math.log(freq[k], 2) for k in freq)
+    return result
 
+def ok(keys):
+     for i in keys:
+          top = list(dict(sorted(Counter(decryption(ciphertext, i)).items(), key=lambda item: item[1], reverse=True)).keys())
+          if top[0] != 'о': continue
+          e = entropy(decryption(ciphertext,i))
+          if 4.4 < e and 4.5 > e: return i
+     return False
+
+print(ok(findkeys(ciphertext)))
