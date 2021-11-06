@@ -100,4 +100,5 @@ def ok(keys):
           if 4.4 < e and 4.5 > e: return i
      return False
 
-print(ok(findkeys(ciphertext)))
+#print(ok(findkeys(ciphertext)))
+print(decryption(ciphertext, (441,310)))
