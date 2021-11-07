@@ -1,8 +1,9 @@
 from collections import Counter
 from itertools import permutations
+from typing import KeysView
 
 popularBigramInLanguage = ['ст', 'но', 'ен', 'то', 'на', 'ов', 'ни', 'ра', 'во', 'ко']
-
+alphabet = "абвгдежзийклмнопрстуфхцчшщьыэюя"
 def GCD(a,b):
   arr = []
   while a>0 and b>0:
@@ -43,16 +44,10 @@ def SolveEqution(a, b, mod):
       return arr
 
 def getNumbe(leter):
-  n = ord(leter)
-  if n > ord('ъ'):
-    return  n - 1073
-  return n - 1072
+  return alphabet.index(leter)
 
 def getChar(n):
-  n += 1072
-  if n >= ord('ъ'):
-    n += 1
-  return chr(int(n))
+  return alphabet[n]
 
 def ParsNumberFromBigram(bigram):
   n = getNumbe(bigram[0])
@@ -60,8 +55,8 @@ def ParsNumberFromBigram(bigram):
   return 31 * n + n1
 
 def ParsBigramFromNumber(number):
-  n = getChar(number//31)
-  n1 = getChar(number % 31)
+  n = getChar(int(number//31))
+  n1 = getChar(int(number % 31))
   return n + n1
 
 def ParsKey(sb1,sb2, ub1,ub2):
@@ -82,7 +77,7 @@ def ParsKey(sb1,sb2, ub1,ub2):
 def CalcKeys(arr):
   i=0
   allA = []
-  popular = ['ст', 'но', 'ен', 'ни', 'от'] 
+  popular = ['ст', 'но', 'то', 'на', 'ен'] 
   while i < 4 :
     res = ParsKey(arr[i],arr[i+1],popular[i],popular[i+1])
     allA.append(res)
@@ -110,49 +105,59 @@ def Analiz(text):
     arr1.append(text[f:f+2])
     f += 1
   popular = [e[0] for e in Counter(arr1).most_common(5)] 
-  print(popular)
   count = 0
   for bigram in popular:
     if bigram in popularBigramInLanguage:
       count+=1
-  if count >= 3:
+  if count >= 4:
     return True
   return False 
-    
+  
 
 
 
-
-    
-
-file = open("text.txt", encoding="utf8")
+file = open("text.txt",encoding='utf-8')
 my_str = file.read()
 
 
 l = len(my_str)
 arr1 = []
 f = 0
-while f < (l - 1):
+while f < (l - 2):
   arr1.append(my_str[f:f+2])
-  f += 1
+  f += 2
 
 
 cS = Counter(arr1).most_common(5)
 popularS = [e[0] for e in cS]
 print(popularS)
 
-allKeys = PrintAllKeys(popularS)
- 
-print(set([1,1]))
 
+
+
+
+allKeys = PrintAllKeys(popularS)
+
+keys = list(filter(lambda key: key != None ,allKeys))
+print(list(filter(lambda key: key[0] == 13 ,keys)))
 for key in allKeys:
-  newStr =''
-  p = 0
-  while p<len(my_str):
-    newStr+=deCode([199,700],my_str[p:p+2])
-    p+=2
-  if Analiz(newStr):
-    print(newStr) 
+  text = ''
+  if key == None:
+    continue
+  for bigram in arr1:
+    text += deCode(key, bigram)
+  if Analiz(text):
+    print(key)
+
+
+text = ''
+for bigram in arr1:
+  text += deCode([199,700], bigram)
+if Analiz(text):
+  print(text)
+
+
+    
 
 
 
