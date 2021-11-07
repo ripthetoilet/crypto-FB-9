@@ -80,11 +80,11 @@ def KeyFound(text):
 #         i += 1
 #     return minimum
 def main():
-    # filename = 'var6'
-    # fin = open(filename + '.txt', "r", encoding='utf-8')
-    # filetext = fin.read()
-    # fin.close()
-    # clear_file(filename, filetext)
+    filename = 'var6'
+    fin = open(filename + '.txt', "r", encoding='utf-8')
+    filetext = fin.read()
+    fin.close()
+    clear_file(filename, filetext)
     fin = open('var6_clear.txt', "r", encoding='utf-8')
     filetext = fin.read()
     fin.close()
