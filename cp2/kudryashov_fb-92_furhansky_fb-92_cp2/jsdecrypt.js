@@ -32,15 +32,7 @@
     ю: 0,
     " ": 0,
   };
-  let alphabet = 'абвгдежзийклмнопрстуфхцчшщъыьэюя'
-  let dictionaryObj={}
-  let revDicObj={}
-  for (let i=0; i<alphabet.length; i++){
-    dictionaryObj[i]=alphabet[i]
-    revDicObj[alphabet[i]]=i
-  }
-console.log(dictionaryObj);
-  /*   console.log(revDicObj); */
+  
   let readyText
 
   document.querySelector("#encrypt").addEventListener("click", function () {
@@ -65,17 +57,30 @@ console.log(dictionaryObj);
        for(let i=0; i<decText.length; i++){
        
         str+=decText[i]
-        if (str.length==16){
-          console.log(str);
-          str=""
-        }
-        
       }
+      console.log(str);
     };
     reader.onerror = function () {
       console.log(reader.error);
     };
   });
+  
+  let alphabet = 'абвгдежзийклмнопрстуфхцчшщъыьэюя'
+  let dictionaryObj={}
+  let revDicObj={}
+  for (let i=0; i<alphabet.length; i++){
+    dictionaryObj[i]=alphabet[i]
+    revDicObj[alphabet[i]]=i
+  }
+
+  function makeObj(text) {
+    let objRet={};
+    for (let i = 0; i < text.length; i++) {
+      if (objRet[text[i]] != undefined) objRet[text[i]]++;
+      else objRet[text[i]] = 1;
+    }
+    return objRet;
+  }
 
   function textEditor(text) {
     let editText;
@@ -124,11 +129,7 @@ console.log(dictionaryObj);
               for (let i=j; i<encText.length;i+=r){
                   strTmp+=encText[i]
               }
-              letterFrq={}
-              for (let i = 0; i < strTmp.length; i++) {
-                if (letterFrq[strTmp[i]] != undefined) letterFrq[strTmp[i]]++;
-                else letterFrq[strTmp[i]] = 1;
-              }
+              letterFrq=makeObj(strTmp)
               arr.push(specialIndex(letterFrq,strTmp))
           }
           
@@ -140,8 +141,8 @@ console.log(dictionaryObj);
       for (let key in checkDct){
         checkDct[key]=Math.abs(checkDct[key]-mathSpecInd)
       }
-      /* console.log("checkDct");
-      console.log(checkDct); */
+      console.log("checkDct");
+      console.log(checkDct);
       let minValue=1;
       let minValKey;
       for (let key in checkDct){
@@ -152,8 +153,8 @@ console.log(dictionaryObj);
       }
       let keyStr="";
 
-      /* console.log("minval "+minValue);
-      console.log("minValKey "+minValKey); */
+      console.log("minval "+minValue);
+      console.log("minValKey "+minValKey);
       for (let i=0; i<minValKey; i++){
           let tmpArr=[]
           let blocksObj={}
@@ -161,11 +162,7 @@ console.log(dictionaryObj);
               //console.log(encText[j]);
               tmpArr.push(encText[j])
           } 
-          blocksObj={}
-          for (let i = 0; i < tmpArr.length; i++) { 
-            if (blocksObj[tmpArr[i]] != undefined) blocksObj[tmpArr[i]]++;
-            else blocksObj[tmpArr[i]] = 1;
-          }
+          blocksObj=makeObj(tmpArr)
           /* console.log("blocksObj");
           console.log(blocksObj); */
           let popular =0;
@@ -187,12 +184,12 @@ console.log(dictionaryObj);
   } 
   function decryptText(encText, key, keyValue){
     let mt=[]
-    key="делолисоборойдей"
+    key="делолисоборотней"
     console.log(key);
     for (let i=0; i<encText.length; i++){
-      let par1=alphabet.indexOf(encText[i])
+      let par1=alphabet.indexOf(encText[i%encText.length])
       let par2=alphabet.indexOf(key[i%key.length])
-      mt.push(alphabet[(par1-par2)%alphabet.length])
+      mt.push(alphabet[(par1-par2+alphabet.length)%alphabet.length])
     }
     return mt.join("");
   }

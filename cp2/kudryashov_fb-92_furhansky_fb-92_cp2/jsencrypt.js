@@ -1,37 +1,4 @@
-let alpha = {
-  й: 0,
-  ц: 0,
-  у: 0,
-  к: 0,
-  е: 0,
-  н: 0,
-  г: 0,
-  ш: 0,
-  щ: 0,
-  з: 0,
-  х: 0,
-  ф: 0,
-  ы: 0,
-  в: 0,
-  а: 0,
-  п: 0,
-  р: 0,
-  о: 0,
-  л: 0,
-  д: 0,
-  ж: 0,
-  э: 0,
-  я: 0,
-  ч: 0,
-  с: 0,
-  м: 0,
-  и: 0,
-  т: 0,
-  ь: 0,
-  б: 0,
-  ю: 0,
-  " ": 0,
-};
+let alpha = {};
 
 let alphstr = "йцукенгшщзхэждлорпавыфячсмитьбю";
 
@@ -46,7 +13,7 @@ document.querySelector("#encrypt").addEventListener("click", function () {
   let reader = new FileReader();
   reader.readAsText(file);
   reader.onload = function () {
-    let keys = ["шо", "там", "делают", "москали", "чтомненаписать"];
+    let keys = ["йц","уке","нгшщ","зхфыи","вапролджєя","чсмитьбюфыв","йфяцычувскам","ипенртьогшлбщ","йцукенрпавыфяч","ячсмитьбюфывапр","йысаертьлщшгроне","йфывмсапрнкеготри","йцывукаепрнроггшол", "лшгнепротимсакувчыц", "ячспролдбьтименпауке"];
     let ulList = document.createElement("ul");
     for (let key of keys) {
       let editText=encrypt(textEditor(reader.result), key);
@@ -85,12 +52,10 @@ function encrypt(text, key) {
 }
 
 function specialIndex(text) {
-  for (let letter of text) {
-    for (let key in alpha) {
-      if (key == letter) {
-        alpha[letter]++;
-      }
-    }
+  alpha={}
+  for (let i = 0; i < text.length; i++) { 
+    if (alpha[text[i]] != undefined) alpha[text[i]]++;
+    else alpha[text[i]] = 1;
   }
   let specInd = 0;
   for (i in alpha) {
