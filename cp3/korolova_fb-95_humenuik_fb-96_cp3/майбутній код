@@ -1,0 +1,5 @@
+
+Set WA = CreateObject("Word.Application")
+WA.Visible = False
+Set oMyDoc = WA.Documents.Open(vF)
+WA.Application.Run "Module1.Proc1"
