@@ -75,6 +75,8 @@
     revDicObj[alphabet[i]]=i
   }
 
+
+
   function makeObj(text) {
     let objRet={};
     for (let i = 0; i < text.length; i++) {
@@ -123,7 +125,7 @@
       }
       /* console.log("mathSpecInd " +mathSpecInd); */
       let checkDct={}
-      for (let r=2;r<33;r++){
+      for (let r=2;r<35;r++){
           let arr=[]
           
           for (let j=0; j<r;j++){
@@ -181,12 +183,13 @@
           keyStr+=dictionaryObj[(Math.abs(revDicObj[popularKey]-14))%32]
           /* console.log(keyStr); */
       }
-      /* console.log(keyStr); */
+      console.log(keyStr);
+
       return keyStr
   } 
   function decryptText(encText, key, keyValue){
     let mt=[]
-    key="делолисоборотней"
+    /* key="делолисоборотней" */
     console.log(key);
     for (let i=0; i<encText.length; i++){
       let par1=alphabet.indexOf(encText[i%encText.length])
