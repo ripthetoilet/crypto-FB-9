@@ -58,7 +58,9 @@
        
         str+=decText[i]
       }
-      console.log(str);
+      let parStr=document.createElement('p')
+      parStr.textContent=str;
+      document.body.append(parStr)
     };
     reader.onerror = function () {
       console.log(reader.error);
