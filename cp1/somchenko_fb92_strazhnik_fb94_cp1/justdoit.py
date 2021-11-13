@@ -11,18 +11,21 @@ text_without_spaces = re.sub(r'[^а-яА-Я]', '', text).lower()
 
 def letters_frequency(text):
     frequency = Counter(text)
-    return dict(frequency)
+    frequency = dict(sorted(frequency.items(), key=lambda x: x[1], reverse=True))
+    return frequency
 
 
 def bigrams_frequency(text):
     frequency = Counter(text[bi: bi + 2] for bi in range(len(text) - 1))
-    return dict(frequency)
+    frequency = dict(sorted(frequency.items(), key=lambda x: x[1], reverse=True))
+    return frequency
 
 
 def get_probability(frequency, text):
     probability = frequency
     for key in frequency.keys():
         probability[key] /= len(text)
+    probability = dict(sorted(probability.items(), key=lambda x: x[1], reverse=True))
     return probability
 
 
