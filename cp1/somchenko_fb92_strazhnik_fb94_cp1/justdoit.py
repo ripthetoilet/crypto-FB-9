@@ -11,27 +11,23 @@ text_without_spaces = re.sub(r'[^а-яА-Я]', '', text).lower()
 
 def letters_frequency(text):
     frequency = Counter(text)
+    for key in frequency.keys():
+        frequency[key] /= len(text)
     frequency = dict(sorted(frequency.items(), key=lambda x: x[1], reverse=True))
     return frequency
 
 
 def bigrams_frequency(text):
     frequency = Counter(text[bi: bi + 2] for bi in range(len(text) - 1))
+    for key in frequency.keys():
+        frequency[key] /= len(text)
     frequency = dict(sorted(frequency.items(), key=lambda x: x[1], reverse=True))
     return frequency
 
 
-def get_probability(frequency, text):
-    probability = frequency
-    for key in frequency.keys():
-        probability[key] /= len(text)
-    probability = dict(sorted(probability.items(), key=lambda x: x[1], reverse=True))
-    return probability
-
-
-def entropy(probability):
+def entropy(frequency):
     entropy = 0
-    for value in probability.values():
+    for value in frequency.values():
         entropy += -value * log2(value)
     return entropy
 
@@ -51,15 +47,10 @@ letters_wo_spaces_frequency = letters_frequency(text_without_spaces)
 bigrams_w_spaces_frequency = bigrams_frequency(text_with_spaces)
 bigrams_wo_spaces_frequency = bigrams_frequency(text_without_spaces)
 
-letters_w_spaces_probability = get_probability(letters_w_spaces_frequency, text_with_spaces)
-letters_wo_spaces_probability = get_probability(letters_wo_spaces_frequency, text_without_spaces)
-bigrams_w_spaces_probability = get_probability(bigrams_w_spaces_frequency, text_with_spaces)
-bigrams_wo_spaces_probability = get_probability(bigrams_wo_spaces_frequency, text_without_spaces)
-
-letters_w_spaces_entropy = entropy(letters_w_spaces_probability)
-letters_wo_spaces_entropy = entropy(letters_wo_spaces_probability)
-bigrams_w_spaces_entropy = entropy(bigrams_w_spaces_probability) / 2
-bigrams_wo_spaces_entropy = entropy(bigrams_wo_spaces_probability) / 2
+letters_w_spaces_entropy = entropy(letters_w_spaces_frequency)
+letters_wo_spaces_entropy = entropy(letters_wo_spaces_frequency)
+bigrams_w_spaces_entropy = entropy(bigrams_w_spaces_frequency) / 2
+bigrams_wo_spaces_entropy = entropy(bigrams_wo_spaces_frequency) / 2
 
 letters_w_spaces_excess = excess(letters_w_spaces_entropy, 33)
 letters_wo_spaces_excess = excess(letters_wo_spaces_entropy, 32)
@@ -84,12 +75,3 @@ report.write(f'Bigrams with spaces frequency:\n')
 output(bigrams_w_spaces_frequency)
 report.write(f'Bigrams without spaces frequency:\n')
 output(bigrams_wo_spaces_frequency)
-
-report.write(f'Letters with spaces probability:\n')
-output(letters_w_spaces_probability)
-report.write(f'Letters without spaces probability:\n')
-output(letters_wo_spaces_probability)
-report.write(f'Bigrams with spaces probability:\n')
-output(bigrams_w_spaces_probability)
-report.write(f'Bigrams without spaces probability:\n')
-output(bigrams_wo_spaces_probability)
