@@ -3,30 +3,64 @@ from collections import Counter
 
 alphabet = 'абвгдежзийклмнопрстуфхцчшщъыьэюя'
 keys = ['ну', 'так', 'даже', 'очень', 'прикольнаялаба']
-file = open('plaintext.txt', encoding='utf-8')
-text = re.sub(r'[^а-яА-Я]', '', file.read()).lower()
+plaintext = re.sub(r'[^а-яА-Я]', '', open('plaintext.txt').read()).lower()
+ciphertext = re.sub(r'[^а-яА-Я]', '', open('ciphertext_v4.txt').read()).lower()
 
 
-def encrypt(plaintext, key):
-    ciphertext = ''
-    for num, letter in enumerate(plaintext):
-        ciphertext += alphabet[(alphabet.index(letter) + alphabet.index(key[num % len(key)])) % len(alphabet)]
-    return ciphertext
+def encrypt(_plaintext, _key):
+    _ciphertext = ''
+    for num, letter in enumerate(_plaintext):
+        _ciphertext += alphabet[(alphabet.index(letter) + alphabet.index(_key[num % len(_key)])) % len(alphabet)]
+    return _ciphertext
 
 
-def compliance_index(text_block):
+def conformity_index(text_block):
     quantity = Counter(text_block)
-    compliance = 0
+    conformity = 0
     for el in quantity:
-        compliance += quantity[el] * (quantity[el] - 1)
-    compliance /= len(text_block) * (len(text_block) - 1)
-    return compliance
+        conformity += quantity[el] * (quantity[el] - 1)
+    conformity /= len(text_block) * (len(text_block) - 1)
+    return conformity
 
 
 def output(_text):
-    for num, key in enumerate(keys):
-        encrypted_text = encrypt(text, key)
-        open(f'key{num}.txt', 'w').write(f'Compliance index: {compliance_index(encrypted_text)}\n\n{encrypted_text}')
+    for num, _key in enumerate(keys):
+        encrypted_text = encrypt(plaintext, _key)
+        open(f'key{num}.txt', 'w').write(f'Conformity index: {conformity_index(encrypted_text)}\n\n{encrypted_text}')
 
 
-output(text)
+def cipher_break(_text):
+    russian_conformity_index = 0.05666
+    keys_indices = {}
+    for key_length in range(2, 31):
+        average_index = 0.0
+        text_blocks = [_text[i::key_length] for i in range(key_length)]
+        for text_block in text_blocks:
+            average_index += conformity_index(text_block)
+        average_index /= len(text_blocks)
+        keys_indices[average_index] = key_length
+    true_key_length = keys_indices.get(russian_conformity_index) or keys_indices[
+        min(keys_indices.keys(), key=lambda key: abs(key - russian_conformity_index))]
+    most_common_chars = []
+    for text_block in [_text[i::true_key_length] for i in range(true_key_length)]:
+        most_common_chars.append(Counter(text_block).most_common(1)[0][0])
+    _key = ''
+    for e in range(len(most_common_chars)):
+        _key += alphabet[(alphabet.index(most_common_chars[e]) - 14) % 32]
+    return _key
+
+
+def decrypt(_text, _key):
+    plain_text: str = ''
+    for pointer, char in enumerate(_text):
+        plain_text += alphabet[(alphabet.index(_text[pointer % len(_text)]) - alphabet.index(
+            _key[pointer % len(_key)]) + len(alphabet)) % len(alphabet)]
+    open('decrypted.txt', 'w').write(plain_text)
+
+
+output(plaintext)
+
+key = cipher_break(re.sub(r'[^а-яА-Я]', '', open('ciphertext_v4.txt', 'r').read()).lower())
+print(key)
+
+decrypt(ciphertext, key)
