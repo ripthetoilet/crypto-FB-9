@@ -1,14 +1,13 @@
 import random 
 LOW = pow(2, 255) + 1
 HIGH = pow(2, 256) - 1
-msg = 'hello, my name is tolik its pleasure for me to meet you'
 
 gcd = lambda a, b: a if b == 0 else not a % b and b or gcd(b , a % b)
 encode = lambda msg: int(msg.encode('utf-8').hex(), 16)
 decode = lambda msg: bytes.fromhex(hex(msg)[2:]).decode('ASCII')
-encrypt = lambda msg, e, n: pow(encode(msg), e, n)
+encrypt = lambda msg, e, n: pow(msg, e, n)
 decrypt = lambda msg, d, n: decode(pow(msg, d, n))
-sign = lambda msg, d, n: pow(encode(msg), d, n)
+sign = lambda msg, d, n: pow(msg, d, n)
 verify = lambda msg, sign, e, n: True if encode(msg) == pow(sign, e, n) else False
 
 def milrab(num, r = 100):
@@ -44,24 +43,62 @@ def genkey():
     openkey = (n, e)
     return (openkey, d)
 
-keysA  = genkey()
-NA, EA = keysA[0]
-da = keysA[1]
-print('na = ', NA)
-print('ea = ', EA)
-print('da = ', da)
-keysB  = genkey()
-NB, EB = keysB[0]
-db = keysB[1]
-print('\nnb = ', NB)
-print('eb = ', EB)
-print('db = ', db)
-while NA < NB: 
-    print('generate new keys for A')
-    keysA  = genkey()
-    NA, EA = keysA[0]
-    da = keysA[1]
-    print('na = ', NA)
-    print('ea = ', EA)
-    print('da = ', da)
-print('----------------------------------------------------')
+class abonent():
+
+    def __init__(self):
+        self.n = 0
+        self.e = 0
+        self.d = 0
+
+    def GenerateKeyPairSender(self, n):
+        key = genkey()
+        self.n = key[0][0]
+        self.e = key[0][1]
+        self.d = key[1]       
+        while n < self.n:
+            key = genkey()
+            self.n = key[0][0]
+            self.e = key[0][1]
+            self.d = key[1]
+
+    def GenerateKeyPairReceiver(self):
+        key = genkey()
+        self.n = key[0][0]
+        self.e = key[0][1]
+        self.d = key[1]          
+        
+    def Encrypt(self, msg, e, n):
+        if isinstance(msg, str): return encrypt(encode(msg), e, n)
+        else: return encrypt(msg, e, n)
+
+    def Decrypt(self, msg):
+        return decrypt(msg, self.d, self.n)
+
+    def Sign(self, msg):
+        return sign(encode(msg), self.d, self.n)
+
+    def Verify(self, msg, signature, e, n):
+        return verify(msg, signature, e, n)
+
+    def SendKey(self, msg, e, n):
+        signature = self.Encrypt(self.Sign(msg), e, n)
+        msg = self.Encrypt(msg, e, n)
+        return (msg, signature)
+
+    def ReceiveKey(self, packet, e, n):
+        msg = self.Decrypt(packet[0])
+        if self.Verify(msg, packet[1], e, n): print('authentication failed')
+        return msg
+
+Alice = abonent()
+Bob = abonent()
+
+msg = 'hello, my name is tolya its pleasure for me to meet you'
+
+Bob.GenerateKeyPairReceiver()
+Alice.GenerateKeyPairSender(Bob.n)
+
+packet = Alice.SendKey(msg, Bob.e, Bob.n)
+output = Bob.ReceiveKey(packet, Alice.e, Alice.n)
+
+print(output)
