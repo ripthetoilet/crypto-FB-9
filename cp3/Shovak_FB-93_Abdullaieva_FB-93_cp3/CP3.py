@@ -1,4 +1,3 @@
-
 file1 = open("/Users/esmira.23/Desktop/KPI/3курс/Крипта/1.txt", "r").read()
 file2 = open("/Users/esmira.23/Desktop/KPI/3курс/Крипта/2.txt", "w")
 
@@ -22,7 +21,7 @@ def reverse(a, n):
     if gcd == 1:
         return (x % n + n) % n
     else:
-        return -1
+        return False
 
 def euclid(a, y, n):
     gcd, y1, x1 = euclid_ext(a, n)
