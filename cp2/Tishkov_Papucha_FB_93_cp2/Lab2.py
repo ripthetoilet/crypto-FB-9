@@ -12,12 +12,11 @@ def calc_symbol_freq(symbol, text):
             symbol_counter = symbol_counter + 1
     return symbol_counter / len(text)
 
-def encrypt_letter(ch, key_letter):
-    ch_id = 0
-    ch_id = rus_alphabet.index(ch)
-    k_id = rus_alphabet.index(key_letter)
-    enc_ch_id = (ch_id + k_id) % len(rus_alphabet)
-    enc_ch = rus_alphabet[enc_ch_id]
+def encrypt_letter(ch, key_letter, alphabet=rus_alphabet):
+    ch_id = alphabet.index(ch)
+    k_id = alphabet.index(key_letter)
+    enc_ch_id = (ch_id + k_id) % len(alphabet)
+    enc_ch = alphabet[enc_ch_id]
     return enc_ch
 
 def encrypt(text, key):
@@ -26,8 +25,18 @@ def encrypt(text, key):
         enc_text.append(encrypt_letter(j, key[i % len(key)]))
     return "".join(enc_text)
 
-def decrypt_letter():
-    pass
+def decrypt_letter(enc_ch, key_letter, alphabet=rus_alphabet):
+    enc_ch_id = alphabet.index(enc_ch)
+    k_id = alphabet.index(key_letter)
+    dec_ch_id = (enc_ch_id - k_id) % len(alphabet)
+    dec_ch = alphabet[dec_ch_id]
+    return dec_ch
+
+def decrypt(enc_text, key, alphabet=rus_alphabet):
+    dec_text = list()
+    for i, j in enumerate(enc_text):
+        dec_text.append(decrypt_letter(j, key[i % len(key)], alphabet))
+    return "".join(dec_text) 
 
 def generate_key(size):
     key = ''
