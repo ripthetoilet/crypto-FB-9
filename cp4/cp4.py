@@ -6,7 +6,7 @@ gcd = lambda a, b: a if b == 0 else not a % b and b or gcd(b , a % b)
 encode = lambda msg: int(msg.encode('utf-8').hex(), 16)
 decode = lambda msg: bytes.fromhex(hex(msg)[2:]).decode('ASCII')
 encrypt = lambda msg, e, n: pow(msg, e, n)
-decrypt = lambda msg, d, n: decode(pow(msg, d, n))
+decrypt = lambda msg, d, n: pow(msg, d, n)
 sign = lambda msg, d, n: pow(msg, d, n)
 verify = lambda msg, sign, e, n: True if encode(msg) == pow(sign, e, n) else False
 
@@ -86,8 +86,9 @@ class abonent():
         return (msg, signature)
 
     def ReceiveKey(self, packet, e, n):
-        msg = self.Decrypt(packet[0])
-        if self.Verify(msg, packet[1], e, n): print('authentication failed')
+        msg = decode(self.Decrypt(packet[0]))
+        sign = self.Decrypt(packet[1])
+        if not self.Verify(msg, sign, e, n): print('authentication failed')
         return msg
 
 Alice = abonent()
