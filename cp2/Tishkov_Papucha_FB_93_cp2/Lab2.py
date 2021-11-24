@@ -97,8 +97,12 @@ class Log:
         if log_file is not None:
             table.to_excel(log_file + '.xlsx')
 
-    def guess_key_size_log(self, relativity_indexes_dict):
-        pass
+    def guess_key_size_log(self, relativity_indexes_dict, log_file):
+        for i in relativity_indexes_dict.keys():
+            for j in range(max(relativity_indexes_dict.keys()) - i):
+                relativity_indexes_dict[i].append(0)
+        log_of_process_df = DataFrame(relativity_indexes_dict)
+        log_of_process_df.to_excel(log_file + '.xlsx')
 
 
 class HackTheKey:
@@ -109,6 +113,7 @@ class HackTheKey:
         self.alphabet = alphabet
         self.max_diff = max_diff
         self.relativity_index_of_rus_lang = relativity_index_of_rus_lang
+        self.log = Log(analysis_module, vigenere_module)
 
     def divide_to_blocks(self, text, num):
         text_blocks_list = []
@@ -125,24 +130,24 @@ class HackTheKey:
         target_key_size = int()
         relativity_indexes_dict = dict()
         for i in range(2, max_key_size + 1):
-            relativity_indexes_dict.update({i: []})
-        for i in range(2, max_key_size + 1):
             numerator = 0
             indexes_list = list()
             text_blocks = self.divide_to_blocks(enc_text, i)
             for block in text_blocks:
                 index = self.analysis_module.calc_relativity_index(block)
                 numerator += index
-                indexes_list.append(index)
+                indexes_list.append(round(index, 6))
             relativity_indexes_dict.update({i: indexes_list})
             average = numerator / i
             diff = abs(self.relativity_index_of_rus_lang - average)
             if diff < self.max_diff:
                 target_key_size = i
                 break
+        if log_file is not None:
+            self.log.guess_key_size_log(relativity_indexes_dict, log_file)
         return target_key_size
 
-    def guess_key(self, enc_text, key_size, log_file=None):
+    def guess_key(self, enc_text, key_size):
         text_blocks = self.divide_to_blocks(enc_text, key_size)
         key_letter_list = []
         for block in text_blocks:
@@ -161,7 +166,7 @@ def main():
         vigenere = VigenereCypherModule(rus_alphabet_full)
         log = Log(analysis, vigenere)
         hack_the_key = HackTheKey(vigenere, analysis, rus_alphabet_full)
-        target_key_size = hack_the_key.guess_key_size(enc_text, 32)
+        target_key_size = hack_the_key.guess_key_size(enc_text, 32, 'task3')
         print("Key size is: " + str(target_key_size))
 
         # This is the most close key
@@ -173,7 +178,7 @@ def main():
         target_text = vigenere.decrypt(enc_text, guessed_key)
         print('\n\n\n--------------------TEXT---------------------------')
         print(target_text)
-        output_file = open('target_text.txt', 'w')
+        output_file = open('decrypted_text.txt', 'w')
         output_file.write(target_text)
         output_file.close()
 
