@@ -1,12 +1,18 @@
 #coding=UTF-8
 import random
 import pandas as pd
+import math
+from pandas.core.frame import DataFrame
 
 rus_alphabet = ['а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к',
                 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х',
                 'ц', 'ч', 'ш', 'щ', 'ы', 'ь', 'э', 'ю', 'я']
 
-rus_index_of_considence = 0.0566
+rus_alphabet_full = ['а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к',
+                'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х',
+                'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я']
+
+rus_index_of_considence = 0.0553
 
 def calc_symbol_freq(symbol, text):
     symbol_counter = 0
@@ -17,7 +23,7 @@ def calc_symbol_freq(symbol, text):
 
 def count_letters_in_text(text, alphabet=rus_alphabet):
     letters_amount_dict = {}
-    for i in rus_alphabet:
+    for i in alphabet:
         letters_amount_dict.update({i: 0})
     for ch in text:
         letters_amount_dict.update({ch: letters_amount_dict[ch] + 1})
@@ -56,9 +62,9 @@ def decrypt(enc_text, key, alphabet=rus_alphabet):
         dec_text.append(decrypt_letter(j, key[i % len(key)], alphabet))
     return "".join(dec_text) 
 
-def count_considence_index(text):
+def count_considence_index(text, alphabet):
     index = 0
-    for i in count_letters_in_text(text).values():
+    for i in count_letters_in_text(text, alphabet).values():
         index += i * (i - 1)
     n = len(text)
     index /= n * (n - 1)
@@ -66,7 +72,62 @@ def count_considence_index(text):
 
 def divide_to_blocks(text, num):
     text_blocks_list = []
-    
+    for i in range(0, num):
+        let_num = i
+        new_block = []
+        while let_num < len(text):
+            new_block.append(text[let_num])
+            let_num += num
+        text_blocks_list.append(''.join(new_block))
+    return text_blocks_list
+
+def find_most_freq_letter(text, alphabet=rus_alphabet):
+    freq_dict = dict()
+    for ch in alphabet:
+        freq_dict.update({ch: 0})
+    for ch in text:
+        freq_dict.update({ch: freq_dict[ch] + 1})  
+    return max(freq_dict, key=freq_dict.get)
+
+def guess_key(enc_text, max_key_size, lang_index=rus_index_of_considence, alphabet=rus_alphabet_full, log_file=None):
+    min_diff = 1
+    target_key_size = int()
+    target_block_list = []
+    indexes_dict = {}
+    for i in range(2, max_key_size + 1):
+        indexes_dict.update({i: []})
+    for i in range(2, max_key_size + 1):
+        text_blocks = divide_to_blocks(enc_text, i)
+        average = 0
+        indexes_list = []
+        for block in text_blocks:
+            index = count_considence_index(block, alphabet)
+            average += index
+            indexes_list.append(index)
+        indexes_dict.update({i: indexes_list})
+        average = average / i
+        print(average)
+        diff = abs(lang_index - average)
+        if diff < 0.005:
+                min_diff = diff
+                target_key_size = i  
+                target_block_list = text_blocks 
+                break
+    if log_file != None:
+        indexes_df = DataFrame(indexes_dict)
+        indexes_df.to_excel(log_file + 'xlsx')
+    key_letter_list = []
+    for block in target_block_list:
+        most_freq_letter = find_most_freq_letter(block, alphabet)
+        most_freq_letter_id = alphabet.index(most_freq_letter)
+        shift = (most_freq_letter_id - alphabet.index('о'))%len(alphabet)
+        predictable_letter = alphabet[shift]
+        key_letter_list.append(predictable_letter)
+    print(target_key_size)
+    return ''.join(key_letter_list)
+
+
+
 
 #Additional functions:
 def generate_table_of_EncText_and_indexes(open_text, key_len_list, log_file='index_table'):
@@ -120,12 +181,30 @@ def main():
                     output_file.write(encrypt(input_text, key))
 
 def main2():
-    file_open_text = open('dyuma_cut.txt', 'r')
-    open_text = file_open_text.read()
-    file_open_text.close()
-    key_len_list = [2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-    generate_table_of_EncText_and_indexes(open_text, key_len_list, 'indexes1')
+    with open('text_lab2.txt', 'r') as enc_text_file:
+        enc_text = enc_text_file.read()
+        ch_text_list = list()
+        for ch in enc_text:
+            if ch == ' ' or ch == '\n':
+                continue
+            ch_text_list.append(ch)
+        edited_text = ''.join(ch_text_list)
+        key = guess_key(edited_text, 32)
+        print(key)
+        print(decrypt(edited_text, key, rus_alphabet_full))
+
+def main3():
+    with open('text_lab2.txt', 'r') as enc_text_file:
+        enc_text = enc_text_file.read()
+        ch_text_list = list()
+        for ch in enc_text:
+            if ch == ' ' or ch == '\n':
+                continue
+            ch_text_list.append(ch)
+        edited_text = ''.join(ch_text_list)
+        print(decrypt(edited_text, 'крадущийсявтени', rus_alphabet_full))
+        
                 
 if __name__ == '__main__':
-    main2()
+    main3()
     #main()
