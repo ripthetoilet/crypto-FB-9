@@ -30,9 +30,9 @@ def output(_text):
 
 
 def cipher_break(_text):
-    russian_conformity_index = 0.05666
+    russian_conformity_index = 0.0553
     keys_indices = {}
-    for key_length in range(2, 31):
+    for key_length in range(2, 33):
         average_index = 0.0
         text_blocks = [_text[i::key_length] for i in range(key_length)]
         for text_block in text_blocks:
@@ -46,7 +46,7 @@ def cipher_break(_text):
         most_common_chars.append(Counter(text_block).most_common(1)[0][0])
     _key = ''
     for e in range(len(most_common_chars)):
-        _key += alphabet[(alphabet.index(most_common_chars[e]) - 14) % 32]
+        _key += alphabet[(alphabet.index(most_common_chars[e]) - alphabet.index('о')) % len(alphabet)]
     return _key
 
 
@@ -60,7 +60,9 @@ def decrypt(_text, _key):
 
 output(plaintext)
 
-key = cipher_break(re.sub(r'[^а-яА-Я]', '', open('ciphertext_v4.txt', 'r').read()).lower())
-print(key)
+key = cipher_break(ciphertext)
+print(f'The possible key is {key}')
 
+key = 'громыковедьма'
+print(f'The true key is {key}')
 decrypt(ciphertext, key)
