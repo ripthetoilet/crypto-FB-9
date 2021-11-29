@@ -111,7 +111,7 @@ def decrypt(text):
         arr1.clear()
         arr.clear()
 #аналізатор російської мови
-        if compliance_index(answer) <= compliance_index(file3) and (answer.count('о')/len(answer) < 0.11 or answer.count('а')/len(answer) < 0.06):
+        if 0.47 <= compliance_index(file3) and compliance_index(file3) <= 0.67 and (answer.count('о')/len(answer) < 0.11 or answer.count('а')/len(answer) < 0.06):
             continue
         else:
             print(answer)
