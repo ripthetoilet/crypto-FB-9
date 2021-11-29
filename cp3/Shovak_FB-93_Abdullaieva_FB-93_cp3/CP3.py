@@ -22,7 +22,7 @@ def reverse(a, n):
     if gcd == 1:
         return (x % n + n) % n
     else:
-        return -1
+        return False
 
 #Обробка окремих випадків
 def euclid(a, y, n):
