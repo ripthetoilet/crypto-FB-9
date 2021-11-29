@@ -85,30 +85,30 @@ class abonent():
     SendKey = lambda self, msg, e, n: (self.Encrypt(msg, e, n), self.Encrypt(self.Sign(msg), e, n))
     ReceiveKey = lambda self, packet, e, n: 'authentication failed' if not self.Verify(decode(self.Decrypt(packet[0])), self.Decrypt(packet[1]), e, n) else decode(self.Decrypt(packet[0]))
 
-# Alice = abonent()
-# Bob = abonent()
+Alice = abonent()
+Bob = abonent()
 
-# msg = 'hello, my name is tolya its pleasure for me to meet you'
+msg = 'hello, my name is tolya its pleasure for me to meet you'
 
-# Bob.GenerateKeyPairReceiver()
-# Alice.GenerateKeyPairSender(Bob.n)
+Bob.GenerateKeyPairReceiver()
+Alice.GenerateKeyPairSender(Bob.n)
 
-# packet = Alice.SendKey(msg, Bob.e, Bob.n)
-# output = Bob.ReceiveKey(packet, Alice.e, Alice.n)
+packet = Alice.SendKey(msg, Bob.e, Bob.n)
+output = Bob.ReceiveKey(packet, Alice.e, Alice.n)
 
-# print(output)
+print(output)
 
-def testserver():
-    Alice = abonent()
-    servermod = int('0xA53346F4729270537DF889F6CBD514B8AD5E7101F7D13DFFE77CE2636014A713D64E4764F952407115714BBD4A187EDFA91F7063EB381ACEE99BE642BD8F6DAF', 16)
-    serversign = int('0x830CCAFC347763CDC6AE2BBD08D1E449FA829B6930F62916A79D4B352F2A2EEA37F45B2F01439FDDC26377DD3DD2FC9149F5394781676CFC69CC207516C8CE3B', 16)
-    e = 0x10001
-    msg = 0x24082001
-    Alice.GenerateKeyPairSender(servermod)
-    packet = Alice.SendKey(msg, e, servermod)
-    print(f'encrypted message is {hex(encrypt(msg, e, servermod))[2:]}')
-    print(f'verify is ok {verify(msg, serversign, e, servermod)}')
-    print(f'message is {hex(packet[0])[2:]}')
-    print(f'signature is {hex(packet[1])[2:]}')
+# def testserver():
+#     Alice = abonent()
+#     servermod = int('0xA53346F4729270537DF889F6CBD514B8AD5E7101F7D13DFFE77CE2636014A713D64E4764F952407115714BBD4A187EDFA91F7063EB381ACEE99BE642BD8F6DAF', 16)
+#     serversign = int('0x830CCAFC347763CDC6AE2BBD08D1E449FA829B6930F62916A79D4B352F2A2EEA37F45B2F01439FDDC26377DD3DD2FC9149F5394781676CFC69CC207516C8CE3B', 16)
+#     e = 0x10001
+#     msg = 0x24082001
+#     Alice.GenerateKeyPairSender(servermod)
+#     packet = Alice.SendKey(msg, e, servermod)
+#     print(f'encrypted message is {hex(encrypt(msg, e, servermod))[2:]}')
+#     print(f'verify is ok {verify(msg, serversign, e, servermod)}')
+#     print(f'message is {hex(packet[0])[2:]}')
+#     print(f'signature is {hex(packet[1])[2:]}')
 
-testserver()
+# testserver()
