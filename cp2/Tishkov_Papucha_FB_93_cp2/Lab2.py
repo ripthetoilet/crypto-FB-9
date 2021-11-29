@@ -1,7 +1,7 @@
 #coding=UTF-8
 import random
 import pandas as pd
-import math
+from collections import Counter
 from pandas.core.frame import DataFrame
 
 rus_alphabet = ['а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к',
@@ -9,202 +9,179 @@ rus_alphabet = ['а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к'
                 'ц', 'ч', 'ш', 'щ', 'ы', 'ь', 'э', 'ю', 'я']
 
 rus_alphabet_full = ['а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к',
-                'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х',
-                'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я']
+                     'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х',
+                     'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я']
 
-rus_index_of_considence = 0.0553
 
-def calc_symbol_freq(symbol, text):
-    symbol_counter = 0
-    for text_symbol in text:
-        if symbol == text_symbol:
-            symbol_counter = symbol_counter + 1
-    return symbol_counter / len(text)
-
-def count_letters_in_text(text, alphabet=rus_alphabet):
-    letters_amount_dict = {}
-    for i in alphabet:
-        letters_amount_dict.update({i: 0})
+def cut_spaces(text):
+    new_text_list = list()
     for ch in text:
-        letters_amount_dict.update({ch: letters_amount_dict[ch] + 1})
-    return letters_amount_dict        
+        if ch != '\n' and ch != ' ':
+            new_text_list.append(ch)
+    return ''.join(new_text_list)
 
-def generate_key(size):
-    key = ''
-    for i in range(0, size):
-        #TODO: It is better to find another solution
-        key += ''.join(random.choice(rus_alphabet))
-    return key
 
-def encrypt_letter(ch, key_letter, alphabet=rus_alphabet):
-    ch_id = alphabet.index(ch)
-    k_id = alphabet.index(key_letter)
-    enc_ch_id = (ch_id + k_id) % len(alphabet)
-    enc_ch = alphabet[enc_ch_id]
-    return enc_ch
+class TextAnalysisModule:
 
-def encrypt(text, key):
-    enc_text = list()
-    for i, j in enumerate(text):
-        enc_text.append(encrypt_letter(j, key[i % len(key)]))
-    return "".join(enc_text)
+    def __init__(self, alphabet):
+        self.alphabet = alphabet
 
-def decrypt_letter(enc_ch, key_letter, alphabet=rus_alphabet):
-    enc_ch_id = alphabet.index(enc_ch)
-    k_id = alphabet.index(key_letter)
-    dec_ch_id = (enc_ch_id - k_id) % len(alphabet)
-    dec_ch = alphabet[dec_ch_id]
-    return dec_ch
+    def calc_relativity_index(self, text):
+        numerator = 0
+        for i in Counter(text).values():
+            numerator += i * (i - 1)
+        n = len(text)
+        relativity_index = numerator / ((n - 1) * n)
+        return relativity_index
 
-def decrypt(enc_text, key, alphabet=rus_alphabet):
-    dec_text = list()
-    for i, j in enumerate(enc_text):
-        dec_text.append(decrypt_letter(j, key[i % len(key)], alphabet))
-    return "".join(dec_text) 
+    def find_most_freq_letter(self, text):
+        freq_dict = Counter(text)
+        return max(freq_dict, key=freq_dict.get)
 
-def count_considence_index(text, alphabet):
-    index = 0
-    for i in count_letters_in_text(text, alphabet).values():
-        index += i * (i - 1)
-    n = len(text)
-    index /= n * (n - 1)
-    return index
 
-def divide_to_blocks(text, num):
-    text_blocks_list = []
-    for i in range(0, num):
-        let_num = i
-        new_block = []
-        while let_num < len(text):
-            new_block.append(text[let_num])
-            let_num += num
-        text_blocks_list.append(''.join(new_block))
-    return text_blocks_list
+class VigenereCypherModule:
 
-def find_most_freq_letter(text, alphabet=rus_alphabet):
-    freq_dict = dict()
-    for ch in alphabet:
-        freq_dict.update({ch: 0})
-    for ch in text:
-        freq_dict.update({ch: freq_dict[ch] + 1})  
-    return max(freq_dict, key=freq_dict.get)
+    def __init__(self, alphabet):
+        self.alphabet = alphabet
 
-def guess_key(enc_text, max_key_size, lang_index=rus_index_of_considence, alphabet=rus_alphabet_full, log_file=None):
-    min_diff = 1
-    target_key_size = int()
-    target_block_list = []
-    indexes_dict = {}
-    for i in range(2, max_key_size + 1):
-        indexes_dict.update({i: []})
-    for i in range(2, max_key_size + 1):
-        text_blocks = divide_to_blocks(enc_text, i)
-        average = 0
-        indexes_list = []
-        for block in text_blocks:
-            index = count_considence_index(block, alphabet)
-            average += index
-            indexes_list.append(index)
-        indexes_dict.update({i: indexes_list})
-        average = average / i
-        print(average)
-        diff = abs(lang_index - average)
-        if diff < 0.005:
-                min_diff = diff
-                target_key_size = i  
-                target_block_list = text_blocks 
+    def generate_key(self, size):
+        key_list = list()
+        for i in range(0, size):
+            key_list.append(random.choice(self.alphabet))
+        return ''.join(key_list)
+
+    def encrypt_letter(self, ch, key_letter):
+        enc_ch = self.alphabet[(self.alphabet.index(ch) + self.alphabet.index(key_letter)) % len(self.alphabet)]
+        return enc_ch
+
+    def encrypt(self, text, key):
+        enc_text_list = list()
+        for i, j in enumerate(text):
+            enc_text_list.append(self.encrypt_letter(j, key[i % len(key)]))
+        return "".join(enc_text_list)
+
+    def decrypt_letter(self, enc_ch, key_letter):
+        dec_ch = self.alphabet[(self.alphabet.index(enc_ch) - self.alphabet.index(key_letter)) % len(self.alphabet)]
+        return dec_ch
+
+    def decrypt(self, enc_text, key):
+        dec_text_list = list()
+        for i, j in enumerate(enc_text):
+            dec_text_list.append(self.decrypt_letter(j, key[i % len(key)]))
+        return "".join(dec_text_list)
+
+
+class Log:
+    def __init__(self, analysis_module, vigenere_module):
+        self.analysis_module = analysis_module
+        self.vigenere_module = vigenere_module
+
+    def generate_table_of_enc_and_indexes(self, text, key_len_list, log_file='index_table'):
+        keys_dict = {}
+        enc_texts_dict = {}
+        relativity_indexes_dict = {}
+
+        for i in sorted(key_len_list):
+            keys_dict.update({i: 0})
+            enc_texts_dict.update({i: 0})
+            relativity_indexes_dict.update({i: 0})
+        for i in key_len_list:
+            key = self.vigenere_module.generate_key(i)
+            enc_text = self.vigenere_module.encrypt(text, key)
+            keys_dict.update({i: key})
+            enc_texts_dict.update({i: enc_text[0:39]})
+            relativity_indexes_dict.update({i: self.analysis_module.count_considence_index(enc_text)})
+        table = pd.DataFrame({'Key': keys_dict.values(),
+                              'relativity': relativity_indexes_dict.values(),
+                              'Enc. text': enc_texts_dict.values()}, index=key_len_list)
+        if log_file is not None:
+            table.to_excel(log_file + '.xlsx')
+
+    def guess_key_size_log(self, relativity_indexes_dict, log_file):
+        for i in relativity_indexes_dict.keys():
+            for j in range(max(relativity_indexes_dict.keys()) - i):
+                relativity_indexes_dict[i].append(0)
+        log_of_process_df = DataFrame(relativity_indexes_dict)
+        log_of_process_df.to_excel(log_file + '.xlsx')
+
+
+class HackTheKey:
+
+    def __init__(self, vigenere_module, analysis_module, alphabet, max_diff=0.005, relativity_index_of_rus_lang=0.0553):
+        self.vigenere_module = vigenere_module
+        self.analysis_module = analysis_module
+        self.alphabet = alphabet
+        self.max_diff = max_diff
+        self.relativity_index_of_rus_lang = relativity_index_of_rus_lang
+        self.log = Log(analysis_module, vigenere_module)
+
+    def divide_to_blocks(self, text, num):
+        text_blocks_list = []
+        for i in range(0, num):
+            let_num = i
+            new_block = []
+            while let_num < len(text):
+                new_block.append(text[let_num])
+                let_num += num
+            text_blocks_list.append(''.join(new_block))
+        return text_blocks_list
+
+    def guess_key_size(self, enc_text, max_key_size, log_file=None):
+        target_key_size = int()
+        relativity_indexes_dict = dict()
+        for i in range(2, max_key_size + 1):
+            numerator = 0
+            indexes_list = list()
+            text_blocks = self.divide_to_blocks(enc_text, i)
+            for block in text_blocks:
+                index = self.analysis_module.calc_relativity_index(block)
+                numerator += index
+                indexes_list.append(round(index, 6))
+            relativity_indexes_dict.update({i: indexes_list})
+            average = numerator / i
+            diff = abs(self.relativity_index_of_rus_lang - average)
+            if diff < self.max_diff:
+                target_key_size = i
                 break
-    if log_file != None:
-        indexes_df = DataFrame(indexes_dict)
-        indexes_df.to_excel(log_file + 'xlsx')
-    key_letter_list = []
-    for block in target_block_list:
-        most_freq_letter = find_most_freq_letter(block, alphabet)
-        most_freq_letter_id = alphabet.index(most_freq_letter)
-        shift = (most_freq_letter_id - alphabet.index('о'))%len(alphabet)
-        predictable_letter = alphabet[shift]
-        key_letter_list.append(predictable_letter)
-    print(target_key_size)
-    return ''.join(key_letter_list)
+        if log_file is not None:
+            self.log.guess_key_size_log(relativity_indexes_dict, log_file)
+        return target_key_size
 
-
-
-
-#Additional functions:
-def generate_table_of_EncText_and_indexes(open_text, key_len_list, log_file='index_table'):
-    key_dict = {}
-    enc_text_dict = {}
-    index_of_considence_dict = {}
-
-    for i in sorted(key_len_list):
-        key_dict.update({i: 0})
-        enc_text_dict.update({i: 0})
-        index_of_considence_dict.update({i: 0})
-    for i in key_len_list:
-        key = generate_key(i)
-        enc_text = encrypt(open_text, key)
-        key_dict.update({i: key})
-        enc_text_dict.update({i: enc_text[0:39]})
-        index_of_considence_dict.update({i: count_considence_index(enc_text)})
-    table = pd.DataFrame({'Key': key_dict.values(),
-                        'index of considence': index_of_considence_dict.values(),
-                        'Enc. text': enc_text_dict.values()}, index=key_len_list)
-    if log_file != None:
-        table.to_excel(log_file + '.xlsx')
-    return table
+    def guess_key(self, enc_text, key_size):
+        text_blocks = self.divide_to_blocks(enc_text, key_size)
+        key_letter_list = []
+        for block in text_blocks:
+            most_freq_letter = self.analysis_module.find_most_freq_letter(block)
+            most_freq_letter_id = self.alphabet.index(most_freq_letter)
+            shift = (most_freq_letter_id - self.alphabet.index('о')) % len(self.alphabet)
+            predictable_letter = self.alphabet[shift]
+            key_letter_list.append(predictable_letter)
+        return ''.join(key_letter_list)
 
 
 def main():
-    while(True):
-        print("To encrypt text: 2")
-        print("To calculate index: 1")
-        print("Quit: 0")
-        command = input()
-        if command == '0':
-            break
-        elif command == '1':
-            print("Type file name:")
-            file_name = input()
-            with open(file_name, 'r') as file:
-                text = file.read()
-                print(count_considence_index(text))
-        elif command == '2':
-            print("Type file name of original text:")
-            input_file_name = input()
-            print("Type size of key for encryption:")
-            key_size = int(input())
-            print("Enter file name for encrypted text:")
-            enc_file_name = input()
-            with open(input_file_name, 'r') as input_file:
-                input_text = input_file.read()
-                with open(enc_file_name, 'w') as output_file:
-                    key = generate_key(key_size)
-                    output_file.write(encrypt(input_text, key))
+    with open('text_lab2.txt', 'r') as text_file:
+        enc_text = cut_spaces(text_file.read())
+        analysis = TextAnalysisModule(rus_alphabet_full)
+        vigenere = VigenereCypherModule(rus_alphabet_full)
+        log = Log(analysis, vigenere)
+        hack_the_key = HackTheKey(vigenere, analysis, rus_alphabet_full)
+        target_key_size = hack_the_key.guess_key_size(enc_text, 32, 'task3')
+        print("Key size is: " + str(target_key_size))
 
-def main2():
-    with open('text_lab2.txt', 'r') as enc_text_file:
-        enc_text = enc_text_file.read()
-        ch_text_list = list()
-        for ch in enc_text:
-            if ch == ' ' or ch == '\n':
-                continue
-            ch_text_list.append(ch)
-        edited_text = ''.join(ch_text_list)
-        key = guess_key(edited_text, 32)
-        print(key)
-        print(decrypt(edited_text, key, rus_alphabet_full))
+        # This is the most close key
+        target_key = hack_the_key.guess_key(enc_text, target_key_size)
+        print("Key is: " + target_key)
 
-def main3():
-    with open('text_lab2.txt', 'r') as enc_text_file:
-        enc_text = enc_text_file.read()
-        ch_text_list = list()
-        for ch in enc_text:
-            if ch == ' ' or ch == '\n':
-                continue
-            ch_text_list.append(ch)
-        edited_text = ''.join(ch_text_list)
-        print(decrypt(edited_text, 'крадущийсявтени', rus_alphabet_full))
-        
-                
+        # Decryption with true guessed key
+        guessed_key = 'крадущийсявтени'
+        target_text = vigenere.decrypt(enc_text, guessed_key)
+        print('\n\n\n--------------------TEXT---------------------------')
+        print(target_text)
+        output_file = open('decrypted_text.txt', 'w')
+        output_file.write(target_text)
+        output_file.close()
+
+
 if __name__ == '__main__':
-    main3()
-    #main()
+    main()
