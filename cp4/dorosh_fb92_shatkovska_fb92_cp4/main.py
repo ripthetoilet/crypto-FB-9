@@ -13,7 +13,7 @@ def gcd(a, b):
         gcd_val = b
         a, b = b, a % b
         p.append(p[-1]*(-q)+p[-2])
-    return gcd_val, p[-2]
+    return gcd_val, p[-2]       # returns gdc and a^-1
 
 
 def decompose(p):
@@ -53,6 +53,76 @@ def miller_rabin(p, k):
     return True
 
 
-print(miller_rabin(97, 10))             # prime
-print(miller_rabin(21881, 10))          # prime
+# print(miller_rabin(97, 10))             # prime
+# print(miller_rabin(21881, 10))          # prime
 
+
+def generate_prime(bits):
+    while True:
+        a = (rand.randrange(1 << bits-1, 1 << bits) << 1) + 1   # making sure its odd
+        if miller_rabin(a, 20):
+            return a
+
+
+# print(generate_prime(256))
+
+
+def generate_pq_pair(bits):
+    pair0 = (generate_prime(bits), generate_prime(bits))
+    return pair0
+
+    # while True:
+    #     pair1 = (generate_prime(bits), generate_prime(bits))
+    #     if pair0[0]*pair0[1] <= pair1[0]*pair1[1]:
+    #         return pair0, pair1
+
+
+print(generate_pq_pair(256))
+
+
+def generate_e(phin):
+    while True:
+        e = rand.randrange(2, phin)
+        if gcd(e, phin) == 1:
+            return e
+
+
+
+class User:
+    def __init__(self):
+        self.p = 0
+        self.q = 0
+        self.n = 0
+        self.e = 0
+        self.d = 0
+
+    def generate_keys(self):
+        bits = 256
+        self.p, self.q = generate_pq_pair(bits)
+        self.n = self.p * self.q
+        phin = (self.p - 1)*(self.q - 1)
+        self.e = generate_e(phin)
+        self.d = gcd(self.e, phin)[1]
+        return self.n, self.e
+
+    def encrypt(self, message):
+        message = int(message.encode('utf-8').hex(), 16)
+        encrypted = pow(message, self.e, self.n)
+        return encrypted
+
+    def decrypt(self, message):
+        decrypted = pow(message, self.d, self.n)
+        decrypted = bytes.fromhex(hex(decrypted)).decode('utf-8')
+        return decrypted
+
+    def sign(self, message):
+        
+
+def verify():
+    pass
+
+def send_key():
+    pass
+
+def receive_key():
+    pass
