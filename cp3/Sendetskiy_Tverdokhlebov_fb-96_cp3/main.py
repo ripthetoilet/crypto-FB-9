@@ -10,7 +10,7 @@ Alphabet = list(Alphabet)
 with open("01.txt", 'r') as f1:
     text = f1.read().lower().replace("ъ", "ь").replace("ё", "е").replace("\n", "")
 top_ru_birgams = ['ст', 'но', 'то', 'на', 'ен']
-
+top_text_bigrams = ['рн', 'ыч', 'нк', 'цз', 'иа']
 lenght = len(Alphabet)
 
 
@@ -27,7 +27,6 @@ def bigram(text):
 bigram1 = Counter(bigram(text))
 
 
-# bigram frequancy
 def bigram_frequancy(bigram):
     bigramfreq=[]
     for i in bigram:
@@ -43,10 +42,12 @@ def PrintBigramTop(bigram):
     sorted_dict = {}
     for i in sorted_keys:
         sorted_dict[i] = dic[i]
-    data=pd.DataFrame.from_dict(sorted_dict, 'index')
+
     #print(sorted_dict)
     #print(tabulate(data, headers='keys', tablefmt='grid'))
     return sorted_dict
+
+# print(PrintBigramTop(bigram1).keys())
 
 
 # gcd
@@ -58,7 +59,7 @@ def gcd(a, b):
 
 
 # обернений елемент
-def modular_multiplicative_inverse(elem, mod):
+def rev_elem(elem, mod):
     if gcd(elem, mod) == 1:
         for x in range(0, mod - 1):
             ans = (elem * x) % mod
@@ -68,49 +69,87 @@ def modular_multiplicative_inverse(elem, mod):
         return -1
 
 
-#test
+# rivnyannya
 def linear_equation(a, b, n):
     d = gcd(a, n)
-    rev_a = modular_multiplicative_inverse(a, n)
+    rev_a = rev_elem(a, n)
     x = []
     if d == 1:
         x.append((rev_a * b) % n)
-        return x
+
     else:
-        if b % d == 0:
-            a1, b1, n1 = a/d, b/d, n/d
-            x0 = linear_equation(a1, b1, n1)
-            for i in range(0, d):
-                x.append(x0[0] + i * n1)
-            return x
+        if (b % d) == 0:
+            a1 = a/d
+            b1 = b/d
+            n1 = n/d
+            res = (rev_elem(a1 * b1, n1)) % n1
+            for i in range(d):
+                x.append(res + i * n1)
         else:
-            return -1
+            x.append(-1)
+    return x
 
 
 def bigram_num(bgrm):
-    return len(Alphabet) * Alphabet.index(bgrm[0]) + Alphabet.index(bgrm[1])
+    return 31 * Alphabet.index(bgrm[0]) + Alphabet.index(bgrm[1])
 
 
 def bigram_txt(num):
-    return Alphabet[num // len(Alphabet)] + Alphabet[num % len(Alphabet)]
+    return Alphabet[num // 31] + Alphabet[num % 31]
 
 
 def decrypt(a, b, text):
     decrypted_text = ""
-    rev_a = modular_multiplicative_inverse(a, len(Alphabet)**2)
+    rev_a = rev_elem(a, len(Alphabet)**2)
     for i in range(0, len(text), 2):
         y = bigram_num(text[i] + text[i+1])
-        x = (rev_a*(y-b)) % len(Alphabet)**2
+        x = ((y-b)*rev_a) % len(Alphabet)**2
         decrypted_text += bigram_txt(x)
     return decrypted_text
 
 
-def check():
-    pass
+# test
+# def check(text):
+#     d = dict.fromkeys(text, 0)
+#     for key in d:
+#         d[key] /= len(text)
+#     if d['а'] < 0.05:
+#         return 0
+#     if d['е'] < 0.05:
+#         return 0
+#     if d['о'] < 0.07:
+#         return 0
+#     if d['ф'] > 0.03 or d['щ'] > 0.03 or d['ь'] > 0.05:
+#         return 0
+#
+#     return 1
 
 
-def find_key():
-    pass
+def possible_keys():
+    possible_keys = []
+    for i in range(0,5):
+        for j in range(0,5):
+            for n in range(0,5):
+                for m in range(0,5):
+                    if n==m or i==j:
+                        continue
+                    X1 = Alphabet.index(top_ru_birgams[i][0])*31+Alphabet.index(top_ru_birgams[i][1])
+                    X2 = Alphabet.index(top_ru_birgams[j][0])*31+Alphabet.index(top_ru_birgams[j][1])
+                    Y1 = Alphabet.index(top_text_bigrams[n][0])*31+Alphabet.index(top_text_bigrams[n][1])
+                    Y2 = Alphabet.index(top_text_bigrams[m][0])*31+Alphabet.index(top_text_bigrams[m][1])
 
-print(PrintBigramTop(bigram1))
+                    a = linear_equation((X1-X2), (Y1-Y2), 31*31)
+                    for num in a:
+                        b = (Y1-num*X1)%(31*31)
+                        if a!=-1:
+                            ans = (num, b)
+                            possible_keys.append(ans)
+    return possible_keys
+
+
+for i in range(0,len(possible_keys())):
+    print(possible_keys()[i], decrypt(possible_keys()[i][0], possible_keys()[i][1], text))
+    print('\n')
+
+
 
