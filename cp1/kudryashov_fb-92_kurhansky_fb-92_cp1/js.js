@@ -116,8 +116,15 @@ function setLetters(text, alphabet, keys, iteration) {
   for (let val of varArr) {
     summ += val;
   }
-  console.log("entropy: ", summ," redundency: ", redundency(summ, keys.length));
+  if (iteration == 1){
+    console.log("entropy: ", summ," redundency: ", redundency(summ, keys.length-1));
+    appendList(sortObj(alphabet), iteration);
+  }
+  else{
+    console.log("entropy: ", summ," redundency: ", redundency(summ, keys.length));
   appendList(sortObj(alphabet), iteration);
+  }
+  
 }
 
 function setBigrams(text, inters, iteration) {
@@ -164,6 +171,6 @@ function setBigrams(text, inters, iteration) {
   }
   summ = summ / 2;
   
-  console.log("entropy: ", summ," redundency: ", redundency(summ, Object.values(bigramsObj).length));
+  console.log("entropy: ", summ," redundency: ", redundency(summ, Object.values(alpha).length));
   appendList(sortObj(bigramsObj), iteration);
 }
