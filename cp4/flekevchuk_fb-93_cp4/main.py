@@ -187,6 +187,7 @@ Alice.receiveKey(
     )
 
 '''
+
 print(Alice.verify(
     Bob.sign(1111), Bob.name
     )
