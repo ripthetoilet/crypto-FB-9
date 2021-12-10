@@ -1,6 +1,5 @@
 from collections import Counter
 import re
-import time
 
 alphabet = 'абвгдежзийклмнопрстуфхцчшщъыьэюя'
 
@@ -55,14 +54,15 @@ def find_key(text):
             for j in range(i, len(text), word_length):
                 a.append(text[j])
 
-            print(conformity_index(''.join(a)))
+            #print(conformity_index(''.join(a)))
             index_sum += conformity_index(''.join(a))
-            print(a)
+            #print(a)
         key.append(index_sum/word_length)
         print()
     nearest_val = nearest(key, 0.055)
     print(key.index(nearest_val) + 2)
-
+    print(nearest_val)
+    
     print(key)
 
 
@@ -87,18 +87,18 @@ def key_value(text, key_length,most_popular):
         #Адекватный ключик в строку
     return k
 
-keyf = ''.join(key_value(a, 14, 'о'))
+keyf = ''.join(key_value(a, 28, 'о'))
+print("\nКлюч який пропонує программа:" +keyf)
 
-time.sleep(3)
 
 
 keyprint = ['э', 'к', 'о', 'м', 'а', 'я', 'т', 'н', 'и', 'к', 'ф', 'у', 'к', 'о', 'э', 'к', 'о', 'м', 'а', 'я', 'т', 'н', 'и', 'к', 'ф', 'у', 'к', 'о']
+print("\nНаш ключ:")
 print(keyprint)
-print(keyf)
 def decrypt_function(text, key):
     decoded_text = []
     for i in range(len(text)):
-        func = (alphabet.index(text[i]) - alphabet.index(key[i % 14]) + 32) % 32
+        func = (alphabet.index(text[i]) - alphabet.index(key[i % 28]) + 32) % 32
         func = chr(func + 1072)
         decoded_text.append(func)
     return ''.join(decoded_text)
@@ -118,7 +118,6 @@ key4 = 'логик'
 key5 = 'телефонист'
 key6 = 'неперпендикулярность'
 
-print(encode_function(text, key1))
 open('text1.txt', 'w').write(encode_function(text, key1))
 open('text2.txt', 'w').write(encode_function(text, key2))
 open('text3.txt', 'w').write(encode_function(text, key3))
@@ -138,3 +137,5 @@ print('Key5= '+key5,"\n"+encode_function(text, key5)+"\nindex vidpovidnosti:")
 print(conformity_index(encode_function(text, key5)))
 print('Key6= '+key6,"\n"+encode_function(text, key6)+"\nindex vidpovidnosti:")
 print(conformity_index(encode_function(text, key6)))
+print("index vidpovidnosti BT:")
+print(conformity_index(text))
