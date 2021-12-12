@@ -107,11 +107,7 @@ def check(text):
     d = dict(Counter(text).most_common())
     for key in d:
         d[key] /= len(text)
-    if d['а'] < 0.05:
-        return 0
-    if d['е'] < 0.05:
-        return 0
-    if d['о'] < 0.07:
+    if d['а'] < 0.05 or d['е'] < 0.05 or d['о'] < 0.07:
         return 0
     if d['ф'] > 0.03 or d['щ'] > 0.03 or d['ь'] > 0.05:
         return 0
