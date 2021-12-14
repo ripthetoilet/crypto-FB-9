@@ -124,7 +124,8 @@ def recieve_key(k1, s1, private, public):
     return k, s
 
 
-if __name__ == "__main__":
+# тестували "локально"
+def my_test():
     # згенерували 4 простих числа
     #p, q, p1, q1 = gen_numbers_pair()
     p = 199678154031684671539430416713290906166999585391355487044350862215685268344879
@@ -178,5 +179,69 @@ if __name__ == "__main__":
 
     # протокол обміну
     k1,s1 = send_key(msg,bob_public,alice_private)
-
     recieve_key(k1,s1,bob_private,alice_public)
+
+
+def int_to_hex(number):
+    return hex(number)[2:].upper()
+
+
+def hex_to_int(hex_value):
+    return int(hex_value, 16)
+
+
+def encode_to_hex(string):
+    string = (string.encode('utf-8'))
+    return string.hex().upper()
+
+
+def decode_from_hex(hex_value):
+    return bytes.fromhex(hex_value).decode('utf-8')
+
+
+def sever_test():
+    # ключ з сервера
+    modulus = 'B2243C28EB7E4C3DBF93BE6F37A2EE39489549857E793FB6FD1567D43ED5D5D7'
+    exp = '10001'
+
+    server_open = [hex_to_int(exp),hex_to_int(modulus)]
+
+    msg = 'Great! We did it!'
+
+    # складові нашого ключа (згенеровані у 1 частині для Аліси)
+    e = 31811810397541411518390776294835057193314687426271862377448009668698747444709905182745849045723700219230766301737381579326438243281828096105520784648772369
+    n = 40968785585179110685184299376332342832605494307488528671728507393914766727141639329418216226852424329933127753248984922917069362009463494923614991430891617
+    d = 7195740480726333941257813343609756758476520065810118550975628695567716773384083132290873373314233700176193109954563146216146339386404509588001316335249745
+    p = 199678154031684671539430416713290906166999585391355487044350862215685268344879
+    q = 205174100210673205200058779618100018279183148869024122379502109050216467008623
+
+    my_open = [e,n]
+    my_private = [d,p,q]
+
+
+    # site encryption
+    print('mod =', int_to_hex(n))
+    print('e = ', int_to_hex(e))
+    enc = encrypt(hex_to_int(encode_to_hex(msg)),my_open)
+    print('enc= ',int_to_hex(enc))
+
+
+    # site decryption
+    encrypted = encrypt(hex_to_int(encode_to_hex(msg)),server_open)
+    print('Encrypted = ',int_to_hex(encrypted))
+
+
+    # site sign
+    site_sg = '6CA04253EBCD2B2C45C82D7B39FB7D1229E8C72105BA636723D9619351F12900'
+    print(verify(hex_to_int(encode_to_hex(msg)),hex_to_int(site_sg),server_open))
+
+
+    # my sign
+    my_sg = sign(hex_to_int(encode_to_hex(msg)),my_private)
+    print("My sign = ",int_to_hex(my_sg))
+
+
+
+if __name__ == '__main__':
+    my_test()
+    sever_test()
