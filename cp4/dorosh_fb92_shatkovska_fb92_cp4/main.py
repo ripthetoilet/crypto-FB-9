@@ -1,7 +1,9 @@
 # # This is the 4th lab on Cryptology yet in progress by Dorosh and Shatkovska FB-92
 import random
+
 rand = random.SystemRandom()
 import math
+
 
 # from lab3
 def gcd(a, b):
@@ -12,8 +14,8 @@ def gcd(a, b):
         q = a // b
         gcd_val = b
         a, b = b, a % b
-        p.append(p[-1]*(-q)+p[-2])
-    return gcd_val, p[-2]       # returns gdc and a^-1
+        p.append(p[-1] * (-q) + p[-2])
+    return gcd_val, p[-2]  # returns gdc and a^-1
 
 
 def decompose(p):
@@ -42,7 +44,7 @@ def miller_rabin(p, k):
             if abs(pow(x, d, p)) == 1:
                 continue
             else:
-                xr = pow(x, 2*d, p)         # if r == 1
+                xr = pow(x, 2 * d, p)  # if r == 1
                 for r in range(2, s - 1):
                     xr = pow(xr, d * (2 ** r), p)
                     if xr == -1:
@@ -59,7 +61,7 @@ def miller_rabin(p, k):
 
 def generate_prime(bits):
     while True:
-        a = (rand.randrange(1 << bits-1, 1 << bits) << 1) + 1   # making sure its odd
+        a = (rand.randrange(1 << bits - 1, 1 << bits) << 1) + 1  # making sure its odd
         if miller_rabin(a, 20):
             return a
 
@@ -87,6 +89,15 @@ def generate_e(phin):
             return e
 
 
+def decode(message):
+    message = int(message.encode('utf-8').hex(), 16)
+    return message
+
+
+def encode(message):
+    message = bytes.fromhex(hex(message)).decode('utf-8')
+    return message
+
 
 class User:
     def __init__(self):
@@ -95,36 +106,80 @@ class User:
         self.n = 0
         self.e = 0
         self.d = 0
+        self.other_e = 0
+        self.other_n = 0
 
     def generate_keys(self):
         bits = 256
         self.p, self.q = generate_pq_pair(bits)
         self.n = self.p * self.q
-        phin = (self.p - 1)*(self.q - 1)
+        phin = (self.p - 1) * (self.q - 1)
         self.e = generate_e(phin)
         self.d = gcd(self.e, phin)[1]
         return self.n, self.e
 
-    def encrypt(self, message):
-        message = int(message.encode('utf-8').hex(), 16)
-        encrypted = pow(message, self.e, self.n)
+    # !!!may be combined with generate_keys() later
+    def generate_correct_keys(self):  # for user A to choose correct keys (other.n <= n)
+        while self.other_n > self.generate_keys()[0]:
+            continue
+
+    def encrypt(self, message):  # message needs to be decoded from utf-8
+        encrypted = pow(message, self.other_e, self.other_n)
         return encrypted
 
     def decrypt(self, message):
         decrypted = pow(message, self.d, self.n)
-        decrypted = bytes.fromhex(hex(decrypted)).decode('utf-8')
-        return decrypted
+        return decrypted  # message needs to be encoded as utf-8
 
     def sign(self, message):
-        
+        signed = pow(message, self.d, self.n)
+        signed_encrypted = self.encrypt(signed)
+        return signed_encrypted
 
-def verify():
-    pass
+    def verify(self, signed, decrypted_message):
+        return self.encrypt(signed) == decrypted_message
 
-def send_key():
-    pass
+    def send_keys(self):
+        return self.e, self.n
 
-def receive_key():
-    pass
+    def receive_keys(self, other_e, other_n):
+        self.other_e = other_e
+        self.other_n = other_n
 
-# mmm oaoa
+    def send_message(self, text):
+        message = decode(text)
+        encrypted = self.encrypt(message)
+        signed = self.sign(message)
+        encrypted_signed = self.encrypt(signed)
+
+        return encrypted, encrypted_signed
+
+    def receive_message(self, encrypted, encrypted_signed):
+        decrypted_message = self.decrypt(encrypted)
+        signed = self.decrypt(encrypted_signed)
+
+        if self.verify(signed, decrypted_message):
+            return encode(decrypted_message)
+        else:
+            return -1
+
+
+# full process of A sending a message to B
+# B creates its keys and shares open keys (eb, nb) with A
+B = User()
+B.generate_keys()
+
+# A receives keys
+A = User()
+A.receive_keys(B.send_keys())
+
+# A creates its keys (nb < na) and shares its keys (ea, na) with B
+# B receives A's keys and message
+A.generate_correct_keys()
+B.receive_keys(A.send_keys())
+
+# A sends signed message and encrypted message to B
+# B receives A's message, decrypts signed message and encrypted message and verifies signed message
+M = "Hi there!"
+received = B.receive_message(A.send_message(M))
+print(received)
