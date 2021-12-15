@@ -1,46 +1,61 @@
+from itertools import cycle, combinations
+
 from cp3.Prokhorenko_Tryhubenko_FB95_cp3.PetyaUtils import PetyaUtils
+from cp3.Prokhorenko_Tryhubenko_FB95_cp3.Sys import Sys
 
 
 class Petya:
-    def __init__(self):
-        self.most_frequent_bigrams = ['ст', 'но', 'то', 'на', 'ен']
-        self.alphabet = "абвгдежзийклмнопрстуфхцчшщыьэюя"
+    @staticmethod
+    def crack(path_to_file):
 
-    def crack(self):
+        possible_keys: list = []
+        most_frequent_ru_bigrams = Sys.get_most_frequent_ru_bigrams()
+        most_frequent_text_bigrams = Sys.get_most_frequent_text_bigrams(Sys.get_text(path_to_file))
 
-        possibles_keys: list = []
-        frequent_bigrams_cipher_text: dict = {}
-        for iterator_i in range(0, len(self.most_frequent_bigrams) - 1):
-            frequent_bigrams_cipher_text = PetyaUtils.get_frequent_bigrams("01.txt")
-            for iterator_j in range(0, len(frequent_bigrams_cipher_text) - 1):
-                difX = (self.alphabet.index(self.most_frequent_bigrams[iterator_i][0]) * len(
-                    self.alphabet) + self.alphabet.index(self.most_frequent_bigrams[iterator_i][1])) - (
-                               self.alphabet.index(self.most_frequent_bigrams[iterator_i + 1][0]) * len(
-                           self.alphabet) + self.alphabet.index(self.most_frequent_bigrams[iterator_i + 1][1]))
-                difY = (self.alphabet.index(frequent_bigrams_cipher_text[iterator_j][0]) * len(
-                    self.alphabet) + self.alphabet.index(frequent_bigrams_cipher_text[iterator_j][1])) - (
-                               self.alphabet.index(frequent_bigrams_cipher_text[iterator_j + 1][0]) * len(
-                           self.alphabet) + self.alphabet.index(frequent_bigrams_cipher_text[iterator_j + 1][1]))
-                possible_values = PetyaUtils.calculate_linear_comparisons(difX, difY, len(self.alphabet) ** 2)
-                if (type(possible_values) == list):
-                    for possible_value in possible_values:
-                        if PetyaUtils.calculate_gcd(possible_value, len(self.alphabet))[0] == 1:
-                            y = (self.alphabet.index(frequent_bigrams_cipher_text[iterator_j][0]) * len(
-                                self.alphabet) + self.alphabet.index(frequent_bigrams_cipher_text[iterator_j][1]))
-                            x = (self.alphabet.index(self.most_frequent_bigrams[iterator_i][0]) * len(
-                                self.alphabet) + self.alphabet.index(self.most_frequent_bigrams[iterator_i][1]))
-                            possibles_keys.append((possible_value, (y - x * possible_value) % len(self.alphabet) ** 2))
-        print(possibles_keys)
-        for possibles_key in possibles_keys:
-            a, b = possibles_key
-            plaintext = ""
-            for char in PetyaUtils.get_text("01.txt"):
-                plaintext += self.alphabet[(PetyaUtils.calculate_inverted(a, len(self.alphabet)) * (
-                            self.alphabet.index(char) + len(self.alphabet) - b)) % len(self.alphabet)]
-            print(plaintext + "\n\n\n")
+        all_generated_permutations = PetyaUtils.generate_permutations(most_frequent_ru_bigrams,
+                                                                      most_frequent_text_bigrams)
+        temp_for_permutations: list = []
+        for permutation in all_generated_permutations:
+            for lower_permutation in list(permutation.items()):
+                temp_for_permutations.append(lower_permutation)
+        clear_permutations = list(set(temp_for_permutations))
+        all_generated_combinations = combinations(clear_permutations, 2)
+        if True:
+            for combination in all_generated_combinations:
+                most_frequent_text_bigram_int_value_1, most_frequent_text_bigram_int_value_2 = PetyaUtils.convert_bigram_to_int_value(
+                    combination[0][0]), PetyaUtils.convert_bigram_to_int_value(combination[1][0])
+                most_frequent_ru_bigram_int_value_1, most_frequent_ru_bigram_int_value_2 = PetyaUtils.convert_bigram_to_int_value(
+                    combination[0][1]), PetyaUtils.convert_bigram_to_int_value(combination[1][1])
 
-    # a,b -> foo1() -> text -> print(text) -> (approve || decline) by RUSSIAN rozpiznavach
+                difference_X = PetyaUtils.calculate_difference(most_frequent_ru_bigram_int_value_1,
+                                                               most_frequent_ru_bigram_int_value_2)
+                difference_Y = PetyaUtils.calculate_difference(most_frequent_text_bigram_int_value_1,
+                                                               most_frequent_text_bigram_int_value_2)
+
+                gcd = PetyaUtils.calculate_gcd(difference_X, len(Sys.get_alphabet()) ** 2)
+
+                if gcd == 1:
+                    a = PetyaUtils.calculate_linear_a(difference_X, difference_Y, len(Sys.get_alphabet()) ** 2)
+                    b = PetyaUtils.calculate_linear_b(a, most_frequent_ru_bigram_int_value_1,
+                                                      most_frequent_text_bigram_int_value_1)
+                    possible_keys.append((a, b))
+                elif difference_Y % gcd == 0 and gcd > 1:
+                    difference_X /= gcd
+                    difference_Y /= gcd
+                    module = len(Sys.get_alphabet()) ** 2 / gcd
+                    a = PetyaUtils.calculate_linear_a(difference_X, difference_Y, module)
+                    while a < len(Sys.get_alphabet()) ** 2:
+                        b = PetyaUtils.calculate_linear_b(a, most_frequent_ru_bigram_int_value_1,
+                                                          most_frequent_text_bigram_int_value_1)
+                        possible_keys.append((a, b))
+                        a += gcd
+        possible_keys = list(set(possible_keys))
+        for key in possible_keys:
+            plain_text = PetyaUtils.decrypt_cipher_test(Sys.get_text(path_to_file), key)
+            if plain_text:
+                print(key)
+                print(plain_text)
 
 
-p = Petya()
-p.crack()
+if __name__ == "__main__":
+    Petya.crack("../../tasks/cp3/variants.utf8/06.txt")
