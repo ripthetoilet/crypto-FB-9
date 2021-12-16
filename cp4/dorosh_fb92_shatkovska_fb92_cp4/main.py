@@ -79,13 +79,13 @@ def generate_pq_pair(bits):
     #         return pair0, pair1
 
 
-print(generate_pq_pair(256))
+#print(generate_pq_pair(256))
 
 
 def generate_e(phin):
     while True:
         e = rand.randrange(2, phin)
-        if gcd(e, phin) == 1:
+        if gcd(e, phin)[0] == 1:
             return e
 
 
@@ -95,7 +95,7 @@ def decode(message):
 
 
 def encode(message):
-    message = bytes.fromhex(hex(message)).decode('utf-8')
+    message = bytes.fromhex(hex(message)[2:]).decode('ASCII')
     return message
 
 
@@ -112,10 +112,14 @@ class User:
     def generate_keys(self):
         bits = 256
         self.p, self.q = generate_pq_pair(bits)
+        print(self.p, self.q, '---1---')
         self.n = self.p * self.q
+        print(self.n, '---2---')
         phin = (self.p - 1) * (self.q - 1)
         self.e = generate_e(phin)
+        print(self.e, '---3---')
         self.d = gcd(self.e, phin)[1]
+        print(self.d, '---4---')
         return self.n, self.e
 
     # !!!may be combined with generate_keys() later
@@ -133,8 +137,7 @@ class User:
 
     def sign(self, message):
         signed = pow(message, self.d, self.n)
-        signed_encrypted = self.encrypt(signed)
-        return signed_encrypted
+        return signed
 
     def verify(self, signed, decrypted_message):
         return self.encrypt(signed) == decrypted_message
@@ -142,7 +145,8 @@ class User:
     def send_keys(self):
         return self.e, self.n
 
-    def receive_keys(self, other_e, other_n):
+    def receive_keys(self, ne):
+        other_e, other_n = ne
         self.other_e = other_e
         self.other_n = other_n
 
@@ -154,7 +158,8 @@ class User:
 
         return encrypted, encrypted_signed
 
-    def receive_message(self, encrypted, encrypted_signed):
+    def receive_message(self, mess):
+        encrypted, encrypted_signed = mess
         decrypted_message = self.decrypt(encrypted)
         signed = self.decrypt(encrypted_signed)
 
@@ -167,7 +172,8 @@ class User:
 # full process of A sending a message to B
 # B creates its keys and shares open keys (eb, nb) with A
 B = User()
-B.generate_keys()
+print('----1----')
+print(B.generate_keys())
 
 # A receives keys
 A = User()
@@ -175,7 +181,8 @@ A.receive_keys(B.send_keys())
 
 # A creates its keys (nb < na) and shares its keys (ea, na) with B
 # B receives A's keys and message
-A.generate_correct_keys()
+print('----2----')
+print(A.generate_correct_keys())
 B.receive_keys(A.send_keys())
 
 # A sends signed message and encrypted message to B
