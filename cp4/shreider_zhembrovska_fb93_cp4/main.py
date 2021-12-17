@@ -48,15 +48,38 @@ def gcd(a, b):
         else: b = b % a
     return a + b
 
+def inverted(a, n):
+    q = [0, 1]
+    while a != 0 and n != 0:
+        if a > n:
+            q.append(a // n); a = a % n
+        else:
+            q.append(n // a); n = n % a
+    for i in range(2, len(q)): q[i] = q[i - 2] - q[i] * q[i - 1]
+    return q[-2]
 
 def generate_pairs():
     interval = [265,1000]
-    x = [0]*4
-    for i in range(4):
-        x[i] = find_simple_num(interval[0],interval[1])
-    if (x[0]*x[1] > x[2]*x[3]): return generate_pairs()
-    return x
+    pq, pq1 = [], []
+    for i in range(2):
+        pq.append(find_simple_num(interval[0],interval[1]))
+        pq1.append(find_simple_num(interval[0],interval[1]))
+    if (pq[0]*pq[1] > pq1[0]*pq1[1]): return generate_pairs()
+    return [pq, pq1]
 
-print(generate_pairs())
+def generate_keys():
+    pq = generate_pairs()
+    n,fi,e,d = [],[],[],[]
+    for i in range(2):
+        n.append(pq[i][0]*pq[i][1])
+        fi.append((pq[i][0]-1)*(pq[i][1]-1))
+        e.append(random.randint(2, fi[i]-1))
+        while (gcd(e[i], fi[i]) != 1):
+            e[i] = random.randint(2, fi[i]-1)
+        d.append(inverted(e[i],fi[i]))
+    return 0
+
+
+print(generate_keys())
 
 
