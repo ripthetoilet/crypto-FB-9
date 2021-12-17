@@ -49,6 +49,14 @@ def gcd(a, b):
     return a + b
 
 
+def generate_pairs():
+    interval = [265,1000]
+    x = [0]*4
+    for i in range(4):
+        x[i] = find_simple_num(interval[0],interval[1])
+    if (x[0]*x[1] > x[2]*x[3]): return generate_pairs()
+    return x
 
-print(find_simple_num(256,1000))
+print(generate_pairs())
+
 
