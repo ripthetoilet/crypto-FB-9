@@ -120,9 +120,12 @@ class User:
         print("q: ", self.q)
         self.n = self.p * self.q
         print("n: ", hex(self.n))
+        print("n: ", self.n)
         phin = (self.p - 1) * (self.q - 1)
+        print("phin ", phin)
         self.e = generate_e(phin)
         print("e: ", hex(self.e))
+        print("e: ", self.e)
         self.d = gcd(self.e, phin)[1]
         print("d: ", self.d)
         return self.n, self.e
@@ -209,12 +212,10 @@ def test(mod, sig):
 
     print(C.generate_correct_keys())
 
-    s1 = C.send_message("Hi there!")[1]
-    print(s1)
+    C.send_message("Hi there!")
 
-receiver_n = "AF8463E50A8FD65894866FF241C07143ADE0AB0CCCC55BB4A129DB1F71A31E93"
+
+receiver_n = "C6FF016AD331C3A925B12B36AD00A332F3E72C9E714B8B87C51D5D4CC8DD352EEE1511447858260FA29876A2B642E711496BDAAE491E43612A71EF1FFD246757"
 receiver_e = "10001"
-
-test(receiver_n, receiver_e)
-
-
+# test(receiver_n, receiver_e)
+# test(receiver_n, receiver_e)
