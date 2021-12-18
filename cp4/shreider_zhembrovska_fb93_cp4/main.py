@@ -1,5 +1,5 @@
 import random
-interval = [2**256, 2**257-2]
+interval = [1+2**255, -1+2**256]
 
 def gcd(a, b):
     while a != 0 and b != 0:
@@ -18,10 +18,10 @@ def inverse(a, n):
     return q[-2]
 
 def gorner(x,e,m):
-    e, y  = bin(e), 1
+    e, y = bin(e), 1
     for i in e[2:]:
-        y = (y**2)%m
-        if int(i) == 1: y = (y*x)%m
+        y = (y ** 2) % m
+        y = (y*x**int(i))%m
     return y
 
 def get_prime():
@@ -44,7 +44,7 @@ def ds(p):
 
 def miller_rabin(p):
     d,s = ds(p)
-    for i in range(10):
+    for i in range(20):
         prime = 0
         x = random.randint(1,p)
         if gcd(x,p) != 1: return 0
@@ -62,7 +62,8 @@ def miller_rabin(p):
 
 def gen_keys():
     p, q = get_prime(), get_prime()
-    while p == q: p = get_prime()
+    while p == q:
+        p = get_prime()
     n = p*q
     phi = (p-1)*(q-1)
     e = random.randint(2,phi-1)
@@ -70,7 +71,7 @@ def gen_keys():
     d = inverse(e,phi)%phi
     return (e,n,d)
 
-class Node():
+class Node:
     def __init__(self):
         self.e = 0
         self.n = 0
@@ -102,22 +103,66 @@ class Node():
     def ReceiveKey(self,pack,e,n):
         data = self.Encrypt(pack[0],self.d,self.n)
         sign = self.Decrypt(pack[1],self.d,self.n)
-        return self.Verify(data,sign,e,n)
+        if (self.Verify(data,sign,e,n) == False):
+            print('Verification failed')
+        else: return data
 
-    def Print(self):
+    def PrintKeys(self):
         print('e', self.e)
         print('n', self.n)
         print('d', self.d)
 
-A = Node()
-B = Node()
-B.GenerateKeyPair(0)
-A.GenerateKeyPair(B.n)
-A.Print()
+def check():
+    A = Node()
+    server_n = int(0x9A8EE5B763FF0B0570C5B41AFD881FFEFD28757C68CB291E18D4042001987081447A86BDD7EA57F8722308B5ECB695F1B8B57702331C834EA76773224FA51693)
+    server_e = int(0x10001)
 
-k = random.randint(1, 2**256-1)
-print(k)
-ks = A.SendKey(k,B.e,B.n)
-result = B.ReceiveKey(ks,A.e,A.n)
-print(result)
+    #генеруємо ключі, які будемо використовувати нижче
+    #A.GenerateKeyPair(server_n)
+    #A.PrintKeys()
 
+    A.e = 10852746501111419120795960929289968488613208275606288276151660071245230394717794773237389989976950293838562598240507342259497868077712481899388858960780149
+    A.n = 11729174846780466515621400509184851154650274595662807386553577455135392784735642578294635291713690950972273380803161955115964315406336833363293791988506049
+    A.d = 10395809668393900846290703319055430003363574478006090934093666592738743330019249614087926613845539922756948307649748442660101450656799819642150514339729889
+    print('\nmy keys')
+    print('e ', hex(A.e)[2:], '\nn ', hex(A.n)[2:], '\nd ', hex(A.d)[2:])
+
+    msg = 114888933979642393893806692060425606139553765450567466106219951259984737489665
+    print('\nmsg ', hex(msg)[2:])
+
+    print('\n-encrypt here with server keys, decrypt on the server-')
+    print('encrypted msg', hex(A.Encrypt(msg,server_e,server_n))[2:])
+
+    print('\n-encrypt on the server with my keys, decrypt here-')
+    emsg = 0xD6A64F78722422EAB4E0AC03BFEB8029ACF0CB50C929BF05D09C707BC22F7C768EE7D50197CF0C7B2017EAE1E393506BD807D5D037FF57DB909120659FF3ADA9
+    print('encrypted msg ', emsg)
+    print('decrypted msg ', hex(A.Decrypt(emsg,A.d,A.n))[2:])
+
+    print('\n-create a sign here and verify on the server-')
+    print('my sign ', hex(A.Sign(msg))[2:])
+
+    print('\n-create a sign on the server and verify on the here-')
+    server_sign = 0x2A777F1355107E54D60F3C9B1EEEA89489DFCB5E88CB99A85F42C025C086D90B86CEDD6E77E209772D211AB4876B31F4AB17DDA9266EB3CED5E1618F14269335
+    print('server sign ', server_sign)
+    print(A.Verify(msg,int(server_sign),server_e,server_n))
+
+def protocol():
+    Mabel = Node()
+    Dipper = Node()
+
+    Dipper.GenerateKeyPair(0)
+    Mabel.GenerateKeyPair(Mabel.n)
+
+    print('\nMabel keys')
+    Mabel.PrintKeys()
+    print('\nDipper keys')
+    Dipper.PrintKeys()
+
+    k = random.randint(0, 2**256)
+    print('\nkey', k)
+    pack = Mabel.SendKey(k,Dipper.e,Dipper.n)
+    print('Mabel send ', pack)
+    result = Dipper.ReceiveKey(pack,Mabel.e,Mabel.n)
+    print('Dipper receive', result)
+
+protocol()
