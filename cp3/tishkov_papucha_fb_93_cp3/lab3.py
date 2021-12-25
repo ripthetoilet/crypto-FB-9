@@ -1,7 +1,4 @@
-import math
-import pandas as pd
 from itertools import permutations
-
 from cp1.Tishkov_Papucha_FB_93_cp1.Lab1 import calc_all_bigramm_freq
 
 rus_alphabet = ['а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к',
