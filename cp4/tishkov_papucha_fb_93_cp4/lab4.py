@@ -3,12 +3,12 @@ from math import gcd
 from cp3.tishkov_papucha_fb_93_cp3.lab3 import gcd_ext
 from cp3.tishkov_papucha_fb_93_cp3.lab3 import calc_reverse_by_mod
 
-interval = [2**255+1, 2**256-1]
+default_interval_pair = [2**255+1, 2**256-1]
 
 
-def prime_gen():
+def prime_gen(min_interval=default_interval_pair[0], max_interval=default_interval_pair[1]):
     while True:
-        random_num = random.randint(interval[0], interval[1])
+        random_num = random.randint(min_interval, max_interval)
         print(random_num)
 
 
