@@ -2,15 +2,27 @@ import math
 import pandas as pd
 from itertools import permutations
 
+from cp1.Tishkov_Papucha_FB_93_cp1.Lab1 import calc_all_bigramm_freq
+
 rus_alphabet = ['а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к',
                 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х',
                 'ц', 'ч', 'ш', 'щ', 'ь', 'ы', 'э', 'ю', 'я']
 
 rus_most_freq_bigramms = ['ст', 'но', 'то', 'ен', 'на']
 
-control_bigramms_rus = ['аы', 'аь', 'еэ', 'жф', 'жч', 'жш', 'жщ', 'зп', 'зщ',
-                    'йь', 'оы', 'уы', 'уь', 'фц', 'хщ', 'цщ', 'цэ', 'чщ',
-                    'чэ', 'шщ', 'ьы', 'ыь', 'йж', 'ыэ']
+control_bigramms_rus = ['аы', 'аь', 'йь', 'оы', 'уы', 'уь', 'ьы', 'ыь']
+
+
+def insert_line_breaks(text, period):
+    new_text = list()
+    i = 1
+    while i <= len(text):
+        new_text.append(text[i - 1])
+        if i % period == 0:
+            new_text.append('\n')
+        i += 1
+    return ''.join(new_text)
+
 
 def gcd_ext(a, b):
     if a == 0:
@@ -34,60 +46,14 @@ def calc_linear_comparison(a, b, mod):
     if gcd == 1:
         x = (calc_reverse_by_mod(a, mod) * b) % mod
         return x
-    elif gcd > 1:
+    elif b % gcd != 0:
+        return -1
+    else:
         a1 = int(a / gcd)
         b1 = int(b / gcd)
         n1 = int(mod / gcd)
         x = calc_linear_comparison(a1, b1, n1)
         return x
-    else:
-        return -1
-
-
-def calc_all_bigramm_freq(alphabet, text, is_space_allowed=False, is_intersec_allowed=False, log_file_name=None):
-    bigramm_freq_dict = {}
-    bigramm_num_dict = {}
-
-    # Reduce text size if its length is odd
-    if is_space_allowed:
-        alphabet.append(' ')
-    text_len = 0
-    if len(text) % 2 == 0:
-        text_len = len(text)
-    else:
-        text_len = len(text) - 1
-
-    # Combine all letters for creating bigramms
-    for sym1 in alphabet:
-        for sym2 in alphabet:
-            new_bigramm = sym1 + sym2
-            bigramm_freq_dict.update({new_bigramm: 0})
-            bigramm_num_dict.update({new_bigramm: 0})
-
-    # Counting bigramm frequency
-    index = 0
-    while index < text_len - 1:
-        sym1 = text[index]
-        sym2 = text[index + 1]
-        cur_bigramm = sym1 + sym2
-        bigramm_num_dict[cur_bigramm] = bigramm_num_dict[cur_bigramm] + 1
-        if is_intersec_allowed:
-            index = index + 1
-        else:
-            index = index + 2
-    for bigramm in bigramm_num_dict:
-        divider = 0
-        if is_intersec_allowed:
-            divider = text_len - 1
-        else:
-            divider = text_len / 2
-        bigramm_freq_dict.update({bigramm: bigramm_num_dict[bigramm]/divider})
-
-    sorted_bigramm_freq_dict = dict(sorted(bigramm_freq_dict.items(), key=lambda item: item[1], reverse=True))
-    if log_file_name is not None:
-        out_df = pd.DataFrame.from_dict(sorted_bigramm_freq_dict, orient='index', columns=['Frequency'])
-        out_df.to_excel(log_file_name + '.xlsx')
-    return sorted_bigramm_freq_dict
 
 
 def get_most_freq_bigramms(bigramm_freq_dict, size):
@@ -145,19 +111,17 @@ class HackTheKey:
         self.control_bigramms = control_bigramms
         self.aphine = AphineCypher(self.alphabet)
 
-    def find_key(self, enc_bigramm_num1, enc_bigramm_num2,
-                       dec_bigramm_num1, dec_bigramm_num2):
-        x = enc_bigramm_num1 - enc_bigramm_num2
-        y = dec_bigramm_num1 - dec_bigramm_num2
+    def find_key(self, enc_bigramm_num1, enc_bigramm_num2, dec_bigramm_num1, dec_bigramm_num2):
+        x = dec_bigramm_num1 - dec_bigramm_num2
+        y = enc_bigramm_num1 - enc_bigramm_num2
         m = len(self.alphabet)
         a = calc_linear_comparison(x, y, m*m)
         b = (enc_bigramm_num1 - a*dec_bigramm_num1) % (m*m)
-        return [a, b]
+        return a, b
 
     def generate_suitable_keys(self, most_freq_bigramms, most_freq_bigramms_enc):
         enc_bigramm_pairs = list(permutations(most_freq_bigramms_enc, 2))
         dec_bigramm_pairs = list(permutations(most_freq_bigramms, 2))
-        #print(enc_bigramm_pairs)
         suitable_keys = list()
         for i in enc_bigramm_pairs:
             for j in dec_bigramm_pairs:
@@ -167,15 +131,14 @@ class HackTheKey:
                                                    get_bigramm_num(j[1], self.alphabet)
                                                    )
                                      )
-        return suitable_keys
+        return list(dict.fromkeys(suitable_keys))
 
     def check_text_readability(self, text):
         for bigramm in self.control_bigramms:
             if bigramm in text:
                 return False
-        print(text.count('о')/len(text))
-        #if text.count('о')/len(text) < 0.10 or text.count('а')/len(text) < 0.07:
-        #    return False
+        if text.count('о')/len(text) < 0.10 or text.count('а')/len(text) < 0.07:
+            return False
         return True
 
     def filter_keys(self, key_pairs, enc_text):
@@ -188,8 +151,9 @@ class HackTheKey:
 
 
 def main():
+    aphine = AphineCypher(rus_alphabet)
     hack_the_key = HackTheKey(rus_alphabet, control_bigramms_rus)
-    with open('encripted.txt', 'r') as enc_text_file:
+    with open('encrypted.txt', 'r') as enc_text_file:
         enc_text = enc_text_file.read()
         enc_text_list = list()
         for i in enc_text:
@@ -197,12 +161,27 @@ def main():
                 enc_text_list.append(i)
         enc_text = ''.join(enc_text_list)
         most_freq_bigramms = get_most_freq_bigramms(calc_all_bigramm_freq(rus_alphabet, enc_text), 5)
-        print(most_freq_bigramms)
-        key_pairs = hack_the_key.generate_suitable_keys(most_freq_bigramms.keys(), rus_most_freq_bigramms)
-        print(len(key_pairs))
+        key_pairs = hack_the_key.generate_suitable_keys(rus_most_freq_bigramms, most_freq_bigramms.keys())
+        print('Amount of suitable keys: ' + str(len(key_pairs)))
+
         key_pairs = hack_the_key.filter_keys(key_pairs, enc_text)
-        print(len(key_pairs))
-        print(key_pairs)
+        len_of_filtered_keys = len(key_pairs)
+        print('Amount of filtered keys: ' + str(len_of_filtered_keys))
+
+        if len(key_pairs) == 0:
+            print("There is no suitable keys!")
+        elif len(key_pairs) == 1:
+            print("Target key is: " + str(key_pairs))
+            target_key_pair = key_pairs[0]
+            open_text = aphine.decrypt(enc_text, target_key_pair[0], target_key_pair[1])
+            open_text_with_breaks = insert_line_breaks(open_text, 200)
+            print("Open text: \n")
+            print(open_text_with_breaks)
+            with open('decrypted.txt', 'w') as decrypted_text_file:
+                decrypted_text_file.write(open_text_with_breaks)
+        else:
+            print("There are too much keys - try to filter it manually!")
+            print("Keys: " + str(key_pairs))
 
 
 if __name__ == '__main__':
