@@ -20,20 +20,20 @@ def is_prime(num):
 
 
 def millera_rabina(num):
-    d, s = p - 1, 0
-    while (d % 2 == 0):
+    d, s = num - 1, 0
+    while d % 2 == 0:
         d = d // 2
         s += 1
-    a = randrange(2, num-1)
+    a = random.randint(2, num-1)
     x = pow(a, d, num)
     if x == 1 or x == num-1:
         return True
-    while r > 1:
+    while s > 1:
         x = pow(x, x, num)
         if x == 1:
             return False
         if x == -1:
             return True
-        r -= 1
+        s -= 1
     return False
 
