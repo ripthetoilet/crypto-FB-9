@@ -1,27 +1,16 @@
 import random
 from math import gcd
+from cp3.tishkov_papucha_fb_93_cp3.lab3 import gcd_ext
+from cp3.tishkov_papucha_fb_93_cp3.lab3 import calc_reverse_by_mod
 
 interval = [2**255+1, 2**256-1]
 
-def gcd_ext(a, b):
-    if a == 0:
-        return b, 0, 1
-    gcd, x1, y1 = gcd_ext(b % a, a)
-    x = y1 - (b // a) * x1
-    y = x1
-    return gcd, x, y
-
-def calc_reverse_by_mod(a, mod):
-    gcd, x, y = gcd_ext(a, mod)
-    if gcd == 1:
-        return (x % mod + mod) % mod
-    else:
-        return -1
 
 def prime_gen():
     while True:
         random_num = random.randint(interval[0], interval[1])
         print(random_num)
+
 
 def is_prime(num):
     if num % 2 == 0 or num % 3 == 0 or num % 5 == 0 or num % 7 == 0:
