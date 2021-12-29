@@ -19,6 +19,15 @@ def hex_to_int(hex_value):
     return int(hex_value, 16)
 
 
+def encode_to_hex(string):
+    string = (string.encode('utf-8'))
+    return string.hex().upper()
+
+
+def decode_from_hex(hex_value):
+    return bytes.fromhex(hex_value).decode('utf-8')
+
+
 def gen_random_prime_num(min_interval=default_interval_pair[0], max_interval=default_interval_pair[1]):
     while True:
         random_num = random.randint(min_interval, max_interval)
@@ -78,13 +87,14 @@ class RSA:
         d = calc_reverse_by_mod(e, phi)
         self.public_keys.update({'e': e})
         self.private_keys.update({'d': d})
-        print("Generate " + self.name + "'s private keys: ")
-        print("p: \n" + str(p))
-        print("q: \n" + str(q))
-        print("d: \n" + str(d))
-        print("Generate " + self.name + "'s public keys: ")
-        print("e: \n" + str(e))
-        print("n: \n" + str(n))
+        if self.verbose:
+            print("Generate " + self.name + "'s private keys: ")
+            print("p: \n" + str(p))
+            print("q: \n" + str(q))
+            print("d: \n" + str(d))
+            print("Generate " + self.name + "'s public keys: ")
+            print("e: \n" + str(e))
+            print("n: \n" + str(n))
         return self.public_keys
 
     def encrypt(self, msg):
@@ -109,11 +119,13 @@ class RSA:
         k1 = pow(key, e1, n1)
         s = pow(key, d, n)
         s1 = pow(s, e1, n1)
-        print(self.name + "'s key message: " + str(key))
-        print(self.name + " generate sign (s): \n" + str(s))
-        print(self.name + " generate k1: \n" + str(k1))
-        print(self.name + " generate s1: \n" + str(s1))
-        print(self.name + " return s1, k1")
+        # print(self.name + " generate sign (s): \n" + str(int_to_hex(s)))
+        if self.verbose:
+            print(self.name + "'s key message: " + str(key))
+            print(self.name + " generate sign (s): \n" + str(s))
+            print(self.name + " generate k1: \n" + str(k1))
+            print(self.name + " generate s1: \n" + str(s1))
+            print(self.name + " return s1, k1")
         return s1, k1
 
     def generate_auth_response(self, s1, k1):
@@ -121,11 +133,12 @@ class RSA:
         n = self.public_keys['n']
         check_s = pow(s1, d, n)
         check_key = pow(k1, d, n)
-        print(self.name + " earn s1: \n" + str(s1))
-        print(self.name + " earn k1: \n" + str(k1))
-        print(self.name + " generate s: \n" + str(check_s))
-        print(self.name + " generate key: \n" + str(check_key))
-        print(self.name + " return s")
+        if self.verbose:
+            print(self.name + " earn s1: \n" + str(s1))
+            print(self.name + " earn k1: \n" + str(k1))
+            print(self.name + " generate s: \n" + str(check_s))
+            print(self.name + " generate key: \n" + str(check_key))
+            print(self.name + " return s")
         return check_s, check_key
 
     def check_auth_response(self, check_s, check_k):
@@ -133,7 +146,8 @@ class RSA:
         d = self.private_keys['d']
         n = self.public_keys['n']
         s = pow(key, d, n)
-        print(self.name + " checks (s) from other abonent")
+        if self.verbose:
+            print(self.name + " checks (s) from other abonent")
         if s != check_s:
             print("Authentication failed!")
             return False
@@ -145,6 +159,35 @@ class RSA:
         key = pow(s, e, n)
         self.set_encryption_key(key)
         print(key)
+
+
+def rsa_test():
+    server_e = hex_to_int('10001')
+    server_n = hex_to_int('B14A1D5BFC441D0A0FFB804CA478C2DF46E6ECCF09A8C83A0EAEE047FB81694D')
+    abonent_a = RSA('Alice', False)
+    abonent_b = RSA('Server', False)
+    abonent_b.public_keys.update({'e': server_e})
+    abonent_b.public_keys.update({'n': server_n})
+    a_public_keys = abonent_a.generate_keys()
+    print("A - e: ")
+    print(int_to_hex(a_public_keys['e']))
+    print("A - n: ")
+    print(int_to_hex(a_public_keys['n']))
+    msg = "Hello world!"
+    enc_msg = abonent_a.encrypt(hex_to_int(encode_to_hex(msg)))
+    print("Msg = " + msg)
+    print("Encrypted msg: ")
+    print(int_to_hex(enc_msg))
+    server_msg = "Hello server!"
+    enc_server_msg = abonent_b.encrypt(hex_to_int(encode_to_hex(server_msg)))
+    print("Message for website = " + server_msg)
+    print("Encrypted msg: ")
+    print(int_to_hex(enc_server_msg))
+
+    print("Generate sign:")
+    origin_msg = hex_to_int(encode_to_hex('My sign'))
+    abonent_a.set_encryption_key(origin_msg)
+    abonent_a.generate_auth_msg(server_e, server_n)
 
 
 def main():
