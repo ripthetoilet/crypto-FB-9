@@ -56,7 +56,6 @@ def random_prime(from_num: int, to_num: int):
     cnt = 0
     if from_num > to_num:
         raise AssertionError(f"The range from {from_num} to {to_num} does not exist")
-    n = 0
     for x in range(from_num,to_num+1):
         x = randint(from_num, to_num)
         if x % 2 == 0:
@@ -75,7 +74,6 @@ def random_prime(from_num: int, to_num: int):
             log.debug(f"Candidate {i} is not suitable")
             cnt+=1
 
-        n += 1
     raise ArithmeticError(f"There are no prime numbers in range from {from_num} to {to_num}")
 
 
