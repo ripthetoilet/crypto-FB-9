@@ -45,11 +45,12 @@ def miller_rabin(num):
 
 
 class RSA:
-    def __init__(self):
+    def __init__(self, name):
         self.vigenere = VigenereCypherModule(rus_alphabet)
         self.private_keys = dict()
         self.public_keys = dict()
         self.encryption_key = None
+        self.name = name
 
     def f_n(self):
         p = self.private_keys['p']
@@ -67,8 +68,24 @@ class RSA:
         e = gen_random_prime_num(2, phi - 1)
         d = calc_reverse_by_mod(e, phi)
         self.public_keys.update({'e': e})
-        self.private_keys.update({'d', d})
+        self.private_keys.update({'d': d})
+        print("Generate " + self.name + "'s private keys: ")
+        print("p: \n" + str(p))
+        print("q: \n" + str(q))
+        print("d: \n" + str(d))
+        print("Generate " + self.name + "'s public keys: ")
+        print("e: \n" + str(e))
+        print("n: \n" + str(n))
         return self.public_keys
+
+    def encrypt(self, msg):
+        return pow(msg, self.public_keys['e'], self.public_keys['n'])
+
+    def decrypt(self, msg):
+        d = self.private_keys['d']
+        p = self.private_keys['p']
+        q = self.private_keys['q']
+        return pow(msg, d, p*q)
 
     def set_encryption_key(self, new_key):
         self.encryption_key = new_key
@@ -80,35 +97,49 @@ class RSA:
         key = self.get_encryption_key()
         d = self.private_keys['d']
         n = self.public_keys['n']
-        k1 = (key**e1) % n1
-        s = (key**d) % n
-        s1 = (s**e1) % n1
+        k1 = pow(key, e1, n1)
+        s = pow(key, d, n)
+        s1 = pow(s, e1, n1)
         return s1, k1
 
     def generate_auth_response(self, s1, k1):
         d = self.private_keys['d']
         n = self.public_keys['n']
-        check_s = (s1**d) % n
-        check_key = (k1**d) % n
+        check_s = pow(s1, d, n)
+        check_key = pow(k1, d, n)
         return check_s, check_key
 
     def check_auth_response(self, check_s, check_k):
         key = self.get_encryption_key()
         d = self.private_keys['d']
         n = self.public_keys['n']
-        s = (key ** d) % n
+        s = pow(key, d, n)
         if s != check_s:
             print("Authentication failed!")
             return False
+        print("Authentication success!")
+        print("Key is " + str(self.encrypt(s)))
         return s
 
     def generate_key_by_response(self, s, e, n):
-        key = (s**e) % n
+        key = pow(s, e, n)
         self.set_encryption_key(key)
+        print(key)
 
 
 def main():
-    print(gen_random_prime_num())
+    abonent_a = RSA()
+    abonent_b = RSA()
+    a_public_keys = abonent_a.generate_keys()
+    b_public_keys = abonent_b.generate_keys()
+    e_a = a_public_keys['e']
+    e_b = b_public_keys['e']
+    n_a = a_public_keys['n']
+    n_b = b_public_keys['n']
+    abonent_a.set_encryption_key(20)
+    auth_msg = abonent_a.generate_auth_msg(e_b, n_b)
+    auth_response = abonent_b.generate_auth_response(auth_msg[0], auth_msg[1])
+    abonent_a.check_auth_response(auth_response[0], auth_response[1])
 
 
 if __name__ == '__main__':
