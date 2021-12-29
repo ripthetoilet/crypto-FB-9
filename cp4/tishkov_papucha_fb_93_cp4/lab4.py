@@ -11,6 +11,14 @@ rus_alphabet = ['а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к'
 default_interval_pair = [(2**255)+1, (2**256)-1]
 
 
+def int_to_hex(number):
+    return hex(number)[2:].upper()
+
+
+def hex_to_int(hex_value):
+    return int(hex_value, 16)
+
+
 def gen_random_prime_num(min_interval=default_interval_pair[0], max_interval=default_interval_pair[1]):
     while True:
         random_num = random.randint(min_interval, max_interval)
@@ -45,12 +53,13 @@ def miller_rabin(num):
 
 
 class RSA:
-    def __init__(self, name):
+    def __init__(self, name, verbose=True):
         self.vigenere = VigenereCypherModule(rus_alphabet)
         self.private_keys = dict()
         self.public_keys = dict()
         self.encryption_key = None
         self.name = name
+        self.verbose = verbose
 
     def f_n(self):
         p = self.private_keys['p']
@@ -100,6 +109,11 @@ class RSA:
         k1 = pow(key, e1, n1)
         s = pow(key, d, n)
         s1 = pow(s, e1, n1)
+        print(self.name + "'s key message: " + str(key))
+        print(self.name + " generate sign (s): \n" + str(s))
+        print(self.name + " generate k1: \n" + str(k1))
+        print(self.name + " generate s1: \n" + str(s1))
+        print(self.name + " return s1, k1")
         return s1, k1
 
     def generate_auth_response(self, s1, k1):
@@ -107,6 +121,11 @@ class RSA:
         n = self.public_keys['n']
         check_s = pow(s1, d, n)
         check_key = pow(k1, d, n)
+        print(self.name + " earn s1: \n" + str(s1))
+        print(self.name + " earn k1: \n" + str(k1))
+        print(self.name + " generate s: \n" + str(check_s))
+        print(self.name + " generate key: \n" + str(check_key))
+        print(self.name + " return s")
         return check_s, check_key
 
     def check_auth_response(self, check_s, check_k):
@@ -114,6 +133,7 @@ class RSA:
         d = self.private_keys['d']
         n = self.public_keys['n']
         s = pow(key, d, n)
+        print(self.name + " checks (s) from other abonent")
         if s != check_s:
             print("Authentication failed!")
             return False
@@ -128,8 +148,8 @@ class RSA:
 
 
 def main():
-    abonent_a = RSA()
-    abonent_b = RSA()
+    abonent_a = RSA('Alice')
+    abonent_b = RSA('Bob')
     a_public_keys = abonent_a.generate_keys()
     b_public_keys = abonent_b.generate_keys()
     e_a = a_public_keys['e']
