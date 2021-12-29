@@ -121,15 +121,15 @@ def attack_on_cypher(text: str) -> list[tuple[int]]:
             supposable_keys.append(j)
     return list(set(supposable_keys))
 
-def validation(text):
+def valid1(text):
     allowed_2g=['ст', 'но', 'ен', 'то', 'на', 'ов', 'ни', 'ра', 'по', 'ко']
     allowed_3g=['сто', 'ено', 'нов', 'тов', 'ово', 'ова']
     bigrams_stats = my_lib.make_dict_of_stats_of_bigram(text, 2).items()
     sorted_by_frequency_bigrams = [i[0] for i in sorted(bigrams_stats, key=lambda a: a[1],
-                                                        reverse=True)][:len(allowed_2g)*2]
+                                                        reverse=True)][:len(allowed_2g)+300]
     threegrams_stats = Counter([text[i]+text[i+1]+text[i+2] for i in range(0,len(text)-len(text)%3,3)])
     sorted_by_frequency_threegrams = [i[0] for i in sorted(threegrams_stats, key=lambda a: a[1],
-                                                        reverse=True)][:len(allowed_3g)*2]
+                                                        reverse=True)][:len(allowed_2g) + 300]
     count_of_valid_ngrams=0
     for i in allowed_2g:
         if i  in sorted_by_frequency_bigrams:
@@ -137,15 +137,4 @@ def validation(text):
     for i in allowed_3g:
         if i  in sorted_by_frequency_threegrams:
             count_of_valid_ngrams+=1
-    forbiden = ['аь', 'аъ', 'бй', 'бф', 'гщ', 'гъ', 'еъ', 'жй', 'жц', 'жщ', 'жъ', 'жы', 'йъ', 'къ', 'лъ', 'мъ',
-    'оъ', 'пъ', 'ръ', 'уъ', 'уь', 'фщ', 'фъ', 'хы', 'цщ', 'цъ', 'цю', 'чф', 'цщ', 'чъ',
-    'чю', 'шщ', 'шъ', 'шы', 'шю', 'щж', 'щл', 'щх', 'щц', 'щш', 'щъ', 'щы', 'щю', 'щя', 'ъа',
-    'ъб', 'ъг', 'ъд', 'ъз', 'ъй', 'ък', 'ъл', 'ън', 'ъо', 'ъп', 'ър', 'ъс', 'ът', 'ъу', 'ъф', 'ъх', 'ъц',
-    'ъч', 'ъш', 'ъщ', 'ъъ', 'ъы', 'ъы', 'ъь', 'ъэ', 'ыъ',  'ьъ', 'ьы', 'эа', 'эж',   'эу',
-    'эщ', 'эъ',  'эь', 'эю',  'юъ', 'юы', 'юь', 'яъ', 'яь', 'ьь']
-    count=0
-    for i in forbiden:
-        if i in text:
-            count+=1
-    return count<len(forbiden)*0.30 and len(allowed_2g+allowed_3g)*0.40<count_of_valid_ngrams
-
+    return len(allowed_2g+allowed_3g)*0.60<count_of_valid_ngrams

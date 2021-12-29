@@ -3,12 +3,12 @@ import sys
 sys.path.insert(0, '../../cp1/Denysiuk_fb-93_tovstonojenko_fb-93_cp1')
 import my_lib
 
-text=my_lib.filter_text('../../tasks/cp3/variants.utf8/04.txt', False)
+text=my_lib.filter_text('../../tasks/cp3/variants.utf8/09.txt', False)
 supposable_keys = af.attack_on_cypher(text)
 decrypted_text=''
 for i in supposable_keys:
     b = af.decrypt_text(text, i)
-    if af.validation(b):
+    if af.valid1(b):
         decrypted_text=b
         print(f'Supposable key:{i}')
         print(b, '\n')
